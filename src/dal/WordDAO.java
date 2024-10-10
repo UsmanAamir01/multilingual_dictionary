@@ -1,18 +1,19 @@
 package dal;
 
 import dto.Word;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class WordDAO {
-    private Map<String, String> users;
 
-    public WordDAO() {
-        users = new HashMap<>();
-
-        users.put("admin", "password");
-        users.put("user1", "pass123");
-    }
     public Word getWordFromDB(String username)
     {
     	
@@ -161,4 +162,8 @@ public class WordDAO {
     	
     	return false;
     }
+    
+
+
+   
 }
