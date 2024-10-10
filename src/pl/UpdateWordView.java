@@ -23,17 +23,17 @@ import javax.swing.border.EmptyBorder;
 import bl.WordBO;
 import dto.Word;
 
-public class AddWordView extends JFrame {
+public class UpdateWordView extends JFrame {
     private JTextField wordTextField;
-    private JTextField meaningTextField;
-    private JButton addButton;
+    private JTextField newMeaningTextField;
+    private JButton updateButton;
     private WordBO wordBO;
 
-    public AddWordView(WordBO wordBO) {
+    public UpdateWordView(WordBO wordBO) {
         this.wordBO = wordBO;
 
         // Set up the JFrame
-        setTitle("Add Word");
+        setTitle("Update Word");
         setSize(400, 250);
         setLocationRelativeTo(null); // Center the frame
         setResizable(false);
@@ -56,27 +56,27 @@ public class AddWordView extends JFrame {
         wordTextField.setFont(new Font("Arial", Font.PLAIN, 14));
         formPanel.add(wordTextField);
 
-        JLabel meaningLabel = new JLabel("Meaning:");
-        meaningLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        formPanel.add(meaningLabel);
+        JLabel newMeaningLabel = new JLabel("New Meaning:");
+        newMeaningLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        formPanel.add(newMeaningLabel);
 
-        meaningTextField = new JTextField();
-        meaningTextField.setFont(new Font("Arial", Font.PLAIN, 14));
-        formPanel.add(meaningTextField);
+        newMeaningTextField = new JTextField();
+        newMeaningTextField.setFont(new Font("Arial", Font.PLAIN, 14));
+        formPanel.add(newMeaningTextField);
 
-        // Button panel for the add button
+        // Button panel for the update button
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-        addButton = new JButton("Add");
-        addButton.setPreferredSize(new Dimension(100, 30));
-        addButton.setBackground(new Color(66, 135, 245));
-        addButton.setForeground(Color.WHITE);
-        addButton.setFocusPainted(false);
-        addButton.setFont(new Font("Arial", Font.BOLD, 14));
-        addButton.setBorder(BorderFactory.createLineBorder(new Color(30, 144, 255)));
+        updateButton = new JButton("Update");
+        updateButton.setPreferredSize(new Dimension(100, 30));
+        updateButton.setBackground(new Color(66, 135, 245));
+        updateButton.setForeground(Color.WHITE);
+        updateButton.setFocusPainted(false);
+        updateButton.setFont(new Font("Arial", Font.BOLD, 14));
+        updateButton.setBorder(BorderFactory.createLineBorder(new Color(30, 144, 255)));
 
-        buttonPanel.add(addButton);
+        buttonPanel.add(updateButton);
 
         // Add the form and button panels to the main panel
         mainPanel.add(formPanel, BorderLayout.CENTER);
@@ -86,25 +86,25 @@ public class AddWordView extends JFrame {
         add(mainPanel);
 
         // Add button action listener
-        addButton.addActionListener(new ActionListener() {
+        updateButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String wordText = wordTextField.getText();
-                String meaning = meaningTextField.getText();
+                String newMeaning = newMeaningTextField.getText();
 
-                if (!wordText.isEmpty() && !meaning.isEmpty()) {
-                    Word word = new Word(wordText, meaning);
-                    boolean success = wordBO.addWord(word);
+                if (!wordText.isEmpty() && !newMeaning.isEmpty()) {
+                    Word word = new Word(wordText, newMeaning);
+                    boolean success = wordBO.updateWord(word);
 
                     if (success) {
-                        JOptionPane.showMessageDialog(AddWordView.this, "Word added successfully!");
+                        JOptionPane.showMessageDialog(UpdateWordView.this, "Word updated successfully!");
                         wordTextField.setText("");
-                        meaningTextField.setText("");
+                        newMeaningTextField.setText("");
                     } else {
-                        JOptionPane.showMessageDialog(AddWordView.this, "Failed to add the word.");
+                        JOptionPane.showMessageDialog(UpdateWordView.this, "Failed to update the word. It may not exist.");
                     }
                 } else {
-                    JOptionPane.showMessageDialog(AddWordView.this, "Please fill in all fields.");
+                    JOptionPane.showMessageDialog(UpdateWordView.this, "Please fill in all fields.");
                 }
             }
         });
