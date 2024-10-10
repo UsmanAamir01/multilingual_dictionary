@@ -5,19 +5,160 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WordDAO {
-    private Map<String, String> words;
+    private Map<String, String> users;
 
     public WordDAO() {
-        words = new HashMap<>();
+        users = new HashMap<>();
 
-        words.put("admin", "password");
-        words.put("user1", "pass123");
+        users.put("admin", "password");
+        users.put("user1", "pass123");
     }
-
-    public Word getWord(String username) {
-        if (words.containsKey(username)) {
-            return new Word(username, words.get(username));
-        }
-        return null;
+    public Word getWordFromDB(String username)
+    {
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	return null;
+    }
+    public boolean updateWordToDB(Word w)
+    {
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	return false;
+    }
+    public boolean addWordToDB(Word w)
+    {
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	return false;
+    }
+    public boolean removeWordFromDB(String username)
+    {
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	return false;
     }
 }

@@ -1,27 +1,20 @@
 package dto;
 
 public class Word {
-    private String username;
-    private String password;
+    private String word;
+    private String meaning;
 
-    public Word(String username, String password) {
-        this.username = username;
-        this.password = password;
+    public Word(String word, String meaning) {
+        this.word = word;
+        this.meaning = meaning;
     }
 
-    public String getUsername() {
-        return username;
+    public String getWord() {
+        return word;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public String getMeaning() {
+        return meaning;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }
