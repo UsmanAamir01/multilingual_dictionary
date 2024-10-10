@@ -168,6 +168,26 @@ public class WordUI extends JFrame {
                 System.exit(0);
             }
         });
+        addWordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	
+                new AddWordView(wordBo);
+            }
+        });
+        removeWordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new RemoveWordView(wordBo);
+            }
+        });
+        updateWordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new UpdateWordView(wordBo);
+            }
+        });
+
 
         add(buttonPanel);
         revalidate();
