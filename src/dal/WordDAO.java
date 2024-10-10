@@ -5,11 +5,13 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import dto.Word;
 
 public class WordDAO {
-	private static final String URL = "jdbc:mysql://localhost:3306/your_database_name";
+	private static final String URL = "jdbc:mysql://localhost:3306/Dictionarydb";
 	private static final String USER = "root";
 	private static final String PASSWORD = "";
 
@@ -82,4 +84,26 @@ public class WordDAO {
         }
         return false;
 	}
+	
+	public List<Word> getAllWords() {
+        String query = "SELECT word, meaning FROM dictionary";
+        List<Word> wordList = new ArrayList<>();
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = connection.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String word = rs.getString("word");
+                String meaning = rs.getString("meaning");
+                wordList.add(new Word(word, meaning));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return wordList;
+    }
+	
 }

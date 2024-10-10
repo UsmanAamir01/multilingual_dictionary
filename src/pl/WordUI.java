@@ -187,6 +187,13 @@ public class WordUI extends JFrame {
                 new UpdateWordView(wordBo);
             }
         });
+        
+        viewAllButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new AllWordView();
+            }
+        });
 
 
         add(buttonPanel);
