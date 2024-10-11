@@ -3,9 +3,10 @@ package pl;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -30,56 +31,54 @@ public class RemoveWordView extends JFrame {
     public RemoveWordView(WordBO wordBO) {
         this.wordBO = wordBO;
 
-        
         setTitle("Remove Word");
-        setSize(400, 200);
-        setLocationRelativeTo(null); 
-        setResizable(false);
+        setSize(420, 240);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        
         JPanel mainPanel = new JPanel();
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
-        mainPanel.setBackground(new Color(245, 245, 245));
-        mainPanel.setLayout(new BorderLayout(10, 10));
+        mainPanel.setBackground(Color.WHITE);
+        mainPanel.setLayout(new BorderLayout(15, 15));
 
-        
-        JPanel formPanel = new JPanel();
-        formPanel.setLayout(new GridLayout(1, 2, 10, 10)); 
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBackground(Color.WHITE);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel wordLabel = new JLabel("Word:");
-        wordLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        formPanel.add(wordLabel);
+        wordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        wordLabel.setForeground(Color.DARK_GRAY);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        formPanel.add(wordLabel, gbc);
 
-        wordTextField = new JTextField();
-        wordTextField.setFont(new Font("Arial", Font.PLAIN, 14));
-        formPanel.add(wordTextField);
+        wordTextField = new JTextField(20);
+        wordTextField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        gbc.gridx = 1;
+        formPanel.add(wordTextField, gbc);
 
-        
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-
-        removeButton = new JButton("Remove");
-        removeButton.setPreferredSize(new Dimension(100, 30));
+        buttonPanel.setBackground(Color.WHITE);
+        removeButton = new JButton("Remove Word");
+        removeButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
         removeButton.setBackground(new Color(245, 66, 66));
         removeButton.setForeground(Color.WHITE);
+        removeButton.setBorderPainted(false);
         removeButton.setFocusPainted(false);
-        removeButton.setFont(new Font("Arial", Font.BOLD, 14));
+        removeButton.setPreferredSize(new Dimension(140, 35));
         removeButton.setBorder(BorderFactory.createLineBorder(new Color(205, 32, 32)));
 
         buttonPanel.add(removeButton);
 
-        
         mainPanel.add(formPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        
-        add(mainPanel);
-
-        
         removeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String wordText = wordTextField.getText();
+                String wordText = wordTextField.getText().trim();
 
                 if (!wordText.isEmpty()) {
                     boolean success = wordBO.removeWord(wordText);
@@ -95,17 +94,18 @@ public class RemoveWordView extends JFrame {
                 }
             }
         });
+
         this.addWindowListener(new WindowAdapter() {
-        	@Override
-        	public void windowClosing(WindowEvent e)
-        	{
-        		dispose();
-        	}
+            @Override
+            public void windowClosing(WindowEvent e) {
+                dispose();
+            }
         });
+
+        add(mainPanel);
         setVisible(true);
     }
 
-    
     public void display() {
         setVisible(true);
     }

@@ -47,7 +47,7 @@ public class DictionaryUI {
                         DefaultTableModel tableModel = (DefaultTableModel) dataTable.getModel();
                         tableModel.setRowCount(0); // Clear existing data
                         for (Word word : importedWords) {
-                            tableModel.addRow(new Object[]{word.getWord(), word.getMeaning1(), word.getMeaning2()});
+                            tableModel.addRow(new Object[]{word.getWord(), word.getMeaning()});
                         }
                         JOptionPane.showMessageDialog(frame, "Data imported successfully!");
 

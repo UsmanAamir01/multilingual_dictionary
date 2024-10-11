@@ -1,17 +1,15 @@
 package pl;
-
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.GridBagLayout; 
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.util.List;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -23,11 +21,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.JFileChooser;
 
 import bl.UserBO;
 import bl.WordBO;
-import dto.Word;
 
 public class WordUI extends JFrame {
     private JTextField usernameField;
@@ -35,7 +31,7 @@ public class WordUI extends JFrame {
     private JButton loginButton;
     private WordBO wordBo;
     private UserBO userBo;
-
+    
     private JButton addWordButton;
     private JButton removeWordButton;
     private JButton updateWordButton;
@@ -140,7 +136,7 @@ public class WordUI extends JFrame {
                 timer.start();
             }
         });
-
+        
         return button;
     }
 
@@ -175,6 +171,7 @@ public class WordUI extends JFrame {
         addWordButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+            	
                 new AddWordView(wordBo);
             }
         });
@@ -190,7 +187,7 @@ public class WordUI extends JFrame {
                 new UpdateWordView(wordBo);
             }
         });
-
+        
         viewAllButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -198,24 +195,6 @@ public class WordUI extends JFrame {
             }
         });
 
-        // Action listener for the import file button
-        importFileButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
-                int returnValue = fileChooser.showOpenDialog(WordUI.this);
-
-                if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-                    List<Word> importedWords = wordBo.importDataFromFile(selectedFile.getAbsolutePath());
-                    if (importedWords.isEmpty()) {
-                        JOptionPane.showMessageDialog(WordUI.this, "No words imported. Please check the file format.", "Import Error", JOptionPane.ERROR_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(WordUI.this, importedWords.size() + " words imported successfully!", "Import Successful", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                }
-            }
-        });
 
         add(buttonPanel);
         revalidate();
