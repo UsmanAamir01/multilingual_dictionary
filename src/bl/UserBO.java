@@ -10,8 +10,9 @@ public class UserBO {
     public UserBO() {
         users = new HashMap<>();
 
-        users.put("admin", "password");
-        users.put("user1", "pass123");
+        users.put("usman", "3709");
+        users.put("sarim", "3688");
+        users.put("zainab", "3691");
     }
     public boolean validateUser(String username, String password)
     {
