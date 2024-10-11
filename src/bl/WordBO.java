@@ -82,10 +82,4 @@ public class WordBO {
         }
         return allInserted; // Return true if all inserts succeed
     }
-
-    // Validate the word data
-    private boolean validateWord(Word word) {
-        return word.getWord() != null && !word.getWord().isEmpty()
-                && word.getMeaning() != null;
-    }
 }
