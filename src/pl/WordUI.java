@@ -25,6 +25,7 @@ import javax.swing.Timer;
 
 import bl.UserBO;
 import bl.WordBO;
+import dal.WordDAO;
 
 public class WordUI extends JFrame {
 	private JTextField usernameField;
@@ -194,6 +195,12 @@ public class WordUI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new AllWordView();
+			}
+		});
+		importFileButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new DictionaryUI(wordBo);
 			}
 		});
 
