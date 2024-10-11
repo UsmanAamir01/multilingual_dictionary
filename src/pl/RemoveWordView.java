@@ -30,21 +30,21 @@ public class RemoveWordView extends JFrame {
     public RemoveWordView(WordBO wordBO) {
         this.wordBO = wordBO;
 
-        // Set up the JFrame
+        
         setTitle("Remove Word");
         setSize(400, 200);
-        setLocationRelativeTo(null); // Center the frame
+        setLocationRelativeTo(null); 
         setResizable(false);
 
-        // Create a main panel with padding and background color
+        
         JPanel mainPanel = new JPanel();
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
         mainPanel.setBackground(new Color(245, 245, 245));
         mainPanel.setLayout(new BorderLayout(10, 10));
 
-        // Form panel for input
+        
         JPanel formPanel = new JPanel();
-        formPanel.setLayout(new GridLayout(1, 2, 10, 10)); // 1 row, 2 columns with padding
+        formPanel.setLayout(new GridLayout(1, 2, 10, 10)); 
 
         JLabel wordLabel = new JLabel("Word:");
         wordLabel.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -54,7 +54,7 @@ public class RemoveWordView extends JFrame {
         wordTextField.setFont(new Font("Arial", Font.PLAIN, 14));
         formPanel.add(wordTextField);
 
-        // Button panel for the remove button
+        
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
@@ -68,14 +68,14 @@ public class RemoveWordView extends JFrame {
 
         buttonPanel.add(removeButton);
 
-        // Add the form and button panels to the main panel
+        
         mainPanel.add(formPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Add the main panel to the JFrame
+        
         add(mainPanel);
 
-        // Add button action listener
+        
         removeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -105,7 +105,7 @@ public class RemoveWordView extends JFrame {
         setVisible(true);
     }
 
-    // Method to display the JFrame
+    
     public void display() {
         setVisible(true);
     }
