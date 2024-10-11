@@ -16,7 +16,7 @@ public class WordDAO {
 	private static final String PASSWORD = "";
 
 	public Word getWordFromDB(String word) {
-		String query = "SELECT * FROM words WHERE word = ?";
+		String query = "SELECT * FROM dictionary WHERE word = ?";
 		try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
 				PreparedStatement statement = connection.prepareStatement(query)) {
 
@@ -24,7 +24,7 @@ public class WordDAO {
 			ResultSet resultSet = statement.executeQuery();
 
 			if (resultSet.next()) {
-				// Assuming 'words' table has columns 'word_text', 'language', and 'meaning'
+				
 				String word2 = resultSet.getString("word");
 				String meaning = resultSet.getString("meaning");
 				return new Word(word2, meaning);
@@ -38,7 +38,7 @@ public class WordDAO {
 
 	public boolean updateWordToDB(Word w) {
 
-		String query = "UPDATE words SET meaning = ? WHERE word = ?";
+		String query = "UPDATE dictionary SET meaning = ? WHERE word = ?";
 		try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
 				PreparedStatement statement = connection.prepareStatement(query)) {
 
@@ -55,7 +55,7 @@ public class WordDAO {
 	}
 
 	public boolean addWordToDB(Word w) {
-		String query = "INSERT INTO words (word, meaning) VALUES (?, ?)";
+		String query = "INSERT INTO dictionary (word, meaning) VALUES (?, ?)";
 		try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
 				PreparedStatement statement = connection.prepareStatement(query)) {
 
@@ -71,7 +71,7 @@ public class WordDAO {
 	}
 
 	public boolean removeWordFromDB(String word) {
-		String query = "DELETE FROM words WHERE word_text = ?";
+		String query = "DELETE FROM dictionary WHERE word = ?";
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement statement = connection.prepareStatement(query)) {
              

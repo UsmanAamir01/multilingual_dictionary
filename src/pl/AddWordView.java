@@ -32,21 +32,20 @@ public class AddWordView extends JFrame {
     public AddWordView(WordBO wordBO) {
         this.wordBO = wordBO;
 
-        // Set up the JFrame
         setTitle("Add Word");
         setSize(400, 250);
-        setLocationRelativeTo(null); // Center the frame
+        setLocationRelativeTo(null); 
         setResizable(false);
 
-        // Create a main panel with padding and background color
+        
         JPanel mainPanel = new JPanel();
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
         mainPanel.setBackground(new Color(245, 245, 245));
         mainPanel.setLayout(new BorderLayout(10, 10));
 
-        // Form panel for inputs
+        
         JPanel formPanel = new JPanel();
-        formPanel.setLayout(new GridLayout(2, 2, 10, 10)); // 2 rows, 2 columns with padding
+        formPanel.setLayout(new GridLayout(2, 2, 10, 10)); 
 
         JLabel wordLabel = new JLabel("Word:");
         wordLabel.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -64,7 +63,7 @@ public class AddWordView extends JFrame {
         meaningTextField.setFont(new Font("Arial", Font.PLAIN, 14));
         formPanel.add(meaningTextField);
 
-        // Button panel for the add button
+        
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
@@ -78,14 +77,14 @@ public class AddWordView extends JFrame {
 
         buttonPanel.add(addButton);
 
-        // Add the form and button panels to the main panel
+        
         mainPanel.add(formPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Add the main panel to the JFrame
+        
         add(mainPanel);
 
-        // Add button action listener
+        
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -118,7 +117,7 @@ public class AddWordView extends JFrame {
         setVisible(true);
     }
 
-    // Method to display the JFrame
+    
     public void display() {
         setVisible(true);
     }
