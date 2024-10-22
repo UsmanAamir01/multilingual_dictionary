@@ -19,7 +19,8 @@ public class DictionaryUI {
 
     // Constructor to accept the WordBO instance
     public DictionaryUI(WordBO wordBO) {
-        this.wordBO = wordBO; // Initialize the WordBO
+        this.wordBO = wordBO;
+        createAndShowGUI();
     }
 
     public void createAndShowGUI() {
@@ -39,8 +40,6 @@ public class DictionaryUI {
                     File selectedFile = fileChooser.getSelectedFile();
                     String filePath = selectedFile.getAbsolutePath();
                     filePathField.setText(filePath);
-
-                    // Use the passed wordBO to import data
                     List<Word> importedWords = wordBO.importDataFromFile(filePath);
                     if (!importedWords.isEmpty() && wordBO.insertImportedData(importedWords)) {
                         // Populate the table and show a success message
@@ -70,7 +69,7 @@ public class DictionaryUI {
         });
 
         // Create a table model with column headers
-        String[] columnNames = {"Word", "Meaning 1", "Meaning 2"};
+        String[] columnNames = {"Word", "Meaning"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
         dataTable.setModel(tableModel);
 
@@ -89,12 +88,5 @@ public class DictionaryUI {
 
         // Initially disable the view button
         viewButton.setEnabled(false);
-    }
-
-    public static void main(String[] args) {
-        // Create an instance of WordBO and DictionaryUI to run the application
-        WordBO wordBO = new WordBO();
-        DictionaryUI dictionaryUI = new DictionaryUI(wordBO);
-        SwingUtilities.invokeLater(dictionaryUI::createAndShowGUI);
     }
 }
