@@ -20,20 +20,16 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import bl.UserBO;
 import bl.WordBO;
-import dal.WordDAO;
 
 public class WordUI extends JFrame {
 	private JTextField usernameField;
 	private JPasswordField passwordField;
 	private JButton loginButton;
 	private WordBO wordBo;
-	private UserBO userBo;
-
 	private JButton addWordButton;
 	private JButton removeWordButton;
 	private JButton updateWordButton;
@@ -42,10 +38,9 @@ public class WordUI extends JFrame {
 	private JButton closeButton;
 
 	public WordUI(WordBO wordBo, UserBO userBo) {
-		this.userBo = userBo;
 		this.wordBo = wordBo;
 		setTitle("Multilingual Dictionary");
-		setSize(400, 400);
+		setSize(500, 500);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		getContentPane().setBackground(new Color(240, 240, 240));
@@ -174,33 +169,37 @@ public class WordUI extends JFrame {
 		addWordButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
-				new AddWordView(wordBo);
+				new AddWordView(wordBo, WordUI.this);
+				WordUI.this.setVisible(false);
 			}
 		});
 		removeWordButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new RemoveWordView(wordBo);
+				new RemoveWordView(WordUI.this, wordBo);
+				WordUI.this.setVisible(false);
 			}
 		});
 		updateWordButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new UpdateWordView(wordBo);
+				new UpdateWordView(WordUI.this, wordBo);
+				WordUI.this.setVisible(false);
 			}
 		});
 
 		viewAllButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new AllWordView();
+				new AllWordView(WordUI.this);
+				WordUI.this.setVisible(false);
 			}
 		});
 		importFileButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new DictionaryUI(wordBo);
+				new DictionaryUI(wordBo, WordUI.this);
+				WordUI.this.setVisible(false);
 			}
 		});
 
