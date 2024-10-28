@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -21,11 +23,13 @@ import bl.WordBO;
 import dto.Word;
 
 public class AddWordView extends JFrame {
-    private JTextField wordTextField, meaningTextField;
+    private JTextField arabicWordTextField, urduMeaningTextField, persianMeaningTextField;
     private JButton addButton, backButton;
     private JFrame previousWindow;
+    private WordBO wordBO;
 
     public AddWordView(WordBO wordBO, JFrame previousWindow) {
+        this.wordBO = wordBO;
         this.previousWindow = previousWindow;
         setTitle("Add Word");
         setSize(500, 500);
@@ -42,25 +46,35 @@ public class AddWordView extends JFrame {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel wordLabel = new JLabel("Word:");
-        wordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        JLabel arabicWordLabel = new JLabel("Arabic Word:");
+        arabicWordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         gbc.gridx = 0;
         gbc.gridy = 0;
-        formPanel.add(wordLabel, gbc);
+        formPanel.add(arabicWordLabel, gbc);
 
-        wordTextField = new JTextField(20);
+        arabicWordTextField = new JTextField(20);
         gbc.gridx = 1;
-        formPanel.add(wordTextField, gbc);
+        formPanel.add(arabicWordTextField, gbc);
 
-        JLabel meaningLabel = new JLabel("Meaning:");
-        meaningLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        JLabel urduMeaningLabel = new JLabel("Urdu Meaning:");
+        urduMeaningLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         gbc.gridx = 0;
         gbc.gridy = 1;
-        formPanel.add(meaningLabel, gbc);
+        formPanel.add(urduMeaningLabel, gbc);
 
-        meaningTextField = new JTextField(20);
+        urduMeaningTextField = new JTextField(20);
         gbc.gridx = 1;
-        formPanel.add(meaningTextField, gbc);
+        formPanel.add(urduMeaningTextField, gbc);
+
+        JLabel persianMeaningLabel = new JLabel("Persian Meaning:");
+        persianMeaningLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        formPanel.add(persianMeaningLabel, gbc);
+
+        persianMeaningTextField = new JTextField(20);
+        gbc.gridx = 1;
+        formPanel.add(persianMeaningTextField, gbc);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.white);
@@ -87,34 +101,42 @@ public class AddWordView extends JFrame {
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
         this.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e) {
+            public void windowClosing(WindowEvent windowEvent) {
                 dispose();
             }
         });
 
-        addButton.addActionListener(e -> {
-            String wordText = wordTextField.getText().trim();
-            String meaning = meaningTextField.getText().trim();
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                String arabicWordText = arabicWordTextField.getText().trim();
+                String urduMeaning = urduMeaningTextField.getText().trim();
+                String persianMeaning = persianMeaningTextField.getText().trim();
 
-            if (!wordText.isEmpty() && !meaning.isEmpty()) {
-                Word word = new Word(wordText, meaning);
-                boolean success = wordBO.addWord(word);
+                if (!arabicWordText.isEmpty() && !urduMeaning.isEmpty() && !persianMeaning.isEmpty()) {
+                    Word word = new Word(arabicWordText, urduMeaning, persianMeaning);
+                    boolean success = wordBO.addWord(word);
 
-                if (success) {
-                    JOptionPane.showMessageDialog(AddWordView.this, "Word added successfully!");
-                    wordTextField.setText("");
-                    meaningTextField.setText("");
+                    if (success) {
+                        JOptionPane.showMessageDialog(AddWordView.this, "Word added successfully!");
+                        arabicWordTextField.setText("");
+                        urduMeaningTextField.setText("");
+                        persianMeaningTextField.setText("");
+                    } else {
+                        JOptionPane.showMessageDialog(AddWordView.this, "Failed to add the word.");
+                    }
                 } else {
-                    JOptionPane.showMessageDialog(AddWordView.this, "Failed to add the word.");
+                    JOptionPane.showMessageDialog(AddWordView.this, "Please fill in all fields.");
                 }
-            } else {
-                JOptionPane.showMessageDialog(AddWordView.this, "Please fill in all fields.");
             }
         });
 
-        backButton.addActionListener(e -> {
-            previousWindow.setVisible(true);
-            dispose();
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                previousWindow.setVisible(true);
+                dispose();
+            }
         });
 
         add(mainPanel);
