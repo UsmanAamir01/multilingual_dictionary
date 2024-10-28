@@ -1,19 +1,25 @@
 package dto;
 
 public class Word {
-    private final String word;
-    private final String meaning;
+    private final String arabicWord;
+    private final String urduMeaning;
+    private final String persianMeaning;
 
-    public Word(String word, String meaning) {
-        this.word = word;
-        this.meaning = meaning;
+    public Word(String arabicWord, String urduMeaning, String persianMeaning) {
+        this.arabicWord = arabicWord;
+        this.urduMeaning = urduMeaning;
+        this.persianMeaning = persianMeaning;
     }
 
-    public String getWord() {
-        return word;
+    public String getArabicWord() {
+        return arabicWord;
     }
 
-    public String getMeaning() {
-        return meaning;
+    public String getUrduMeaning() {
+        return urduMeaning;
+    }
+
+    public String getPersianMeaning() {
+        return persianMeaning;
     }
 }
