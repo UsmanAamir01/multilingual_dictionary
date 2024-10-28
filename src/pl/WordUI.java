@@ -210,8 +210,7 @@ public class WordUI extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		WordDAO wordDAO = new WordDAO();
-		WordBO wordBo = new WordBO(wordDAO);
+		WordBO wordBo = new WordBO();
 		UserBO userBo = new UserBO();
 		WordUI ui = new WordUI(wordBo, userBo);
 		ui.setVisible(true);
