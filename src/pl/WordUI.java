@@ -24,6 +24,7 @@ import javax.swing.Timer;
 
 import bl.UserBO;
 import bl.WordBO;
+import dal.WordDAO;
 
 public class WordUI extends JFrame {
 	private JTextField usernameField;
@@ -209,7 +210,10 @@ public class WordUI extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		WordUI ui = new WordUI(new WordBO(), new UserBO());
+		WordDAO wordDAO = new WordDAO();
+		WordBO wordBo = new WordBO(wordDAO);
+		UserBO userBo = new UserBO();
+		WordUI ui = new WordUI(wordBo, userBo);
 		ui.setVisible(true);
 	}
 }

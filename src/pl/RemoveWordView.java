@@ -28,9 +28,11 @@ public class RemoveWordView extends JFrame {
     private JButton removeButton;
     private JButton backButton;
     private JFrame previousWindow;
+    private final WordBO wordBO;
 
     public RemoveWordView(JFrame previousWindow, WordBO wordBO) {
         this.previousWindow = previousWindow;
+        this.wordBO = wordBO;
         setTitle("Remove Word");
         setSize(500, 500);
         setLocationRelativeTo(null);
@@ -61,9 +63,10 @@ public class RemoveWordView extends JFrame {
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.WHITE);
+
         removeButton = new JButton("Remove Word");
         removeButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        removeButton.setBackground(Color.red);
+        removeButton.setBackground(Color.RED);
         removeButton.setForeground(Color.WHITE);
         removeButton.setBorderPainted(false);
         removeButton.setFocusPainted(false);
@@ -84,24 +87,19 @@ public class RemoveWordView extends JFrame {
         mainPanel.add(formPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        removeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String wordText = wordTextField.getText().trim();
+        removeButton.addActionListener(e -> {
+            String wordText = wordTextField.getText().trim();
 
-                if (!wordText.isEmpty()) {
-                    boolean success = wordBO.removeWord(wordText);
-
-                    if (success) {
-                        JOptionPane.showMessageDialog(RemoveWordView.this, "Word removed successfully!");
-                        wordTextField.setText("");
-                    } else {
-                        JOptionPane.showMessageDialog(RemoveWordView.this,
-                                "Failed to remove the word. It may not exist.");
-                    }
+            if (!wordText.isEmpty()) {
+                boolean success = wordBO.removeWord(wordText);
+                if (success) {
+                    JOptionPane.showMessageDialog(RemoveWordView.this, "Word removed successfully!");
+                    wordTextField.setText("");
                 } else {
-                    JOptionPane.showMessageDialog(RemoveWordView.this, "Please enter a word to remove.");
+                    JOptionPane.showMessageDialog(RemoveWordView.this, "Failed to remove the word. It may not exist.");
                 }
+            } else {
+                JOptionPane.showMessageDialog(RemoveWordView.this, "Please enter a word to remove.");
             }
         });
 
