@@ -3,16 +3,11 @@ package dal;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import dto.Word;
 
 public class WordDAO {
@@ -30,12 +25,12 @@ public class WordDAO {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                String word2 = resultSet.getString("word");
+                String wordText = resultSet.getString("word");
                 String meaning = resultSet.getString("meaning");
-                return new Word(word2, meaning);
+                return new Word(wordText, meaning);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Database error", e);
         }
         return null;
     }
@@ -47,11 +42,9 @@ public class WordDAO {
 
             statement.setString(1, w.getMeaning());
             statement.setString(2, w.getWord());
-
-            int rowsUpdated = statement.executeUpdate();
-            return rowsUpdated > 0;
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Database error", e);
         }
         return false;
     }
@@ -63,11 +56,9 @@ public class WordDAO {
 
             statement.setString(1, w.getWord());
             statement.setString(2, w.getMeaning());
-
-            int rowsInserted = statement.executeUpdate();
-            return rowsInserted > 0;
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Database error", e);
         }
         return false;
     }
@@ -78,29 +69,25 @@ public class WordDAO {
              PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setString(1, word);
-            int rowsDeleted = statement.executeUpdate();
-            return rowsDeleted > 0;
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Database error", e);
         }
         return false;
     }
 
     public List<Word> getAllWords() {
-        String query = "SELECT word, meaning FROM dictionary";
         List<Word> wordList = new ArrayList<>();
-
+        String query = "SELECT word, meaning FROM dictionary";
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = connection.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                String word = rs.getString("word");
-                String meaning = rs.getString("meaning");
-                wordList.add(new Word(word, meaning));
+                wordList.add(new Word(rs.getString("word"), rs.getString("meaning")));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Database error", e);
         }
         return wordList;
     }
@@ -110,34 +97,26 @@ public class WordDAO {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                line = line.trim();
-                if (line.isEmpty())
-                    continue;
-
                 String[] parts = line.split(",");
-                if (parts.length >= 2) { 
-                    String wordText = parts[0].trim();
-                    String meaningText = parts[1].trim();
-                    Word newWord = new Word(wordText, meaningText);
-                    importedWords.add(newWord);
+                if (parts.length >= 2) {
+                    importedWords.add(new Word(parts[0].trim(), parts[1].trim()));
                 } else {
                     LOGGER.log(Level.WARNING, "Invalid line format: {0}", line);
                 }
             }
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error reading file: {0}", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error reading file", e);
         }
         return importedWords;
     }
 
     public boolean insertImportedData(List<Word> words) {
-        boolean allInserted = true;
         for (Word word : words) {
             if (!addWordToDB(word)) {
-                allInserted = false;
                 LOGGER.log(Level.SEVERE, "Failed to add word: {0}", word.getWord());
+                return false;
             }
         }
-        return allInserted;
+        return true;
     }
 }

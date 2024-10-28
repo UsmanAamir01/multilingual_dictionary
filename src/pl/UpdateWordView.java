@@ -7,12 +7,9 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -29,9 +26,11 @@ public class UpdateWordView extends JFrame {
     private JButton updateButton;
     private JButton backButton;
     private JFrame previousWindow;
+    private final WordBO wordBO;
 
     public UpdateWordView(JFrame previousWindow, WordBO wordBO) {
         this.previousWindow = previousWindow;
+        this.wordBO = wordBO;
         setTitle("Update Word");
         setSize(500, 500);
         setLocationRelativeTo(null);
@@ -56,7 +55,6 @@ public class UpdateWordView extends JFrame {
         wordTextField = new JTextField(20);
         wordTextField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         gbc.gridx = 1;
-        gbc.gridy = 0;
         formPanel.add(wordTextField, gbc);
 
         JLabel newMeaningLabel = new JLabel("New Meaning:");
@@ -68,7 +66,6 @@ public class UpdateWordView extends JFrame {
         newMeaningTextField = new JTextField(20);
         newMeaningTextField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         gbc.gridx = 1;
-        gbc.gridy = 1;
         formPanel.add(newMeaningTextField, gbc);
 
         JPanel buttonPanel = new JPanel();
@@ -76,24 +73,21 @@ public class UpdateWordView extends JFrame {
 
         updateButton = new JButton("Update Word");
         updateButton.setPreferredSize(new Dimension(140, 35));
-        updateButton.setBackground(new Color(50,205,50));
+        updateButton.setBackground(new Color(50, 205, 50));
         updateButton.setForeground(Color.WHITE);
-        updateButton.setFocusPainted(false);
         updateButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        buttonPanel.add(updateButton);
 
         backButton = new JButton("Back");
         backButton.setPreferredSize(new Dimension(120, 35));
         backButton.setBackground(new Color(0, 123, 255));
         backButton.setForeground(Color.WHITE);
-        backButton.setFocusPainted(false);
         backButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
+
+        buttonPanel.add(updateButton);
         buttonPanel.add(backButton);
 
         mainPanel.add(formPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-        add(mainPanel);
 
         updateButton.addActionListener(e -> {
             String wordText = wordTextField.getText().trim();
@@ -127,6 +121,7 @@ public class UpdateWordView extends JFrame {
             }
         });
 
+        add(mainPanel);
         setVisible(true);
     }
 

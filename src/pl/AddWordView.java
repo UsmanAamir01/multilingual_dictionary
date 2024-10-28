@@ -1,39 +1,24 @@
 package pl;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
+import java.awt.*;
+import javax.swing.*;
 import bl.WordBO;
 import dto.Word;
 
 public class AddWordView extends JFrame {
     private JTextField wordTextField, meaningTextField;
     private JButton addButton, backButton;
-    private JFrame previousWindow;
+    private final WordBO wordBO;
 
     public AddWordView(WordBO wordBO, JFrame previousWindow) {
-        this.previousWindow = previousWindow;
+        this.wordBO = wordBO;
         setTitle("Add Word");
         setSize(500, 500);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setBackground(Color.white);
 
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout(15, 15));
+        JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
         mainPanel.setBackground(Color.white);
 
         JPanel formPanel = new JPanel(new GridBagLayout());
@@ -43,81 +28,48 @@ public class AddWordView extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel wordLabel = new JLabel("Word:");
-        wordLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        formPanel.add(wordLabel, gbc);
-
         wordTextField = new JTextField(20);
+        JLabel meaningLabel = new JLabel("Meaning:");
+        meaningTextField = new JTextField(20);
+        gbc.gridx = 0; gbc.gridy = 0;
+        formPanel.add(wordLabel, gbc);
         gbc.gridx = 1;
         formPanel.add(wordTextField, gbc);
-
-        JLabel meaningLabel = new JLabel("Meaning:");
-        meaningLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 1; gbc.gridx = 0;
         formPanel.add(meaningLabel, gbc);
-
-        meaningTextField = new JTextField(20);
         gbc.gridx = 1;
         formPanel.add(meaningTextField, gbc);
 
+        addButton = new JButton("Add Word");
+        addButton.addActionListener(e -> addWord());
+        backButton = new JButton("Back");
+        backButton.addActionListener(e -> previousWindow.setVisible(true));
+
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.white);
-        addButton = new JButton("Add Word");
-        addButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        addButton.setBackground(new Color(255, 156, 0));
-        addButton.setPreferredSize(new Dimension(140, 35));
-        addButton.setForeground(Color.WHITE);
-        addButton.setBorderPainted(false);
-        addButton.setFocusPainted(false);
-
-        backButton = new JButton("Back");
-        backButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        backButton.setBackground(new Color(0, 123, 255));
-        backButton.setPreferredSize(new Dimension(140, 35));
-        backButton.setForeground(Color.WHITE);
-        backButton.setBorderPainted(false);
-        backButton.setFocusPainted(false);
-
         buttonPanel.add(addButton);
         buttonPanel.add(backButton);
 
         mainPanel.add(formPanel, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                dispose();
-            }
-        });
-
-        addButton.addActionListener(e -> {
-            String wordText = wordTextField.getText().trim();
-            String meaning = meaningTextField.getText().trim();
-
-            if (!wordText.isEmpty() && !meaning.isEmpty()) {
-                Word word = new Word(wordText, meaning);
-                boolean success = wordBO.addWord(word);
-
-                if (success) {
-                    JOptionPane.showMessageDialog(AddWordView.this, "Word added successfully!");
-                    wordTextField.setText("");
-                    meaningTextField.setText("");
-                } else {
-                    JOptionPane.showMessageDialog(AddWordView.this, "Failed to add the word.");
-                }
-            } else {
-                JOptionPane.showMessageDialog(AddWordView.this, "Please fill in all fields.");
-            }
-        });
-
-        backButton.addActionListener(e -> {
-            previousWindow.setVisible(true);
-            dispose();
-        });
-
         add(mainPanel);
         setVisible(true);
+    }
+
+    private void addWord() {
+        String wordText = wordTextField.getText().trim();
+        String meaningText = meaningTextField.getText().trim();
+        if (!wordText.isEmpty() && !meaningText.isEmpty()) {
+            Word word = new Word(wordText, meaningText);
+            if (wordBO.addWord(word)) {
+                JOptionPane.showMessageDialog(this, "Word added successfully!");
+                wordTextField.setText("");
+                meaningTextField.setText("");
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to add the word.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Please fill in all fields.");
+        }
     }
 }
