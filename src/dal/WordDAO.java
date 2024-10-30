@@ -100,25 +100,25 @@ public class WordDAO implements IWordDAO {
 	}
 
 	public Word viewOnceWord(String arabicWord) {
-	    String query = "SELECT arabic_word, urdu_meaning, persian_meaning FROM dictionary WHERE arabic_word = ?";
-	    Word word = null;
+		String query = "SELECT arabic_word, urdu_meaning, persian_meaning FROM dictionary WHERE arabic_word = ?";
+		Word word = null;
 
-	    try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-	         PreparedStatement statement = connection.prepareStatement(query)) {
+		try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+				PreparedStatement statement = connection.prepareStatement(query)) {
 
-	        statement.setString(1, arabicWord);
-	        ResultSet resultSet = statement.executeQuery();
+			statement.setString(1, arabicWord);
+			ResultSet resultSet = statement.executeQuery();
 
-	        if (resultSet.next()) {
-	            String wordText = resultSet.getString("arabic_word");
-	            String urduMeaning = resultSet.getString("urdu_meaning");
-	            String persianMeaning = resultSet.getString("persian_meaning");
-	            word = new Word(wordText, urduMeaning, persianMeaning);
-	        }
-	    } catch (SQLException e) {
-	        LOGGER.log(Level.SEVERE, "Database error in viewOnceWord", e);
-	    }
-	    return word;
+			if (resultSet.next()) {
+				String wordText = resultSet.getString("arabic_word");
+				String urduMeaning = resultSet.getString("urdu_meaning");
+				String persianMeaning = resultSet.getString("persian_meaning");
+				word = new Word(wordText, urduMeaning, persianMeaning);
+			}
+		} catch (SQLException e) {
+			LOGGER.log(Level.SEVERE, "Database error in viewOnceWord", e);
+		}
+		return word;
 	}
 
 	public List<Word> importDataFromFile(String filePath) {
@@ -149,5 +149,28 @@ public class WordDAO implements IWordDAO {
 		return true;
 	}
 
+	public List<Word> searchWord(String searchTerm) {
+        List<Word> results = new ArrayList<>();
+        String query = "SELECT * FROM dictionary WHERE arabic_word LIKE ? OR urdu_meaning LIKE ? OR persian_meaning LIKE ?";
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement(query)) {
+             
+            String searchPattern = "%" + searchTerm + "%";
+            statement.setString(1, searchPattern);
+            statement.setString(2, searchPattern);
+            statement.setString(3, searchPattern);
+            ResultSet resultSet = statement.executeQuery();
 
+            while (resultSet.next()) {
+                results.add(new Word(
+                    resultSet.getString("arabic_word"),
+                    resultSet.getString("urdu_meaning"),
+                    resultSet.getString("persian_meaning")
+                ));
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Database error", e);
+        }
+        return results;
+    }
 }

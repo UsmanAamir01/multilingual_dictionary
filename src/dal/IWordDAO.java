@@ -19,4 +19,6 @@ public interface IWordDAO {
 	List<Word> importDataFromFile(String filePath);
 
 	boolean insertImportedData(List<Word> words);
+
+	List<Word> searchWord(String searchTerm);
 }

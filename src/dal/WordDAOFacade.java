@@ -1,6 +1,8 @@
 package dal;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 import dto.Word;
 
 public class WordDAOFacade implements IWordDAOFacade {
@@ -53,4 +55,12 @@ public class WordDAOFacade implements IWordDAOFacade {
 	public boolean insertImportedData(List<Word> words) {
 		return wordDAO.insertImportedData(words);
 	}
+	@Override
+	public List<Word> searchWord(String searchTerm) {
+        return wordDAO.getAllWords().stream()
+            .filter(word -> word.getArabicWord().equalsIgnoreCase(searchTerm) ||
+                            word.getUrduMeaning().equalsIgnoreCase(searchTerm) ||
+                            word.getPersianMeaning().equalsIgnoreCase(searchTerm))
+            .collect(Collectors.toList());
+    }
 }
