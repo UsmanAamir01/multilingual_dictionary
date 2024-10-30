@@ -21,4 +21,6 @@ public interface IWordDAO {
 	boolean insertImportedData(List<Word> words);
 
 	List<Word> searchWord(String searchTerm);
+
+	String getMeanings(String searchText, String language);
 }

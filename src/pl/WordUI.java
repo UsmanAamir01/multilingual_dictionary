@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import bl.UserBO;
 import bl.WordBO;
+import dto.Word;
 
 public class WordUI extends JFrame {
 	private JTextField usernameField;
@@ -148,9 +149,10 @@ public class WordUI extends JFrame {
 		welcomeLabel.setForeground(new Color(0, 51, 153));
 		welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mainContentPanel.add(welcomeLabel);
+		mainContentPanel.add(Box.createVerticalStrut(20));
 
 		JPanel searchLanguagePanel = new JPanel();
-		searchLanguagePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
+		searchLanguagePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
 		searchLanguagePanel.setBackground(Color.WHITE);
 
 		String[] languages = { "Arabic", "Persian", "Urdu" };
@@ -172,11 +174,6 @@ public class WordUI extends JFrame {
 				triggerSearch();
 			}
 		});
-
-		JLabel spaceLabel = new JLabel();
-		spaceLabel.setPreferredSize(new Dimension(25, 0));
-
-		searchLanguagePanel.add(spaceLabel);
 		searchLanguagePanel.add(languageComboBox);
 		searchLanguagePanel.add(searchField);
 		searchLanguagePanel.add(logoButton);
@@ -197,7 +194,17 @@ public class WordUI extends JFrame {
 		String selectedLanguage = (String) languageComboBox.getSelectedItem();
 
 		if (!searchText.isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Searching for: " + searchText + " in " + selectedLanguage);
+
+			String result = wordBo.getMeanings(searchText, selectedLanguage);
+
+			if (!result.equals("Word not found.") && !result.equals("Error retrieving meanings.")) {
+
+				JOptionPane.showMessageDialog(this,
+						"Searching for: " + searchText + " in " + selectedLanguage + "\n" + result);
+			} else {
+				JOptionPane.showMessageDialog(this, result);
+			}
+			searchField.setText("");
 		} else {
 			JOptionPane.showMessageDialog(this, "Please enter a word to search.", "Error", JOptionPane.ERROR_MESSAGE);
 		}
@@ -217,7 +224,7 @@ public class WordUI extends JFrame {
 
 	private void navigateTo(JFrame frame) {
 		frame.setVisible(true);
-		this.setVisible(false);
+		this.dispose();
 	}
 
 	private class SidebarButtonActionListener implements ActionListener {
@@ -251,9 +258,8 @@ public class WordUI extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		UserBO userBo = new UserBO();
 		WordBO wordBo = new WordBO();
-		WordUI wordUI = new WordUI(wordBo, userBo);
-		wordUI.setVisible(true);
+		UserBO userBo = new UserBO();
+		new WordUI(wordBo, userBo).setVisible(true);
 	}
 }
