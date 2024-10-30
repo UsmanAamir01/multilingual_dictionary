@@ -1,219 +1,212 @@
 package pl;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.Timer;
+import javax.swing.*;
 import bl.UserBO;
 import bl.WordBO;
 
 public class WordUI extends JFrame {
-    private JTextField usernameField;
-    private JPasswordField passwordField;
-    private JButton loginButton;
-    private WordBO wordBo;
-    private JButton addWordButton;
-    private JButton removeWordButton;
-    private JButton updateWordButton;
-    private JButton viewAllButton;
-    private JButton importFileButton;
-    private JButton closeButton;
+	private JTextField usernameField;
+	private JPasswordField passwordField;
+	private JButton loginButton;
+	private WordBO wordBo;
+	private JPanel sidebarPanel;
+	private JPanel mainContentPanel;
 
-    public WordUI(WordBO wordBo, UserBO userBo) {
-        this.wordBo = wordBo;
-        setTitle("Multilingual Dictionary");
-        setSize(500, 500);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        getContentPane().setBackground(new Color(240, 240, 240));
+	public WordUI(WordBO wordBo, UserBO userBo) {
+		this.wordBo = wordBo;
+		setTitle("Multilingual Dictionary");
+		setSize(800, 600);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
+		getContentPane().setBackground(new Color(245, 245, 245));
 
-        JPanel loginPanel = new JPanel();
-        loginPanel.setLayout(new GridBagLayout());
-        loginPanel.setBackground(new Color(255, 255, 255));
-        loginPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		JPanel loginPanel = createLoginPanel(userBo);
+		add(loginPanel);
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(10, 10, 10, 10);
+		loginButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent actionEvent) {
+				String username = usernameField.getText();
+				String password = new String(passwordField.getPassword());
 
-        JLabel titleLabel = new JLabel("Multilingual Dictionary", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titleLabel.setForeground(new Color(0, 102, 204));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        loginPanel.add(titleLabel, gbc);
+				if (userBo.validateUser(username, password)) {
+					JOptionPane.showMessageDialog(WordUI.this, "Login successful!");
+					showDashboard();
+				} else {
+					JOptionPane.showMessageDialog(WordUI.this, "Invalid credentials, please try again.", "Error",
+							JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+	}
 
-        JLabel usernameLabel = new JLabel("Username:");
-        usernameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        usernameLabel.setForeground(new Color(51, 51, 51));
-        usernameField = new JTextField(15);
-        gbc.gridwidth = 1;
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        loginPanel.add(usernameLabel, gbc);
-        gbc.gridx = 1;
-        loginPanel.add(usernameField, gbc);
+	private JPanel createLoginPanel(UserBO userBo) {
+		JPanel loginPanel = new JPanel(new GridBagLayout());
+		loginPanel.setBackground(Color.WHITE);
+		loginPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.insets = new Insets(10, 10, 10, 10);
 
-        JLabel passwordLabel = new JLabel("Password:");
-        passwordLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        passwordLabel.setForeground(new Color(51, 51, 51));
-        passwordField = new JPasswordField(15);
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        loginPanel.add(passwordLabel, gbc);
-        gbc.gridx = 1;
-        loginPanel.add(passwordField, gbc);
+		JLabel titleLabel = new JLabel("Multilingual Dictionary", SwingConstants.CENTER);
+		titleLabel.setFont(new Font("Arial", Font.BOLD, 26));
+		titleLabel.setForeground(new Color(0, 51, 153)); 
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.gridwidth = 2;
+		loginPanel.add(titleLabel, gbc);
 
-        loginButton = createButton("Login");
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 2;
-        loginPanel.add(loginButton, gbc);
+		JLabel usernameLabel = new JLabel("Username:");
+		usernameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+		usernameLabel.setForeground(Color.DARK_GRAY);
+		usernameField = new JTextField(15);
+		gbc.gridwidth = 1;
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		loginPanel.add(usernameLabel, gbc);
+		gbc.gridx = 1;
+		loginPanel.add(usernameField, gbc);
 
-        add(loginPanel);
+		JLabel passwordLabel = new JLabel("Password:");
+		passwordLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+		passwordLabel.setForeground(Color.DARK_GRAY);
+		passwordField = new JPasswordField(15);
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		loginPanel.add(passwordLabel, gbc);
+		gbc.gridx = 1;
+		loginPanel.add(passwordField, gbc);
 
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                String username = usernameField.getText();
-                String password = new String(passwordField.getPassword());
+		loginButton = createButton("Login", new Color(0, 51, 153), Color.WHITE);
+		gbc.gridx = 0;
+		gbc.gridy = 3;
+		gbc.gridwidth = 2;
+		loginPanel.add(loginButton, gbc);
 
-                if (userBo.validateUser(username, password)) {
-                    JOptionPane.showMessageDialog(WordUI.this, "Login successful!");
-                    showFunctionalityButtons();
-                } else {
-                    JOptionPane.showMessageDialog(WordUI.this, "Invalid credentials, please try again.", "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-    }
+		return loginPanel;
+	}
 
-    private JButton createButton(String text) {
-        JButton button = new JButton(text);
-        button.setBackground(new Color(0, 123, 255));
-        button.setForeground(Color.WHITE);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createLineBorder(new Color(0, 102, 204), 2));
-        button.setOpaque(true);
-        button.setBorderPainted(false);
-        button.setPreferredSize(new Dimension(150, 40));
-        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+	private JButton createButton(String text, Color backgroundColor, Color textColor) {
+		JButton button = new JButton(text);
+		button.setBackground(backgroundColor);
+		button.setForeground(textColor);
+		button.setFont(new Font("Arial", Font.BOLD, 14));
+		button.setFocusPainted(false);
+		button.setBorder(BorderFactory.createLineBorder(backgroundColor.darker(), 2));
+		button.setPreferredSize(new Dimension(150, 40));
+		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		button.setOpaque(true);
 
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                button.setBackground(new Color(0, 102, 204));
-                Timer timer = new Timer(200, new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent evt) {
-                        button.setBackground(new Color(0, 123, 255));
-                    }
-                });
-                timer.setRepeats(false);
-                timer.start();
-            }
-        });
+		return button;
+	}
 
-        return button;
-    }
+	private void showDashboard() {
+		getContentPane().removeAll();
+		setTitle("Dashboard");
 
-    private void showFunctionalityButtons() {
-        getContentPane().removeAll();
-        this.setTitle("Dashboard");
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(6, 1, 10, 10));
-        buttonPanel.setBackground(new Color(240, 240, 240));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		sidebarPanel = new JPanel(new GridLayout(7, 1, 10, 10));
+		sidebarPanel.setPreferredSize(new Dimension(200, 600));
+		sidebarPanel.setBackground(new Color(240, 240, 240));
 
-        addWordButton = createButton("Add Word");
-        removeWordButton = createButton("Remove Word");
-        updateWordButton = createButton("Update Word");
-        viewAllButton = createButton("View All");
-        importFileButton = createButton("Import File");
-        closeButton = createButton("Close");
+		JButton addWordButton = createSidebarButton("Add Word");
+		JButton removeWordButton = createSidebarButton("Remove Word");
+		JButton updateWordButton = createSidebarButton("Update Word");
+		JButton viewAllButton = createSidebarButton("View All Words");
+		JButton importFileButton = createSidebarButton("Import File");
+		JButton viewOnceButton = createSidebarButton("View Word");
+		JButton closeButton = createSidebarButton("Close");
 
-        buttonPanel.add(addWordButton);
-        buttonPanel.add(removeWordButton);
-        buttonPanel.add(updateWordButton);
-        buttonPanel.add(viewAllButton);
-        buttonPanel.add(importFileButton);
-        buttonPanel.add(closeButton);
+		SidebarButtonActionListener actionListener = new SidebarButtonActionListener();
 
-        closeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                System.exit(0);
-            }
-        });
+		addWordButton.addActionListener(actionListener);
+		removeWordButton.addActionListener(actionListener);
+		updateWordButton.addActionListener(actionListener);
+		viewAllButton.addActionListener(actionListener);
+		importFileButton.addActionListener(actionListener);
+		viewOnceButton.addActionListener(actionListener);
+		closeButton.addActionListener(actionListener);
 
-        addWordButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                new AddWordView(wordBo, WordUI.this);
-                WordUI.this.setVisible(false);
-            }
-        });
+		sidebarPanel.add(addWordButton);
+		sidebarPanel.add(removeWordButton);
+		sidebarPanel.add(updateWordButton);
+		sidebarPanel.add(viewAllButton);
+		sidebarPanel.add(importFileButton);
+		sidebarPanel.add(viewOnceButton);
+		sidebarPanel.add(closeButton);
 
-        removeWordButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                new RemoveWordView(WordUI.this, wordBo);
-                WordUI.this.setVisible(false);
-            }
-        });
+		mainContentPanel = new JPanel(new BorderLayout());
+		mainContentPanel.setBackground(Color.WHITE);
+		mainContentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        updateWordButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                new UpdateWordView(WordUI.this, wordBo);
-                WordUI.this.setVisible(false);
-            }
-        });
+		JLabel welcomeLabel = new JLabel("Welcome to the Dashboard!", SwingConstants.CENTER);
+		welcomeLabel.setFont(new Font("Arial", Font.BOLD, 24));
+		welcomeLabel.setForeground(new Color(0, 51, 153));
 
-        viewAllButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                new AllWordView(WordUI.this);
-                WordUI.this.setVisible(false);
-            }
-        });
+		mainContentPanel.add(welcomeLabel, BorderLayout.CENTER);
 
-        importFileButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                new DictionaryUI(wordBo, WordUI.this);
-                WordUI.this.setVisible(false);
-            }
-        });
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sidebarPanel, mainContentPanel);
+		splitPane.setDividerSize(0);
+		splitPane.setDividerLocation(200);
 
-        add(buttonPanel);
-        revalidate();
-        repaint();
-    }
+		add(splitPane);
+		revalidate();
+		repaint();
+	}
 
-    public static void main(String[] args) {
-        WordBO wordBo = new WordBO();
-        UserBO userBo = new UserBO();
-        WordUI ui = new WordUI(wordBo, userBo);
-        ui.setVisible(true);
-    }
+	private JButton createSidebarButton(String text) {
+		JButton button = new JButton(text);
+		button.setBackground(new Color(0, 102, 204));
+		button.setForeground(Color.WHITE);
+		button.setFont(new Font("Arial", Font.BOLD, 14));
+		button.setFocusPainted(false);
+		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		button.setOpaque(true);
+		button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		return button;
+	}
+
+	private void navigateTo(JFrame frame) {
+		frame.setVisible(true);
+		this.setVisible(false);
+	}
+
+	private class SidebarButtonActionListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String command = ((JButton) e.getSource()).getText();
+			switch (command) {
+			case "Add Word":
+				navigateTo(new AddWordView(wordBo, WordUI.this));
+				break;
+			case "Remove Word":
+				navigateTo(new RemoveWordView(WordUI.this, wordBo));
+				break;
+			case "Update Word":
+				navigateTo(new UpdateWordView(WordUI.this, wordBo));
+				break;
+			case "View All Words":
+				navigateTo(new AllWordView(WordUI.this));
+				break;
+			case "Import File":
+				navigateTo(new DictionaryUI(wordBo, WordUI.this));
+				break;
+			case "View Word":
+				navigateTo(new ViewOnceWordView(wordBo, WordUI.this));
+				break;
+			case "Close":
+				System.exit(0);
+				break;
+			}
+		}
+	}
+
+	public static void main(String[] args) {
+		WordBO wordBo = new WordBO();
+		UserBO userBo = new UserBO();
+		WordUI ui = new WordUI(wordBo, userBo);
+		ui.setVisible(true);
+	}
 }

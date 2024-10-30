@@ -30,14 +30,21 @@ public class DictionaryUI extends JFrame {
     public void createAndShowGUI() {
         setTitle("Import Dictionary Data");
 
-        importButton = new JButton("Import Data");
-        backButton = new JButton("Back");
-        filePathField = new JTextField(20);
+        importButton = createStyledButton("Import Data");
+        backButton = createStyledButton("Back");
+        filePathField = new JTextField(30);
+        filePathField.setFont(new Font("Arial", Font.PLAIN, 14));
         dataTable = new JTable();
-        
+
         String[] columnNames = {"Arabic Word", "Urdu Meaning", "Persian Meaning"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
         dataTable.setModel(tableModel);
+        dataTable.setRowHeight(25);
+        dataTable.setFont(new Font("Arial", Font.PLAIN, 14));
+        dataTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
+        dataTable.getTableHeader().setBackground(new Color(230, 230, 230));
+        dataTable.setGridColor(Color.LIGHT_GRAY);
+        dataTable.setShowGrid(true);
 
         importButton.addActionListener(new ActionListener() {
             @Override
@@ -76,15 +83,19 @@ public class DictionaryUI extends JFrame {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
+
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.gridwidth = 1;
         panel.add(new JLabel("File Path:"), gbc);
 
         gbc.gridx = 1;
+        gbc.gridwidth = 2;
         panel.add(filePathField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
+        gbc.gridwidth = 1;
         panel.add(importButton, gbc);
 
         gbc.gridx = 1;
@@ -92,12 +103,19 @@ public class DictionaryUI extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        panel.add(new JScrollPane(dataTable), gbc);
+        gbc.gridwidth = 3;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        JScrollPane tableScrollPane = new JScrollPane(dataTable);
+        tableScrollPane.setPreferredSize(new Dimension(450, 300));
+        panel.add(tableScrollPane, gbc);
 
+       
         add(panel);
-        setSize(500, 500);
+        setSize(600, 500);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
@@ -106,5 +124,16 @@ public class DictionaryUI extends JFrame {
         });
 
         setVisible(true);
+    }
+
+    private JButton createStyledButton(String text) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setBackground(new Color(0, 123, 255));
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createLineBorder(new Color(0, 102, 204), 2));
+        button.setPreferredSize(new Dimension(120, 40));
+        return button;
     }
 }
