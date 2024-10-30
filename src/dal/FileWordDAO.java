@@ -129,26 +129,61 @@ public class FileWordDAO implements IWordDAO {
 	}
 
 	@Override
-    public List<Word> searchWord(String searchTerm) {
-        List<Word> result = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 3) {
-                    String arabicWord = parts[0].trim();
-                    String urduMeaning = parts[1].trim();
-                    String persianMeaning = parts[2].trim();
-                    if (arabicWord.toLowerCase().contains(searchTerm.toLowerCase())
-                            || urduMeaning.toLowerCase().contains(searchTerm.toLowerCase())
-                            || persianMeaning.toLowerCase().contains(searchTerm.toLowerCase())) {
-                        result.add(new Word(arabicWord, urduMeaning, persianMeaning));
-                    }
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Error searching words: " + e.getMessage());
-        }
-        return result;
-    }
+	public List<Word> searchWord(String searchTerm) {
+		List<Word> result = new ArrayList<>();
+		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] parts = line.split(",");
+				if (parts.length == 3) {
+					String arabicWord = parts[0].trim();
+					String urduMeaning = parts[1].trim();
+					String persianMeaning = parts[2].trim();
+					if (arabicWord.toLowerCase().contains(searchTerm.toLowerCase())
+							|| urduMeaning.toLowerCase().contains(searchTerm.toLowerCase())
+							|| persianMeaning.toLowerCase().contains(searchTerm.toLowerCase())) {
+						result.add(new Word(arabicWord, urduMeaning, persianMeaning));
+					}
+				}
+			}
+		} catch (IOException e) {
+			System.err.println("Error searching words: " + e.getMessage());
+		}
+		return result;
+	}
+
+	@Override
+	public String getMeanings(String searchText, String language) {
+		StringBuilder meanings = new StringBuilder();
+		boolean found = false;
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] parts = line.split(",");
+				if (parts.length == 3) {
+					String word = parts[0].trim();
+					String urduMeaning = parts[1].trim();
+					String persianMeaning = parts[2].trim();
+
+					if (word.equalsIgnoreCase(searchText)) {
+						meanings.append("Arabic: ").append(word).append("\n");
+						meanings.append("Urdu: ").append(urduMeaning).append("\n");
+						meanings.append("Persian: ").append(persianMeaning).append("\n");
+						found = true;
+						break;
+					}
+				}
+			}
+		} catch (IOException e) {
+			System.err.println("Error retrieving meanings: " + e.getMessage());
+			return "Error retrieving meanings.";
+		}
+
+		if (!found) {
+			return "Word not found.";
+		}
+
+		return meanings.toString();
+	}
 }

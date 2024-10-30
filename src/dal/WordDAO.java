@@ -17,6 +17,20 @@ public class WordDAO implements IWordDAO {
 	private static final String PASSWORD = "";
 	private static final Logger LOGGER = Logger.getLogger(WordDAO.class.getName());
 
+	private Connection connection;
+
+	public WordDAO(Connection connection) {
+		this.connection = connection;
+	}
+
+	public WordDAO() {
+		try {
+			this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
+		} catch (SQLException e) {
+			LOGGER.log(Level.SEVERE, "Failed to connect to the database", e);
+		}
+	}
+
 	public Word getWordFromDB(String arabicWord) {
 		String query = "SELECT * FROM dictionary WHERE arabic_word = ?";
 		try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -150,27 +164,65 @@ public class WordDAO implements IWordDAO {
 	}
 
 	public List<Word> searchWord(String searchTerm) {
-        List<Word> results = new ArrayList<>();
-        String query = "SELECT * FROM dictionary WHERE arabic_word LIKE ? OR urdu_meaning LIKE ? OR persian_meaning LIKE ?";
-        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement statement = connection.prepareStatement(query)) {
-             
-            String searchPattern = "%" + searchTerm + "%";
-            statement.setString(1, searchPattern);
-            statement.setString(2, searchPattern);
-            statement.setString(3, searchPattern);
-            ResultSet resultSet = statement.executeQuery();
+		List<Word> results = new ArrayList<>();
+		String query = "SELECT * FROM dictionary WHERE arabic_word LIKE ? OR urdu_meaning LIKE ? OR persian_meaning LIKE ?";
+		try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+				PreparedStatement statement = connection.prepareStatement(query)) {
 
-            while (resultSet.next()) {
-                results.add(new Word(
-                    resultSet.getString("arabic_word"),
-                    resultSet.getString("urdu_meaning"),
-                    resultSet.getString("persian_meaning")
-                ));
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Database error", e);
-        }
-        return results;
-    }
+			String searchPattern = "%" + searchTerm + "%";
+			statement.setString(1, searchPattern);
+			statement.setString(2, searchPattern);
+			statement.setString(3, searchPattern);
+			ResultSet resultSet = statement.executeQuery();
+
+			while (resultSet.next()) {
+				results.add(new Word(resultSet.getString("arabic_word"), resultSet.getString("urdu_meaning"),
+						resultSet.getString("persian_meaning")));
+			}
+		} catch (SQLException e) {
+			LOGGER.log(Level.SEVERE, "Database error", e);
+		}
+		return results;
+	}
+
+	public String getMeanings(String word, String language) {
+		StringBuilder meanings = new StringBuilder();
+		String query;
+
+		// Define query based on selected language
+		if ("Urdu".equalsIgnoreCase(language)) {
+			query = "SELECT arabic_word, persian_meaning FROM dictionary WHERE urdu_meaning = ?";
+		} else if ("Persian".equalsIgnoreCase(language)) {
+			query = "SELECT arabic_word, urdu_meaning FROM dictionary WHERE persian_meaning = ?";
+		} else if ("Arabic".equalsIgnoreCase(language)) {
+			query = "SELECT urdu_meaning, persian_meaning FROM dictionary WHERE arabic_word = ?";
+		} else {
+			return "Invalid language selection.";
+		}
+
+		try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+			preparedStatement.setString(1, word);
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			if (resultSet.next()) {
+				if ("Urdu".equalsIgnoreCase(language)) {
+					meanings.append("Arabic: ").append(resultSet.getString("arabic_word")).append("\n");
+					meanings.append("Persian: ").append(resultSet.getString("persian_meaning")).append("\n");
+				} else if ("Persian".equalsIgnoreCase(language)) {
+					meanings.append("Arabic: ").append(resultSet.getString("arabic_word")).append("\n");
+					meanings.append("Urdu: ").append(resultSet.getString("urdu_meaning")).append("\n");
+				} else if ("Arabic".equalsIgnoreCase(language)) {
+					meanings.append("Urdu: ").append(resultSet.getString("urdu_meaning")).append("\n");
+					meanings.append("Persian: ").append(resultSet.getString("persian_meaning")).append("\n");
+				}
+			} else {
+				meanings.append("Word not found.");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			meanings.append("Error retrieving meanings.");
+		}
+
+		return meanings.toString();
+	}
 }

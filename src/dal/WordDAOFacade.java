@@ -55,12 +55,18 @@ public class WordDAOFacade implements IWordDAOFacade {
 	public boolean insertImportedData(List<Word> words) {
 		return wordDAO.insertImportedData(words);
 	}
+
 	@Override
 	public List<Word> searchWord(String searchTerm) {
-        return wordDAO.getAllWords().stream()
-            .filter(word -> word.getArabicWord().equalsIgnoreCase(searchTerm) ||
-                            word.getUrduMeaning().equalsIgnoreCase(searchTerm) ||
-                            word.getPersianMeaning().equalsIgnoreCase(searchTerm))
-            .collect(Collectors.toList());
-    }
+		return wordDAO.getAllWords().stream()
+				.filter(word -> word.getArabicWord().equalsIgnoreCase(searchTerm)
+						|| word.getUrduMeaning().equalsIgnoreCase(searchTerm)
+						|| word.getPersianMeaning().equalsIgnoreCase(searchTerm))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public String getMeanings(String searchText, String language) {
+		return wordDAO.getMeanings(searchText, language);
+	}
 }

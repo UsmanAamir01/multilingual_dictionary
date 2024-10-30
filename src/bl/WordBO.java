@@ -1,8 +1,6 @@
 package bl;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
 import dal.IWordDAOFacade;
 import dal.WordDAOFacade;
 import dto.Word;
@@ -65,4 +63,10 @@ public class WordBO {
 	        }
 	        return "Word not found.";
 	    }
+	 
+	 public String getMeanings(String searchText, String language){
+		String result = wordDAOFacade.getMeanings(searchText, language);
+		return result;
+		 
+	 }
 }
