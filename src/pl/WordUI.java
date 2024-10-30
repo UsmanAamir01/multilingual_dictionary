@@ -14,6 +14,8 @@ public class WordUI extends JFrame {
 	private WordBO wordBo;
 	private JPanel sidebarPanel;
 	private JPanel mainContentPanel;
+	private JTextField searchField;
+	private JComboBox<String> languageComboBox;
 
 	public WordUI(WordBO wordBo, UserBO userBo) {
 		this.wordBo = wordBo;
@@ -53,7 +55,7 @@ public class WordUI extends JFrame {
 
 		JLabel titleLabel = new JLabel("Multilingual Dictionary", SwingConstants.CENTER);
 		titleLabel.setFont(new Font("Arial", Font.BOLD, 26));
-		titleLabel.setForeground(new Color(0, 51, 153)); 
+		titleLabel.setForeground(new Color(0, 51, 153));
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.gridwidth = 2;
@@ -99,7 +101,6 @@ public class WordUI extends JFrame {
 		button.setPreferredSize(new Dimension(150, 40));
 		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		button.setOpaque(true);
-
 		return button;
 	}
 
@@ -137,15 +138,50 @@ public class WordUI extends JFrame {
 		sidebarPanel.add(viewOnceButton);
 		sidebarPanel.add(closeButton);
 
-		mainContentPanel = new JPanel(new BorderLayout());
+		mainContentPanel = new JPanel();
+		mainContentPanel.setLayout(new BoxLayout(mainContentPanel, BoxLayout.Y_AXIS));
 		mainContentPanel.setBackground(Color.WHITE);
 		mainContentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
 		JLabel welcomeLabel = new JLabel("Welcome to the Dashboard!", SwingConstants.CENTER);
 		welcomeLabel.setFont(new Font("Arial", Font.BOLD, 24));
 		welcomeLabel.setForeground(new Color(0, 51, 153));
+		welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		mainContentPanel.add(welcomeLabel);
 
-		mainContentPanel.add(welcomeLabel, BorderLayout.CENTER);
+		JPanel searchLanguagePanel = new JPanel();
+		searchLanguagePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
+		searchLanguagePanel.setBackground(Color.WHITE);
+
+		String[] languages = { "Arabic", "Persian", "Urdu" };
+		languageComboBox = new JComboBox<>(languages);
+		languageComboBox.setPreferredSize(new Dimension(150, 30));
+
+		searchField = new JTextField(15);
+
+		JButton logoButton = new JButton();
+		ImageIcon logoIcon = new ImageIcon("src/images/search-icon.png");
+		logoIcon = new ImageIcon(logoIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
+		logoButton.setIcon(logoIcon);
+		logoButton.setBorder(BorderFactory.createEmptyBorder());
+		logoButton.setContentAreaFilled(false);
+
+		logoButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				triggerSearch();
+			}
+		});
+
+		JLabel spaceLabel = new JLabel();
+		spaceLabel.setPreferredSize(new Dimension(25, 0));
+
+		searchLanguagePanel.add(spaceLabel);
+		searchLanguagePanel.add(languageComboBox);
+		searchLanguagePanel.add(searchField);
+		searchLanguagePanel.add(logoButton);
+
+		mainContentPanel.add(searchLanguagePanel);
 
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sidebarPanel, mainContentPanel);
 		splitPane.setDividerSize(0);
@@ -154,6 +190,17 @@ public class WordUI extends JFrame {
 		add(splitPane);
 		revalidate();
 		repaint();
+	}
+
+	private void triggerSearch() {
+		String searchText = searchField.getText();
+		String selectedLanguage = (String) languageComboBox.getSelectedItem();
+
+		if (!searchText.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Searching for: " + searchText + " in " + selectedLanguage);
+		} else {
+			JOptionPane.showMessageDialog(this, "Please enter a word to search.", "Error", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	private JButton createSidebarButton(String text) {
@@ -204,9 +251,9 @@ public class WordUI extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		WordBO wordBo = new WordBO();
 		UserBO userBo = new UserBO();
-		WordUI ui = new WordUI(wordBo, userBo);
-		ui.setVisible(true);
+		WordBO wordBo = new WordBO();
+		WordUI wordUI = new WordUI(wordBo, userBo);
+		wordUI.setVisible(true);
 	}
 }

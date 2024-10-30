@@ -1,6 +1,8 @@
 package bl;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 import dal.IWordDAOFacade;
 import dal.WordDAOFacade;
 import dto.Word;
@@ -49,4 +51,18 @@ public class WordBO {
 	public boolean insertImportedData(List<Word> words) {
 		return wordDAOFacade.insertImportedData(words);
 	}
+
+	 public String searchWord(String searchTerm) {
+	        List<Word> results = wordDAOFacade.searchWord(searchTerm);
+	        if (!results.isEmpty()) {
+	            StringBuilder sb = new StringBuilder();
+	            for (Word word : results) {
+	                sb.append("Word: ").append(word.getArabicWord()).append(", Urdu Meaning: ")
+	                    .append(word.getUrduMeaning()).append(", Persian Meaning: ")
+	                    .append(word.getPersianMeaning()).append("\n");
+	            }
+	            return sb.toString();
+	        }
+	        return "Word not found.";
+	    }
 }

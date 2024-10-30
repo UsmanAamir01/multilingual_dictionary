@@ -127,4 +127,28 @@ public class FileWordDAO implements IWordDAO {
 		}
 		return success;
 	}
+
+	@Override
+    public List<Word> searchWord(String searchTerm) {
+        List<Word> result = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 3) {
+                    String arabicWord = parts[0].trim();
+                    String urduMeaning = parts[1].trim();
+                    String persianMeaning = parts[2].trim();
+                    if (arabicWord.toLowerCase().contains(searchTerm.toLowerCase())
+                            || urduMeaning.toLowerCase().contains(searchTerm.toLowerCase())
+                            || persianMeaning.toLowerCase().contains(searchTerm.toLowerCase())) {
+                        result.add(new Word(arabicWord, urduMeaning, persianMeaning));
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error searching words: " + e.getMessage());
+        }
+        return result;
+    }
 }
