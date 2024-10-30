@@ -6,16 +6,15 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import bl.WordBO;
-
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class AllWordView extends JFrame {
-    JTable table;
-    JLabel headingLabel, wordLabel, urduLabel, persianLabel;
+    private JTable table;
+    private JLabel headingLabel, wordLabel, urduLabel, persianLabel;
     private WordBO word;
     private JFrame previousWindow;
     private JButton backButton;
@@ -23,47 +22,37 @@ public class AllWordView extends JFrame {
     public AllWordView(JFrame previousWindow) {
         this.previousWindow = previousWindow;
         word = new WordBO();
+
         String[][] wordData = word.getWordsWithMeanings();
-        String[] columnNames = { "Arabic Word", "Urdu Meaning", "Persian Meaning" };
+        String[] columnNames = {"Arabic Word", "Urdu Meaning", "Persian Meaning"};
         DefaultTableModel model = new DefaultTableModel(wordData, columnNames);
         table = new JTable(model);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.setBackground(new Color(224, 247, 218));
-        table.setForeground(Color.BLACK);
-        table.setSelectionBackground(new Color(165, 214, 167));
-        table.setSelectionForeground(Color.BLACK);
-        table.setFont(new Font("Arial", Font.PLAIN, 14));
-        JTableHeader tableHeader = table.getTableHeader();
-        tableHeader.setBackground(new Color(187, 222, 251));
-        tableHeader.setForeground(Color.BLACK);
-        tableHeader.setFont(new Font("Arial", Font.BOLD, 16));
+        
+        setTableStyles();
+        
+        headingLabel = createHeadingLabel("Word and Meanings");
 
-        headingLabel = new JLabel("Selected Word and Meanings", SwingConstants.CENTER);
-        headingLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        headingLabel.setForeground(Color.BLACK);
-        headingLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        wordLabel = createMeaningLabel("Arabic Word: ");
+        urduLabel = createMeaningLabel("Urdu Meaning: ");
+        persianLabel = createMeaningLabel("Persian Meaning: ");
 
-        wordLabel = new JLabel("Arabic Word: ");
-        urduLabel = new JLabel("Urdu Meaning: ");
-        persianLabel = new JLabel("Persian Meaning: ");
+        setLayout(new BorderLayout(10, 10));
+        add(new JScrollPane(table), BorderLayout.CENTER);
+        add(createFooterPanel(), BorderLayout.SOUTH);
 
-        wordLabel.setOpaque(true);
-        wordLabel.setBackground(new Color(135, 206, 250));
-        wordLabel.setForeground(Color.BLACK);
-        wordLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        wordLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setTitle("Word and Meaning Viewer");
+        setSize(600, 600);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setVisible(true);
 
-        urduLabel.setOpaque(true);
-        urduLabel.setBackground(new Color(135, 206, 250));
-        urduLabel.setForeground(Color.BLACK);
-        urduLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        urduLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        persianLabel.setOpaque(true);
-        persianLabel.setBackground(new Color(135, 206, 250));
-        persianLabel.setForeground(Color.BLACK);
-        persianLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        persianLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent event) {
+                dispose();
+            }
+        });
 
         ListSelectionModel selectionModel = table.getSelectionModel();
         selectionModel.addListSelectionListener(new ListSelectionListener() {
@@ -72,56 +61,70 @@ public class AllWordView extends JFrame {
                 if (!event.getValueIsAdjusting()) {
                     int selectedRow = table.getSelectedRow();
                     if (selectedRow != -1) {
-                        String arabicWord = (String) table.getValueAt(selectedRow, 0);
-                        String urduMeaning = (String) table.getValueAt(selectedRow, 1);
-                        String persianMeaning = (String) table.getValueAt(selectedRow, 2);
-                        wordLabel.setText("Arabic Word: " + arabicWord);
-                        urduLabel.setText("Urdu Meaning: " + urduMeaning);
-                        persianLabel.setText("Persian Meaning: " + persianMeaning);
+                        updateLabels(selectedRow);
                     }
                 }
             }
         });
+    }
 
-        setLayout(new BorderLayout());
-        add(new JScrollPane(table), BorderLayout.CENTER);
+    private void setTableStyles() {
+        table.setBackground(new Color(240, 248, 255));
+        table.setForeground(Color.DARK_GRAY);
+        table.setSelectionBackground(new Color(180, 225, 205));
+        table.setSelectionForeground(Color.BLACK);
+        table.setFont(new Font("Arial", Font.PLAIN, 14));
+        table.setRowHeight(30);
 
+        JTableHeader tableHeader = table.getTableHeader();
+        tableHeader.setBackground(new Color(100, 149, 237));
+        tableHeader.setForeground(Color.WHITE);
+        tableHeader.setFont(new Font("Arial", Font.BOLD, 16));
+        tableHeader.setBorder(BorderFactory.createEtchedBorder());
+    }
+
+    private void updateLabels(int selectedRow) {
+        String arabicWord = (String) table.getValueAt(selectedRow, 0);
+        String urduMeaning = (String) table.getValueAt(selectedRow, 1);
+        String persianMeaning = (String) table.getValueAt(selectedRow, 2);
+        wordLabel.setText("Arabic Word: " + arabicWord);
+        urduLabel.setText("Urdu Meaning: " + urduMeaning);
+        persianLabel.setText("Persian Meaning: " + persianMeaning);
+    }
+
+    private JLabel createHeadingLabel(String text) {
+        JLabel label = new JLabel(text, SwingConstants.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 24));
+        label.setForeground(new Color(25, 25, 112));
+        label.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        return label;
+    }
+
+    private JLabel createMeaningLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setOpaque(true);
+        label.setBackground(new Color(173, 216, 230));
+        label.setForeground(Color.DARK_GRAY);
+        label.setFont(new Font("Arial", Font.BOLD, 16));
+        label.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(0, 120, 215), 1),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+        return label;
+    }
+
+    private JPanel createFooterPanel() {
         JPanel footerPanel = new JPanel();
         footerPanel.setLayout(new BoxLayout(footerPanel, BoxLayout.Y_AXIS));
-        footerPanel.setBackground(new Color(240, 240, 240));
-        footerPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-
-        JLabel spacerLabel = new JLabel();
-        spacerLabel.setPreferredSize(new Dimension(0, 20));
-        footerPanel.add(spacerLabel);
+        footerPanel.setBackground(new Color(248, 248, 255));
+        footerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         footerPanel.add(headingLabel);
         footerPanel.add(wordLabel);
         footerPanel.add(urduLabel);
         footerPanel.add(persianLabel);
 
-        backButton = new JButton("Back");
-        backButton.setFont(new Font("Arial", Font.BOLD, 14));
-        backButton.setBackground(new Color(255, 99, 71));
-        backButton.setForeground(Color.WHITE);
-        backButton.setBorderPainted(false);
-        backButton.setFocusPainted(false);
-        footerPanel.add(backButton);
-
-        add(footerPanel, BorderLayout.SOUTH);
-
-        setTitle("Word and Meaning Viewer");
-        setBackground(new Color(245, 245, 245));
-        setSize(500, 500);
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent event) {
-                dispose();
-            }
-        });
-        setLocationRelativeTo(null);
-        setVisible(true);
-
+        backButton = createButton("Back");
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -129,5 +132,21 @@ public class AllWordView extends JFrame {
                 dispose();
             }
         });
+        
+        footerPanel.add(Box.createVerticalStrut(10)); 
+        footerPanel.add(backButton);
+        return footerPanel;
+    }
+
+    private JButton createButton(String text) {
+        JButton button = new JButton(text);
+        button.setBackground(new Color(0, 123, 255));
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
+        button.setOpaque(true);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return button;
     }
 }
