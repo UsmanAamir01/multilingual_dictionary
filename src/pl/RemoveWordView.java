@@ -19,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import bl.WordBO;
@@ -36,7 +37,7 @@ public class RemoveWordView extends JFrame {
 		setTitle("Remove Word");
 		setSize(500, 500);
 		setLocationRelativeTo(null);
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		JPanel mainPanel = new JPanel();
 		mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));

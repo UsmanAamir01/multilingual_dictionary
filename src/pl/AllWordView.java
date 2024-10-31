@@ -1,16 +1,32 @@
 package pl;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-import bl.WordBO;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+
+import bl.WordBO;
 
 public class AllWordView extends JFrame {
     private JTable table;
@@ -28,9 +44,9 @@ public class AllWordView extends JFrame {
         DefaultTableModel model = new DefaultTableModel(wordData, columnNames);
         table = new JTable(model);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        
+
         setTableStyles();
-        
+
         headingLabel = createHeadingLabel("Word and Meanings");
 
         wordLabel = createMeaningLabel("Arabic Word: ");
@@ -44,7 +60,7 @@ public class AllWordView extends JFrame {
         setTitle("Word and Meaning Viewer");
         setSize(600, 600);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setVisible(true);
 
         this.addWindowListener(new WindowAdapter() {
@@ -132,8 +148,8 @@ public class AllWordView extends JFrame {
                 dispose();
             }
         });
-        
-        footerPanel.add(Box.createVerticalStrut(10)); 
+
+        footerPanel.add(Box.createVerticalStrut(10));
         footerPanel.add(backButton);
         return footerPanel;
     }
