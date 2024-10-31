@@ -1,7 +1,8 @@
 package dal;
 
-import dto.Word;
 import java.util.List;
+
+import dto.Word;
 
 public interface IWordDAO {
 	Word getWordFromDB(String arabicWord);
@@ -23,4 +24,10 @@ public interface IWordDAO {
 	List<Word> searchWord(String searchTerm);
 
 	String getMeanings(String searchText, String language);
+
+	List<String> getTaggedAndStemmedWords();
+
+	String getPOSTaggedWord(String arabicWord);
+
+	String getStemmedWord(String arabicWord);
 }

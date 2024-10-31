@@ -1,9 +1,25 @@
 package pl;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
 import bl.WordBO;
 import dto.Word;
 
@@ -126,7 +142,7 @@ public class ViewOnceWordView extends JFrame {
             arabicWordLabel.setText("Word not found.");
             urduMeaningLabel.setText("");
             persianMeaningLabel.setText("");
-            arabicWordLabel.setBackground(new Color(255, 228, 225)); 
+            arabicWordLabel.setBackground(new Color(255, 228, 225));
             urduMeaningLabel.setBackground(new Color(255, 228, 225));
             persianMeaningLabel.setBackground(new Color(255, 228, 225));
         }

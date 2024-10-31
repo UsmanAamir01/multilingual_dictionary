@@ -69,4 +69,20 @@ public class WordDAOFacade implements IWordDAOFacade {
 	public String getMeanings(String searchText, String language) {
 		return wordDAO.getMeanings(searchText, language);
 	}
+
+	@Override
+	public List<String> getTaggedAndStemmedWords() {
+		return wordDAO.getTaggedAndStemmedWords();
+	}
+
+	@Override
+	public String getPOSTaggedWord(String arabicWord) {
+		return wordDAO.getPOSTaggedWord(arabicWord);
+	}
+
+	@Override
+	public String getStemmedWord(String arabicWord) {
+		return wordDAO.getStemmedWord(arabicWord);
+	}
+
 }
