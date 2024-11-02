@@ -13,7 +13,6 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -29,7 +28,6 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
-
 import bl.UserBO;
 import bl.WordBO;
 
@@ -50,16 +48,13 @@ public class WordUI extends JFrame {
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		getContentPane().setBackground(new Color(245, 245, 245));
-
 		JPanel loginPanel = createLoginPanel(userBo);
 		add(loginPanel);
-
 		loginButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent actionEvent) {
 				String username = usernameField.getText();
 				String password = new String(passwordField.getPassword());
-
 				if (userBo.validateUser(username, password)) {
 					JOptionPane.showMessageDialog(WordUI.this, "Login successful!");
 					showDashboard();
@@ -113,7 +108,6 @@ public class WordUI extends JFrame {
 		gbc.gridy = 3;
 		gbc.gridwidth = 2;
 		loginPanel.add(loginButton, gbc);
-
 		return loginPanel;
 	}
 
@@ -134,34 +128,30 @@ public class WordUI extends JFrame {
 		getContentPane().removeAll();
 		setTitle("Dashboard");
 
-		sidebarPanel = new JPanel(new GridLayout(7, 1, 10, 10));
+		sidebarPanel = new JPanel(new GridLayout(8, 1, 10, 10));
 		sidebarPanel.setPreferredSize(new Dimension(200, 600));
 		sidebarPanel.setBackground(new Color(240, 240, 240));
 
 		JButton addWordButton = createSidebarButton("Add Word");
-		JButton removeWordButton = createSidebarButton("Remove Word");
-		JButton updateWordButton = createSidebarButton("Update Word");
 		JButton viewAllButton = createSidebarButton("View All Words");
 		JButton importFileButton = createSidebarButton("Import File");
 		JButton viewOnceButton = createSidebarButton("View Word");
+		JButton arabicTaggerButton = createSidebarButton("Arabic Tagger");
 		JButton closeButton = createSidebarButton("Close");
 
 		SidebarButtonActionListener actionListener = new SidebarButtonActionListener();
-
 		addWordButton.addActionListener(actionListener);
-		removeWordButton.addActionListener(actionListener);
-		updateWordButton.addActionListener(actionListener);
 		viewAllButton.addActionListener(actionListener);
 		importFileButton.addActionListener(actionListener);
 		viewOnceButton.addActionListener(actionListener);
+		arabicTaggerButton.addActionListener(actionListener);
 		closeButton.addActionListener(actionListener);
 
 		sidebarPanel.add(addWordButton);
-		sidebarPanel.add(removeWordButton);
-		sidebarPanel.add(updateWordButton);
 		sidebarPanel.add(viewAllButton);
 		sidebarPanel.add(importFileButton);
 		sidebarPanel.add(viewOnceButton);
+		sidebarPanel.add(arabicTaggerButton);
 		sidebarPanel.add(closeButton);
 
 		mainContentPanel = new JPanel();
@@ -185,45 +175,65 @@ public class WordUI extends JFrame {
 		languageComboBox.setPreferredSize(new Dimension(150, 30));
 
 		searchField = new JTextField(15);
-
 		JButton logoButton = new JButton();
 		ImageIcon logoIcon = new ImageIcon("src/images/search-icon.png");
 		logoIcon = new ImageIcon(logoIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
 		logoButton.setIcon(logoIcon);
 		logoButton.setBorder(BorderFactory.createEmptyBorder());
 		logoButton.setContentAreaFilled(false);
-
 		logoButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				triggerSearch();
 			}
 		});
+
 		searchLanguagePanel.add(languageComboBox);
 		searchLanguagePanel.add(searchField);
 		searchLanguagePanel.add(logoButton);
-
 		mainContentPanel.add(searchLanguagePanel);
-
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sidebarPanel, mainContentPanel);
 		splitPane.setDividerSize(0);
 		splitPane.setDividerLocation(200);
-
 		add(splitPane);
+
 		revalidate();
 		repaint();
+	}
+
+	private class SidebarButtonActionListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String command = ((JButton) e.getSource()).getText();
+			switch (command) {
+			case "Add Word":
+				navigateTo(new AddWordView(wordBo, WordUI.this));
+				break;
+			case "View All Words":
+				navigateTo(new AllWordView(WordUI.this));
+				break;
+			case "Import File":
+				navigateTo(new DictionaryUI(wordBo, WordUI.this));
+				break;
+			case "View Word":
+				navigateTo(new ViewOnceWordView(wordBo, WordUI.this));
+				break;
+			case "Arabic Tagger":
+				navigateTo(new ArabicTaggerUI(WordUI.this));
+				break;
+			case "Close":
+				System.exit(0);
+				break;
+			}
+		}
 	}
 
 	private void triggerSearch() {
 		String searchText = searchField.getText();
 		String selectedLanguage = (String) languageComboBox.getSelectedItem();
-
 		if (!searchText.isEmpty()) {
-
 			String result = wordBo.getMeanings(searchText, selectedLanguage);
-
 			if (!result.equals("Word not found.") && !result.equals("Error retrieving meanings.")) {
-
 				JOptionPane.showMessageDialog(this,
 						"Searching for: " + searchText + " in " + selectedLanguage + "\n" + result);
 			} else {
@@ -250,36 +260,6 @@ public class WordUI extends JFrame {
 	private void navigateTo(JFrame frame) {
 		frame.setVisible(true);
 		this.dispose();
-	}
-
-	private class SidebarButtonActionListener implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			String command = ((JButton) e.getSource()).getText();
-			switch (command) {
-			case "Add Word":
-				navigateTo(new AddWordView(wordBo, WordUI.this));
-				break;
-			case "Remove Word":
-				navigateTo(new RemoveWordView(WordUI.this, wordBo));
-				break;
-			case "Update Word":
-				navigateTo(new UpdateWordView(WordUI.this, wordBo));
-				break;
-			case "View All Words":
-				navigateTo(new AllWordView(WordUI.this));
-				break;
-			case "Import File":
-				navigateTo(new DictionaryUI(wordBo, WordUI.this));
-				break;
-			case "View Word":
-				navigateTo(new ViewOnceWordView(wordBo, WordUI.this));
-				break;
-			case "Close":
-				System.exit(0);
-				break;
-			}
-		}
 	}
 
 	public static void main(String[] args) {
