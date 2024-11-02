@@ -7,11 +7,8 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -19,12 +16,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-
 import bl.WordBO;
 import dto.Word;
 
 public class UpdateWordView extends JFrame {
-	private JTextField wordTextField, newUrduMeaningTextField, newPersianMeaningTextField;
+	private JTextField wordTextField;
+	private JTextField newMeaningTextField;
 	private JButton updateButton;
 	private JButton backButton;
 	private JFrame previousWindow;
@@ -34,7 +31,7 @@ public class UpdateWordView extends JFrame {
 		this.previousWindow = previousWindow;
 		this.wordBO = wordBO;
 		setTitle("Update Word");
-		setSize(500, 500);
+		setSize(500, 400);
 		setLocationRelativeTo(null);
 
 		JPanel mainPanel = new JPanel();
@@ -59,27 +56,16 @@ public class UpdateWordView extends JFrame {
 		gbc.gridx = 1;
 		formPanel.add(wordTextField, gbc);
 
-		JLabel newUrduMeaningLabel = new JLabel("New Urdu Meaning:");
-		newUrduMeaningLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+		JLabel newMeaningLabel = new JLabel("New Meaning:");
+		newMeaningLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 		gbc.gridx = 0;
 		gbc.gridy = 1;
-		formPanel.add(newUrduMeaningLabel, gbc);
+		formPanel.add(newMeaningLabel, gbc);
 
-		newUrduMeaningTextField = new JTextField(20);
-		newUrduMeaningTextField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		newMeaningTextField = new JTextField(20);
+		newMeaningTextField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		gbc.gridx = 1;
-		formPanel.add(newUrduMeaningTextField, gbc);
-
-		JLabel newPersianMeaningLabel = new JLabel("New Persian Meaning:");
-		newPersianMeaningLabel.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-		gbc.gridx = 0;
-		gbc.gridy = 2;
-		formPanel.add(newPersianMeaningLabel, gbc);
-
-		newPersianMeaningTextField = new JTextField(20);
-		newPersianMeaningTextField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		gbc.gridx = 1;
-		formPanel.add(newPersianMeaningTextField, gbc);
+		formPanel.add(newMeaningTextField, gbc);
 
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setBackground(Color.WHITE);
@@ -101,39 +87,9 @@ public class UpdateWordView extends JFrame {
 
 		mainPanel.add(formPanel, BorderLayout.CENTER);
 		mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-		updateButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent actionEvent) {
-				String wordText = wordTextField.getText().trim();
-				String newUrduMeaning = newUrduMeaningTextField.getText().trim();
-				String newPersianMeaning = newPersianMeaningTextField.getText().trim();
 
-				if (!wordText.isEmpty() && !newUrduMeaning.isEmpty() && !newPersianMeaning.isEmpty()) {
-					Word word = new Word(wordText, newUrduMeaning, newPersianMeaning);
-					boolean success = wordBO.updateWord(word);
-
-					if (success) {
-						JOptionPane.showMessageDialog(UpdateWordView.this, "Word updated successfully!");
-						wordTextField.setText("");
-						newUrduMeaningTextField.setText("");
-						newPersianMeaningTextField.setText("");
-					} else {
-						JOptionPane.showMessageDialog(UpdateWordView.this,
-								"Failed to update the word. It may not exist.");
-					}
-				} else {
-					JOptionPane.showMessageDialog(UpdateWordView.this, "Please fill in all fields.");
-				}
-			}
-		});
-
-		backButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				previousWindow.setVisible(true);
-				dispose();
-			}
-		});
+		updateButton.addActionListener(actionEvent -> showLanguageSelectionDialog());
+		backButton.addActionListener(actionEvent -> handleBackAction());
 
 		this.addWindowListener(new WindowAdapter() {
 			@Override
@@ -146,7 +102,49 @@ public class UpdateWordView extends JFrame {
 		setVisible(true);
 	}
 
-	public void display() {
-		setVisible(true);
+	private void showLanguageSelectionDialog() {
+		// Options for the user to select a language
+		String[] options = { "Persian", "Urdu" };
+		int choice = JOptionPane.showOptionDialog(this, "Select the language to update the meaning:",
+				"Language Selection", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
+				options[0]);
+
+		if (choice == JOptionPane.CLOSED_OPTION) {
+			return; // User closed the dialog
+		}
+
+		String selectedLanguage = options[choice];
+		handleUpdateWord(selectedLanguage);
+	}
+
+	private void handleUpdateWord(String language) {
+		String arabicWord = wordTextField.getText().trim();
+		String newMeaning = newMeaningTextField.getText().trim();
+
+		if (arabicWord.isEmpty() || newMeaning.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "All fields must be filled out.", "Input Error",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		Word word = new Word(arabicWord, language.equals("Urdu") ? newMeaning : null,
+				language.equals("Persian") ? newMeaning : null);
+		boolean success = wordBO.updateWord(word);
+		if (success) {
+			JOptionPane.showMessageDialog(this, "Word updated successfully!");
+			clearFields();
+		} else {
+			JOptionPane.showMessageDialog(this, "Failed to update the word.");
+		}
+	}
+
+	private void clearFields() {
+		wordTextField.setText("");
+		newMeaningTextField.setText("");
+	}
+
+	private void handleBackAction() {
+		this.dispose();
+		previousWindow.setVisible(true);
 	}
 }

@@ -132,5 +132,4 @@ public class WordBO {
 
 		return resultText.toString();
 	}
-
 }
