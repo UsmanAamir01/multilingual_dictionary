@@ -1,92 +1,155 @@
 package pl;
 
-import bl.WordBO;
-import dto.Word;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.List;
 
-public class DictionaryUI {
-    private JFrame frame;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.WindowConstants;
+import javax.swing.table.DefaultTableModel;
+
+import bl.WordBO;
+import dto.Word;
+
+public class DictionaryUI extends JFrame {
     private JTextField filePathField;
     private JTable dataTable;
-    private JButton viewButton;
+    private JButton importButton;
+    private JButton backButton;
     private WordBO wordBO;
+    private JFrame previousWindow;
 
-    // Constructor to accept the WordBO instance
-    public DictionaryUI(WordBO wordBO) {
+    public DictionaryUI(WordBO wordBO, JFrame previousWindow) {
         this.wordBO = wordBO;
+        this.previousWindow = previousWindow;
         createAndShowGUI();
     }
 
     public void createAndShowGUI() {
-        frame = new JFrame("Import Dictionary Data");
-        JButton importButton = new JButton("Import Data");
-        filePathField = new JTextField(20);
-        dataTable = new JTable();
-        viewButton = new JButton("View Data");
+        setTitle("Import Dictionary Data");
 
-        // Set up action for the import button
+        importButton = createStyledButton("Import Data");
+        backButton = createStyledButton("Back");
+        filePathField = new JTextField(30);
+        filePathField.setFont(new Font("Arial", Font.PLAIN, 14));
+        dataTable = new JTable();
+
+        String[] columnNames = {"Arabic Word", "Urdu Meaning", "Persian Meaning"};
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+        dataTable.setModel(tableModel);
+        dataTable.setRowHeight(25);
+        dataTable.setFont(new Font("Arial", Font.PLAIN, 14));
+        dataTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
+        dataTable.getTableHeader().setBackground(new Color(230, 230, 230));
+        dataTable.setGridColor(Color.LIGHT_GRAY);
+        dataTable.setShowGrid(true);
+
         importButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent actionEvent) {
                 JFileChooser fileChooser = new JFileChooser();
-                int returnValue = fileChooser.showOpenDialog(frame);
+                int returnValue = fileChooser.showOpenDialog(DictionaryUI.this);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
                     String filePath = selectedFile.getAbsolutePath();
                     filePathField.setText(filePath);
                     List<Word> importedWords = wordBO.importDataFromFile(filePath);
                     if (!importedWords.isEmpty() && wordBO.insertImportedData(importedWords)) {
-                        // Populate the table and show a success message
                         DefaultTableModel tableModel = (DefaultTableModel) dataTable.getModel();
-                        tableModel.setRowCount(0); // Clear existing data
+                        tableModel.setRowCount(0);
                         for (Word word : importedWords) {
-                            tableModel.addRow(new Object[]{word.getWord(), word.getMeaning()});
+                            tableModel.addRow(new Object[]{word.getArabicWord(), word.getUrduMeaning(), word.getPersianMeaning()});
                         }
-                        JOptionPane.showMessageDialog(frame, "Data imported successfully!");
-
-                        // Enable the view button
-                        viewButton.setEnabled(true);
+                        JOptionPane.showMessageDialog(DictionaryUI.this, "Data imported successfully!");
                     } else {
-                        JOptionPane.showMessageDialog(frame, "No valid data found in the file or import failed.");
+                        JOptionPane.showMessageDialog(DictionaryUI.this, "No valid data found in the file or import failed.");
                     }
                 }
             }
         });
 
-        // Action for the view button
-        viewButton.addActionListener(new ActionListener() {
+        backButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(frame, "Viewing imported data...");
-                // Additional functionality can be implemented here
+            public void actionPerformed(ActionEvent actionEvent) {
+                previousWindow.setVisible(true);
+                dispose();
             }
         });
 
-        // Create a table model with column headers
-        String[] columnNames = {"Word", "Meaning"};
-        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
-        dataTable.setModel(tableModel);
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Set up the layout
-        JPanel panel = new JPanel();
-        panel.add(new JLabel("File Path:"));
-        panel.add(filePathField);
-        panel.add(importButton);
-        panel.add(viewButton);
-        panel.add(new JScrollPane(dataTable));
 
-        frame.add(panel);
-        frame.setSize(400, 300);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        panel.add(new JLabel("File Path:"), gbc);
 
-        // Initially disable the view button
-        viewButton.setEnabled(false);
+        gbc.gridx = 1;
+        gbc.gridwidth = 2;
+        panel.add(filePathField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        panel.add(importButton, gbc);
+
+        gbc.gridx = 1;
+        panel.add(backButton, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 3;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        JScrollPane tableScrollPane = new JScrollPane(dataTable);
+        tableScrollPane.setPreferredSize(new Dimension(450, 300));
+        panel.add(tableScrollPane, gbc);
+
+
+        add(panel);
+        setSize(600, 500);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent windowEvent) {
+                dispose();
+            }
+        });
+
+        setVisible(true);
+    }
+
+    private JButton createStyledButton(String text) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setBackground(new Color(0, 123, 255));
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createLineBorder(new Color(0, 102, 204), 2));
+        button.setPreferredSize(new Dimension(120, 40));
+        return button;
     }
 }
