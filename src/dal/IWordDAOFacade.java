@@ -44,4 +44,19 @@ public interface IWordDAOFacade extends IWordDAO {
 
 	@Override
 	LinkedList<?> getStemmedWord(String arabicWord);
+	
+	@Override
+	String getFarsiMeaning(String word);
+
+	@Override
+	void updateFarsiMeaning(String word, String farsiMeaning);
+
+	@Override
+	String scrapeFarsiMeaning(String filePath);
+
+	@Override
+	void saveWordAndUrduMeaning(String word, String urduMeaning);
+
+	@Override
+	String[] scrapeWordAndUrduMeaning(String filePath);
 }

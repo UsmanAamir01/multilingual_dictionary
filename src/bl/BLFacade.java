@@ -83,4 +83,32 @@ public class BLFacade implements IBLFacade {
 	public boolean validateUser(String username, String password) {
 		return userBO.validateUser(username, password);
 	}
+
+	@Override
+	public String getFarsiMeaning(String word) {
+		return wordBO.getFarsiMeaning(word);
+	}
+
+	@Override
+	public void updateFarsiMeaning(String word, String farsiMeaning) {
+		wordBO.updateFarsiMeaning(word, farsiMeaning);
+		
+	}
+
+	@Override
+	public String scrapeFarsiMeaning(String filePath) {
+		return wordBO.scrapeFarsiMeaning(filePath);
+	}
+
+	@Override
+	public void saveWordAndUrduMeaning(String word, String urduMeaning) {
+		wordBO.saveWordAndUrduMeaning(word, urduMeaning);
+		
+	}
+
+	@Override
+	public String[] scrapeWordAndUrduMeaning(String filePath) {
+		return wordBO.scrapeWordAndUrduMeaning(filePath);
+	}
+
 }

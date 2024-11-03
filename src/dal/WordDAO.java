@@ -1,6 +1,7 @@
 package dal;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -14,6 +15,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import dto.Word;
 
@@ -229,71 +234,102 @@ public class WordDAO implements IWordDAO {
 		return results;
 
 	}
+
 	@Override
 	public LinkedList<?> getPOSTaggedWord(String arabicWord) {
 		try {
 			Method tagMethod = posTaggerInstance.getClass().getMethod("analyzedWords", String.class);
 			LinkedList<?> posTaggedResult = (LinkedList<?>) tagMethod.invoke(posTaggerInstance, arabicWord);
-			return posTaggedResult; 
+			return posTaggedResult;
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "POS tagging error", e);
-			return null; 
+			return null;
 		}
 	}
+
 	@Override
 	public LinkedList<?> getStemmedWord(String arabicWord) {
 		try {
 			Method stemMethod = stemmerInstance.getClass().getMethod("stemWords", String.class);
 			LinkedList<?> stemmedResult = (LinkedList<?>) stemMethod.invoke(stemmerInstance, arabicWord);
-			return stemmedResult; 
+			return stemmedResult;
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "Stemming error", e);
-			return null; 
+			return null;
 		}
 	}
-	
-	   public void saveUrduMeaningsToDB(String urduMeaning) {
-	        String query = "INSERT INTO urdu_meaning (meaning) VALUES (?)";
-	        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
-	            statement.setString(1, urduMeaning);
-	            statement.executeUpdate();
-	        } catch (SQLException e) {
-	            LOGGER.log(Level.SEVERE, "Error saving Urdu meanings to database", e);
-	        }
-	    }
 
-	    public List<String> scrapeFarsiMeanings(String word) {
-	        List<String> farsiMeanings = new ArrayList<>();
-	        return farsiMeanings;
-	    }
+	@Override
+	public String[] scrapeWordAndUrduMeaning(String filePath) {
+		try {
+			Document doc = Jsoup.parse(new File(filePath), "UTF-8");
+			Element wordElement = doc.select("td[id^=w]").first();
+			Element meaningElement = doc.select("td[id^=m]").first();
 
-	    public boolean updateFarsiMeaningsInDB(String arabicWord, String farsiMeaning) {
-	        String query = "UPDATE dictionary SET persian_meaning = ? WHERE arabic_word = ?";
-	        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
-	            statement.setString(1, farsiMeaning);
-	            statement.setString(2, arabicWord);
-	            return statement.executeUpdate() > 0;
-	        } catch (SQLException e) {
-	            LOGGER.log(Level.SEVERE, "Error updating Farsi meanings in database", e);
-	        }
-	        return false;
-	    }
+			if (wordElement != null && meaningElement != null) {
+				String word = wordElement.text().replaceAll("\\s*\\[.*?\\]", "");
+				String urduMeaning = meaningElement.text();
+				return new String[] { word, urduMeaning };
+			}
+		} catch (Exception e) {
+			System.err.println("Error scraping word and Urdu meaning: " + e.getMessage());
+		}
+		return null;
+	}
 
-	    public String retrieveFarsiMeanings(String arabicWord) {
-	        StringBuilder farsiMeanings = new StringBuilder();
-	        String query = "SELECT persian_meaning FROM dictionary WHERE arabic_word = ?";
-	        try (PreparedStatement statement = getConnection().prepareStatement(query)) {
-	            statement.setString(1, arabicWord);
-	            ResultSet resultSet = statement.executeQuery();
-	            if (resultSet.next()) {
-	                farsiMeanings.append(resultSet.getString("persian_meaning"));
-	            } else {
-	                farsiMeanings.append("No Farsi meaning found for the word: ").append(arabicWord);
-	            }
-	        } catch (SQLException e) {
-	            LOGGER.log(Level.SEVERE, "Error retrieving Farsi meanings from database", e);
-	        }
-	        return farsiMeanings.toString();
-	    }
-	
+	@Override
+	public void saveWordAndUrduMeaning(String word, String urduMeaning) {
+		String sql = "INSERT INTO dictionary (arabic_word, urdu_meaning) VALUES (?, ?)";
+		try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, word);
+			pstmt.setString(2, urduMeaning);
+			pstmt.executeUpdate();
+			System.out.println("Record inserted successfully for word: " + word);
+		} catch (Exception e) {
+			System.err.println("Error saving word and Urdu meaning: " + e.getMessage());
+		}
+	}
+
+	@Override
+	public String scrapeFarsiMeaning(String filePath) {
+		try {
+			Document doc = Jsoup.parse(new File(filePath), "UTF-8");
+			Element farsiMeaningElement = doc.select("td[id^=m]").get(1);
+			if (farsiMeaningElement != null) {
+				return farsiMeaningElement.text();
+			}
+		} catch (Exception e) {
+			System.err.println("Error scraping Farsi meaning: " + e.getMessage());
+		}
+		return null;
+	}
+
+	@Override
+	public void updateFarsiMeaning(String word, String farsiMeaning) {
+		String sql = "UPDATE dictionary SET persian_meaning = ? WHERE word = ?";
+		try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, farsiMeaning);
+			pstmt.setString(2, word);
+			pstmt.executeUpdate();
+			System.out.println("Farsi Meaning updated successfully for word: " + word);
+		} catch (Exception e) {
+			System.err.println("Error updating Farsi meaning: " + e.getMessage());
+		}
+	}
+
+	@Override
+	public String getFarsiMeaning(String word) {
+		String sql = "SELECT persian_meaning FROM dictionary WHERE word = ?";
+		try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, word);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return rs.getString("mean2");
+			}
+		} catch (Exception e) {
+			System.err.println("Error retrieving Farsi meaning: " + e.getMessage());
+		}
+		return null;
+	}
+
 }

@@ -31,4 +31,14 @@ public interface IWordBO {
 	LinkedList<?> getStemmedWord(String arabicWord);
 
 	String performPOSTagging(String arabicText) throws Exception;
+	
+	String getFarsiMeaning(String word);
+
+	void updateFarsiMeaning(String word, String farsiMeaning);
+
+	String scrapeFarsiMeaning(String filePath);
+
+	void saveWordAndUrduMeaning(String word, String urduMeaning);
+
+	String[] scrapeWordAndUrduMeaning(String filePath);
 }

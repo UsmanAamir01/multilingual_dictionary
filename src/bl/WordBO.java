@@ -140,5 +140,31 @@ public class WordBO implements IWordBO {
         }
         return resultText.toString();
     }
+    
+
+    @Override
+    public String getFarsiMeaning(String word) {
+        return wordDAOFacade.getFarsiMeaning(word);
+    }
+
+    @Override
+    public void updateFarsiMeaning(String word, String farsiMeaning) {
+        wordDAOFacade.updateFarsiMeaning(word, farsiMeaning);
+    }
+
+    @Override
+    public String scrapeFarsiMeaning(String filePath) {
+        return wordDAOFacade.scrapeFarsiMeaning(filePath);
+    }
+
+    @Override
+    public void saveWordAndUrduMeaning(String word, String urduMeaning) {
+        wordDAOFacade.saveWordAndUrduMeaning(word, urduMeaning);
+    }
+
+    @Override
+    public String[] scrapeWordAndUrduMeaning(String filePath) {
+        return wordDAOFacade.scrapeWordAndUrduMeaning(filePath);
+    }
 
 }

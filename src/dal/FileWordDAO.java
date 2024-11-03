@@ -189,15 +189,15 @@ public class FileWordDAO implements IWordDAO {
 
 	@Override
 	public List<String> getTaggedAndStemmedWords() {
-	    List<String> results = new ArrayList<>();
-	    List<Word> words = getAllWords();
-	    for (Word word : words) {
-	        String arabicWord = word.getArabicWord();
-	        LinkedList<?> stemmedWord = getStemmedWord(arabicWord); 
-	        LinkedList<?> taggedWord = getPOSTaggedWord(arabicWord); 
-	        results.add("Original: " + arabicWord + " | Stemmed: " + stemmedWord + " | Tagged: " + taggedWord);
-	    }
-	    return results;
+		List<String> results = new ArrayList<>();
+		List<Word> words = getAllWords();
+		for (Word word : words) {
+			String arabicWord = word.getArabicWord();
+			LinkedList<?> stemmedWord = getStemmedWord(arabicWord);
+			LinkedList<?> taggedWord = getPOSTaggedWord(arabicWord);
+			results.add("Original: " + arabicWord + " | Stemmed: " + stemmedWord + " | Tagged: " + taggedWord);
+		}
+		return results;
 	}
 
 	public LinkedList<?> getPOSTaggedWord(String arabicWord) {
@@ -220,6 +220,107 @@ public class FileWordDAO implements IWordDAO {
 			e.printStackTrace();
 		}
 		return stemmedResult;
+	}
+
+	@Override
+	public String getFarsiMeaning(String word) {
+		// Read all words from the file and find the Farsi meaning for the given Arabic
+		// word
+		Word foundWord = getWordFromDB(word);
+		return foundWord != null ? foundWord.getPersianMeaning() : null;
+	}
+
+	@Override
+	public void updateFarsiMeaning(String word, String farsiMeaning) {
+		List<Word> words = getAllWords();
+		boolean updated = false;
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+			for (Word existingWord : words) {
+				if (existingWord.getArabicWord().equals(word)) {
+					writer.write(
+							existingWord.getArabicWord() + "," + existingWord.getUrduMeaning() + "," + farsiMeaning);
+					updated = true;
+				} else {
+					writer.write(existingWord.getArabicWord() + "," + existingWord.getUrduMeaning() + ","
+							+ existingWord.getPersianMeaning());
+				}
+				writer.newLine();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		if (updated) {
+			System.out.println("Farsi Meaning updated successfully for word: " + word);
+		} else {
+			System.out.println("Word not found for update: " + word);
+		}
+	}
+
+	@Override
+	public String scrapeFarsiMeaning(String filePath) {
+		StringBuilder farsiMeanings = new StringBuilder();
+		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] parts = line.split(",");
+				if (parts.length == 3) {
+					String arabicWord = parts[0].trim();
+					String farsiMeaning = parts[2].trim();
+					farsiMeanings.append("Arabic: ").append(arabicWord).append(" | Farsi: ").append(farsiMeaning)
+							.append("\n");
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return "Error reading file.";
+		}
+		return farsiMeanings.toString();
+	}
+
+	@Override
+	public void saveWordAndUrduMeaning(String word, String urduMeaning) {
+		List<Word> words = getAllWords();
+		boolean updated = false;
+
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+			for (Word existingWord : words) {
+				if (existingWord.getArabicWord().equals(word)) {
+					writer.write(
+							existingWord.getArabicWord() + "," + urduMeaning + "," + existingWord.getPersianMeaning());
+					updated = true;
+				} else {
+					writer.write(existingWord.getArabicWord() + "," + existingWord.getUrduMeaning() + ","
+							+ existingWord.getPersianMeaning());
+				}
+				writer.newLine();
+			}
+			if (!updated) {
+				writer.write(word + "," + urduMeaning + ",");
+				writer.newLine();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public String[] scrapeWordAndUrduMeaning(String filePath) {
+		List<String> wordsWithMeanings = new ArrayList<>();
+		try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] parts = line.split(",");
+				if (parts.length >= 2) {
+					String arabicWord = parts[0].trim();
+					String urduMeaning = parts[1].trim();
+					wordsWithMeanings.add("Arabic: " + arabicWord + " | Urdu: " + urduMeaning);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new String[] { "Error reading file." };
+		}
+		return wordsWithMeanings.toArray(new String[0]);
 	}
 
 }
