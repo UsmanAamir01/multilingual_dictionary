@@ -136,7 +136,7 @@ public class WordUI extends JFrame {
 		JButton viewAllButton = createSidebarButton("View All Words");
 		JButton importFileButton = createSidebarButton("Import File");
 		JButton viewOnceButton = createSidebarButton("View Word");
-		JButton arabicTaggerButton = createSidebarButton("Arabic Tagger");
+		JButton arabicTaggerButton = createSidebarButton("Arabic Tagger/Stemmer");
 		JButton closeButton = createSidebarButton("Close");
 
 		SidebarButtonActionListener actionListener = new SidebarButtonActionListener();
@@ -218,7 +218,7 @@ public class WordUI extends JFrame {
 			case "View Word":
 				navigateTo(new ViewOnceWordView(wordBo, WordUI.this));
 				break;
-			case "Arabic Tagger":
+			case "Arabic Tagger/Stemmer":
 				navigateTo(new ArabicTaggerUI(WordUI.this));
 				break;
 			case "Close":

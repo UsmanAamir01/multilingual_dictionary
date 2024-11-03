@@ -1,19 +1,11 @@
 package dal;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import dto.Word;
 
 public interface IWordDAOFacade extends IWordDAO {
-	 String[] scrapeWordAndUrduMeaning(String filePath);
-	    
-	    void saveWordAndUrduMeaning(String word, String urduMeaning);
-	    
-	    String scrapeFarsiMeaning(String filePath);
-	    
-	    void updateFarsiMeaning(String word, String farsiMeaning);
-	    
-	    String getFarsiMeaning(String word);
 	@Override
 	Word getWordFromDB(String arabicWord);
 
@@ -48,10 +40,8 @@ public interface IWordDAOFacade extends IWordDAO {
 	List<String> getTaggedAndStemmedWords();
 
 	@Override
-	String getPOSTaggedWord(String arabicWord);
+	LinkedList<?> getPOSTaggedWord(String arabicWord);
 
 	@Override
-	String getStemmedWord(String arabicWord);
-
-	
+	LinkedList<?> getStemmedWord(String arabicWord);
 }
