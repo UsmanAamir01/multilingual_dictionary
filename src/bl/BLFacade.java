@@ -9,6 +9,7 @@ public class BLFacade implements IBLFacade {
 	private IUserBO userBO;
 
 	public BLFacade() {
+		
 		this.wordBO = new WordBO();
 		this.userBO = new UserBO();
 	}
@@ -22,7 +23,9 @@ public class BLFacade implements IBLFacade {
 	public boolean addWord(Word w) {
 		return wordBO.addWord(w);
 	}
-
+	public String[] scrapeWordAndUrduMeaning(String filePath) {
+	    return wordBO.scrapeWordAndUrduMeaning(filePath);
+	}
 	@Override
 	public boolean removeWord(String arabicWord) {
 		return wordBO.removeWord(arabicWord);

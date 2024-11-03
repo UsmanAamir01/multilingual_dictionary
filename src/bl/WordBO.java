@@ -1,4 +1,5 @@
 package bl;
+import dal.WordDAO;
 
 import dal.IWordDAOFacade;
 import dal.WordDAOFacade;
@@ -136,4 +137,45 @@ public class WordBO implements IWordBO {
         }
         return resultText.toString();
     }
+    
+    public String[] saveWordAndUrduMeaning(String filePath) {
+        WordDAO wordDAO = new WordDAO(); // Create an instance of WordDAO
+        String[] wordAndUrduMeaning = wordDAO.scrapeWordAndUrduMeaning(filePath); // Call the instance method
+
+        if (wordAndUrduMeaning != null) {
+            String word = wordAndUrduMeaning[0];
+            String urduMeaning = wordAndUrduMeaning[1];
+
+            // Use wordDAOFacade instead of dictionaryDAO
+            wordDAOFacade.addWordToDB(new Word(word, urduMeaning, null)); // Assuming you are creating a Word object
+            System.out.println("Word: " + word + ", Urdu Meaning: " + urduMeaning);
+            return wordAndUrduMeaning;
+        } else {
+            System.out.println("Failed to retrieve word and Urdu meaning.");
+            return null;
+        }
+    }
+
+    // New method to save Farsi meaning
+    public void saveFarsiMeaning(String word, String filePath) {
+        String farsiMeaning = wordDAOFacade.scrapeFarsiMeaning(filePath); // Use wordDAOFacade to scrape Farsi meaning
+
+        if (farsiMeaning != null) {
+            wordDAOFacade.updateFarsiMeaning(word, farsiMeaning); // Use wordDAOFacade to update Farsi meaning
+            System.out.println("Farsi Meaning stored: " + farsiMeaning);
+        } else {
+            System.out.println("Failed to retrieve Farsi meaning.");
+        }
+    }
+
+    public String getFarsiMeaning(String word) {
+        return wordDAOFacade.getFarsiMeaning(word); // Use wordDAOFacade to get Farsi meaning
+    }
+
+	@Override
+	public String[] scrapeWordAndUrduMeaning(String filePath) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -1,15 +1,15 @@
 package dal;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import dto.Word;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
+import java.io.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import dto.Word;
 
 public class FileWordDAO implements IWordDAO {
     private String filePath;
@@ -220,4 +220,63 @@ public class FileWordDAO implements IWordDAO {
         }
         return "Error";
     }
+
+
+    
+
+
+
+
+    public String scrapeFarsiMeaning(String filePath) {
+        try {
+            Document doc = Jsoup.parse(new File(filePath), "UTF-8");
+            Element farsiMeaningElement = doc.select("td[id^=m]").get(1); // Adjusting index to get the second meaning
+            if (farsiMeaningElement != null) {
+                return farsiMeaningElement.text();
+            }
+        } catch (Exception e) {
+            System.err.println("Error scraping Farsi meaning: " + e.getMessage());
+        }
+        return null;
+    }
+
+	@Override
+	public void saveWordAndUrduMeaning(String word, String urduMeaning) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateFarsiMeaning(String word, String farsiMeaning) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String getFarsiMeaning(String word) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String scrapeUrduMeaning(String url, String wordId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String[] scrapeWordAndUrduMeaning(String filePath) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String[] scrapeWordAndUrduMeaning1(String filePath) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+	
+	
 }

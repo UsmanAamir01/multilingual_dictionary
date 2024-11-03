@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import dto.Word;
 
-public class WordDAOFacade implements IWordDAOFacade {
+public  class WordDAOFacade implements IWordDAOFacade {
 	private final IWordDAO wordDAO;
 
 	public WordDAOFacade(IWordDAO wordDAO) {
@@ -83,6 +83,37 @@ public class WordDAOFacade implements IWordDAOFacade {
 	@Override
 	public String getStemmedWord(String arabicWord) {
 		return wordDAO.getStemmedWord(arabicWord);
+	}
+	public String[] scrapeWordAndUrduMeaning(String filePath) {
+        return ((FileWordDAO) wordDAO).scrapeWordAndUrduMeaning(filePath);
+    }
+
+    public void saveWordAndUrduMeaning(String word, String urduMeaning) {
+        ((FileWordDAO) wordDAO).saveWordAndUrduMeaning(word, urduMeaning);
+    }
+
+    public String scrapeFarsiMeaning(String filePath) {
+        return ((FileWordDAO) wordDAO).scrapeFarsiMeaning(filePath);
+    }
+
+    public void updateFarsiMeaning(String word, String farsiMeaning) {
+        ((FileWordDAO) wordDAO).updateFarsiMeaning(word, farsiMeaning);
+    }
+
+    public String getFarsiMeaning(String word) {
+        return ((FileWordDAO) wordDAO).getFarsiMeaning(word);
+    }
+
+	@Override
+	public String scrapeUrduMeaning(String url, String wordId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String[] scrapeWordAndUrduMeaning1(String filePath) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

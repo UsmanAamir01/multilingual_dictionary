@@ -5,7 +5,12 @@ import java.util.List;
 import dto.Word;
 
 public interface IWordDAO {
-	Word getWordFromDB(String arabicWord);
+	String[] scrapeWordAndUrduMeaning(String filePath);
+    
+    String scrapeFarsiMeaning(String filePath);
+    
+    
+	
 
 	boolean updateWordToDB(Word w);
 
@@ -30,4 +35,16 @@ public interface IWordDAO {
 	String getPOSTaggedWord(String arabicWord);
 
 	String getStemmedWord(String arabicWord);
+
+	Word getWordFromDB(String arabicWord);
+
+	void saveWordAndUrduMeaning(String word, String urduMeaning);
+
+	void updateFarsiMeaning(String word, String farsiMeaning);
+
+	String getFarsiMeaning(String word);
+
+	String scrapeUrduMeaning(String url, String wordId);
+
+	String[] scrapeWordAndUrduMeaning1(String filePath);
 }

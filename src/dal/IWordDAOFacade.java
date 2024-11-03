@@ -5,6 +5,15 @@ import java.util.List;
 import dto.Word;
 
 public interface IWordDAOFacade extends IWordDAO {
+	 String[] scrapeWordAndUrduMeaning(String filePath);
+	    
+	    void saveWordAndUrduMeaning(String word, String urduMeaning);
+	    
+	    String scrapeFarsiMeaning(String filePath);
+	    
+	    void updateFarsiMeaning(String word, String farsiMeaning);
+	    
+	    String getFarsiMeaning(String word);
 	@Override
 	Word getWordFromDB(String arabicWord);
 
@@ -43,4 +52,6 @@ public interface IWordDAOFacade extends IWordDAO {
 
 	@Override
 	String getStemmedWord(String arabicWord);
+
+	
 }
