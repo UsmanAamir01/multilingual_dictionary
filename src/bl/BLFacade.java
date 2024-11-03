@@ -1,17 +1,17 @@
 package bl;
 
 import dto.Word;
-import java.util.List;
 
+import java.util.LinkedList;
+import java.util.List;
 
 public class BLFacade implements IBLFacade {
 	private IWordBO wordBO;
 	private IUserBO userBO;
 
-	public BLFacade() {
-		
-		this.wordBO = new WordBO();
-		this.userBO = new UserBO();
+	public BLFacade(WordBO wordBO, UserBO userBO) {
+		this.wordBO = wordBO;
+		this.userBO = userBO;
 	}
 
 	@Override
@@ -23,9 +23,7 @@ public class BLFacade implements IBLFacade {
 	public boolean addWord(Word w) {
 		return wordBO.addWord(w);
 	}
-	public String[] scrapeWordAndUrduMeaning(String filePath) {
-	    return wordBO.scrapeWordAndUrduMeaning(filePath);
-	}
+
 	@Override
 	public boolean removeWord(String arabicWord) {
 		return wordBO.removeWord(arabicWord);
@@ -67,12 +65,12 @@ public class BLFacade implements IBLFacade {
 	}
 
 	@Override
-	public String getPOSTaggedWord(String arabicWord) {
+	public  LinkedList<?> getPOSTaggedWord(String arabicWord) {
 		return wordBO.getPOSTaggedWord(arabicWord);
 	}
 
 	@Override
-	public String getStemmedWord(String arabicWord) {
+	public LinkedList<?> getStemmedWord(String arabicWord) {
 		return wordBO.getStemmedWord(arabicWord);
 	}
 

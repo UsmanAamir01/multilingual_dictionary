@@ -18,38 +18,41 @@ public class ArabicTaggerUI extends JFrame {
 		this.mainDashboard = mainDashboard;
 		wordBO = new WordBO();
 		setTitle("Arabic POS Tagger");
-		setSize(500, 500);
+		setSize(800, 600);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
 		setLocationRelativeTo(null);
+		
 		JPanel inputPanel = new JPanel();
 		inputPanel.setLayout(new GridBagLayout());
-		inputPanel.setBackground(new Color(240, 240, 240));
+		inputPanel.setBackground(new Color(245, 245, 245));
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.insets = new Insets(10, 10, 10, 10);
+		gbc.insets = new Insets(15, 15, 15, 15);
+
 		backButton = createStyledButton("Back");
-		backButton.setPreferredSize(new Dimension(80, 30));
+		backButton.setPreferredSize(new Dimension(100, 40));
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.anchor = GridBagConstraints.LINE_START;
 		inputPanel.add(backButton, gbc);
 
-		JLabel label = new JLabel("Enter Arabic Text:");
-		label.setFont(new Font("Arial", Font.BOLD, 14));
-		label.setForeground(new Color(60, 60, 60));
+		JLabel label = new JLabel("Enter Arabic Word:");
+		label.setFont(new Font("Arial", Font.BOLD, 16));
+		label.setForeground(new Color(50, 50, 50));
 		gbc.gridx = 1;
 		gbc.gridy = 0;
 		inputPanel.add(label, gbc);
 
-		arabicWordTextField = new JTextField(25);
+		arabicWordTextField = new JTextField(30);
 		gbc.gridx = 2;
+		gbc.weightx = 1.0;
 		inputPanel.add(arabicWordTextField, gbc);
 
 		tagButton = new JButton("Tag");
-		tagButton.setBackground(new Color(50, 150, 250));
+		tagButton.setBackground(new Color(30, 144, 255));
 		tagButton.setForeground(Color.WHITE);
-		tagButton.setFont(new Font("Arial", Font.BOLD, 14));
+		tagButton.setFont(new Font("Arial", Font.BOLD, 16));
 		gbc.gridx = 3;
 		gbc.gridwidth = 1;
 		gbc.weightx = 0;
@@ -61,6 +64,7 @@ public class ArabicTaggerUI extends JFrame {
 		outputTextArea.setLineWrap(true);
 		outputTextArea.setWrapStyleWord(true);
 		outputTextArea.setFont(new Font("Arial", Font.PLAIN, 14));
+		outputTextArea.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
 		JScrollPane scrollPane = new JScrollPane(outputTextArea);
 		scrollPane.setBorder(BorderFactory.createTitledBorder("POS Tagged Result"));
 
@@ -79,7 +83,7 @@ public class ArabicTaggerUI extends JFrame {
 						outputTextArea.setText("Error during POS tagging: " + ex.getMessage());
 					}
 				} else {
-					JOptionPane.showMessageDialog(ArabicTaggerUI.this, "Please enter Arabic text.", "Error",
+					JOptionPane.showMessageDialog(ArabicTaggerUI.this, "Please enter Arabic Word.", "Error",
 							JOptionPane.ERROR_MESSAGE);
 				}
 			}

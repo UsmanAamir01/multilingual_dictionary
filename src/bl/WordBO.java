@@ -1,5 +1,4 @@
 package bl;
-import dal.WordDAO;
 
 import dal.IWordDAOFacade;
 import dal.WordDAOFacade;
@@ -88,12 +87,12 @@ public class WordBO implements IWordBO {
     }
 
     @Override
-    public String getPOSTaggedWord(String arabicWord) {
+    public LinkedList<?> getPOSTaggedWord(String arabicWord) {
         return wordDAOFacade.getPOSTaggedWord(arabicWord);
     }
 
     @Override
-    public String getStemmedWord(String arabicWord) {
+    public LinkedList<?> getStemmedWord(String arabicWord) {
         return wordDAOFacade.getStemmedWord(arabicWord);
     }
 
@@ -106,25 +105,29 @@ public class WordBO implements IWordBO {
             Object posTaggerInstance = posTaggerClass.getDeclaredConstructor().newInstance();
             Method tagMethod = posTaggerClass.getMethod("analyzedWords", String.class);
             Object result = tagMethod.invoke(posTaggerInstance, arabicText);
+            
             if (result instanceof LinkedList) {
                 LinkedList<?> wordList = (LinkedList<?>) result;
                 if (!wordList.isEmpty()) {
-                    Object firstWord = wordList.getFirst();
-                    Method getVoweledWordMethod = firstWord.getClass().getMethod("getVoweledWord");
-                    Method getStemMethod = firstWord.getClass().getMethod("getStem");
-                    Method getWordTypeMethod = firstWord.getClass().getMethod("getWordType");
-                    Method getWordRootMethod = firstWord.getClass().getMethod("getWordRoot");
-                    Method getPosMethod = firstWord.getClass().getMethod("getPos");
-                    String voweledWord = (String) getVoweledWordMethod.invoke(firstWord);
-                    String stem = (String) getStemMethod.invoke(firstWord);
-                    String wordType = (String) getWordTypeMethod.invoke(firstWord);
-                    String wordRoot = (String) getWordRootMethod.invoke(firstWord);
-                    String pos = (String) getPosMethod.invoke(firstWord);
-                    resultText.append("Voweled Word: ").append(voweledWord).append("\n")
-                              .append("Stem of the Word: ").append(stem).append("\n")
-                              .append("Type of the Word: ").append(wordType).append("\n")
-                              .append("Root of the Word: ").append(wordRoot).append("\n")
-                              .append("Part of Speech (POS): ").append(pos).append("\n");
+                    for (Object word : wordList) {
+                        Method getVoweledWordMethod = word.getClass().getMethod("getVoweledWord");
+                        Method getStemMethod = word.getClass().getMethod("getStem");
+                        Method getWordTypeMethod = word.getClass().getMethod("getWordType");
+                        Method getWordRootMethod = word.getClass().getMethod("getWordRoot");
+                        Method getPosMethod = word.getClass().getMethod("getPos");
+                        
+                        String voweledWord = (String) getVoweledWordMethod.invoke(word);
+                        String stem = (String) getStemMethod.invoke(word);
+                        String wordType = (String) getWordTypeMethod.invoke(word);
+                        String wordRoot = (String) getWordRootMethod.invoke(word);
+                        String pos = (String) getPosMethod.invoke(word);
+                        
+                        resultText.append("Voweled Word: ").append(voweledWord).append("\n")
+                                  .append("Stem of the Word: ").append(stem).append("\n")
+                                  .append("Type of the Word: ").append(wordType).append("\n")
+                                  .append("Root of the Word: ").append(wordRoot).append("\n")
+                                  .append("Part of Speech (POS): ").append(pos).append("\n\n");
+                    }
                 } else {
                     resultText.append("Tags Not Found!");
                 }
@@ -137,45 +140,5 @@ public class WordBO implements IWordBO {
         }
         return resultText.toString();
     }
-    
-    public String[] saveWordAndUrduMeaning(String filePath) {
-        WordDAO wordDAO = new WordDAO(); // Create an instance of WordDAO
-        String[] wordAndUrduMeaning = wordDAO.scrapeWordAndUrduMeaning(filePath); // Call the instance method
-
-        if (wordAndUrduMeaning != null) {
-            String word = wordAndUrduMeaning[0];
-            String urduMeaning = wordAndUrduMeaning[1];
-
-            // Use wordDAOFacade instead of dictionaryDAO
-            wordDAOFacade.addWordToDB(new Word(word, urduMeaning, null)); // Assuming you are creating a Word object
-            System.out.println("Word: " + word + ", Urdu Meaning: " + urduMeaning);
-            return wordAndUrduMeaning;
-        } else {
-            System.out.println("Failed to retrieve word and Urdu meaning.");
-            return null;
-        }
-    }
-
-    // New method to save Farsi meaning
-    public void saveFarsiMeaning(String word, String filePath) {
-        String farsiMeaning = wordDAOFacade.scrapeFarsiMeaning(filePath); // Use wordDAOFacade to scrape Farsi meaning
-
-        if (farsiMeaning != null) {
-            wordDAOFacade.updateFarsiMeaning(word, farsiMeaning); // Use wordDAOFacade to update Farsi meaning
-            System.out.println("Farsi Meaning stored: " + farsiMeaning);
-        } else {
-            System.out.println("Failed to retrieve Farsi meaning.");
-        }
-    }
-
-    public String getFarsiMeaning(String word) {
-        return wordDAOFacade.getFarsiMeaning(word); // Use wordDAOFacade to get Farsi meaning
-    }
-
-	@Override
-	public String[] scrapeWordAndUrduMeaning(String filePath) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }

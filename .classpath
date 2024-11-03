@@ -6,9 +6,8 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="/Users/muhammadsarim/Downloads/AlKhalil-2.1.21.jar"/>
-	<classpathentry kind="lib" path="/Users/muhammadsarim/Downloads/mysql-connector-j-8.0.31.jar"/>
-	<classpathentry kind="lib" path="C:/Users/MASHALLAH/Downloads/jsoup-1.18.1 (1).jar"/>
-	<classpathentry kind="lib" path="C:/Users/MASHALLAH/Downloads/mysql-connector-j-8.0.31 (1).jar"/>
+	<classpathentry kind="lib" path="C:/Users/Latitude/Downloads/AlKhalil-2.1.21.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Latitude/Downloads/mysql-connector-j-8.0.31.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Latitude/Downloads/jsoup-1.18.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
