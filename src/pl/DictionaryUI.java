@@ -26,7 +26,7 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
-import bl.WordBO;
+import bl.IBLFacade;
 import dto.Word;
 
 public class DictionaryUI extends JFrame {
@@ -34,11 +34,11 @@ public class DictionaryUI extends JFrame {
     private JTable dataTable;
     private JButton importButton;
     private JButton backButton;
-    private WordBO wordBO;
+    private final IBLFacade facade;
     private JFrame previousWindow;
 
-    public DictionaryUI(WordBO wordBO, JFrame previousWindow) {
-        this.wordBO = wordBO;
+    public DictionaryUI(IBLFacade facade, JFrame previousWindow) {
+        this.facade = facade;
         this.previousWindow = previousWindow;
         createAndShowGUI();
     }
@@ -71,8 +71,8 @@ public class DictionaryUI extends JFrame {
                     File selectedFile = fileChooser.getSelectedFile();
                     String filePath = selectedFile.getAbsolutePath();
                     filePathField.setText(filePath);
-                    List<Word> importedWords = wordBO.importDataFromFile(filePath);
-                    if (!importedWords.isEmpty() && wordBO.insertImportedData(importedWords)) {
+                    List<Word> importedWords = facade.importDataFromFile(filePath);
+                    if (!importedWords.isEmpty() && facade.insertImportedData(importedWords)) {
                         DefaultTableModel tableModel = (DefaultTableModel) dataTable.getModel();
                         tableModel.setRowCount(0);
                         for (Word word : importedWords) {
@@ -98,7 +98,6 @@ public class DictionaryUI extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
-
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -126,7 +125,6 @@ public class DictionaryUI extends JFrame {
         JScrollPane tableScrollPane = new JScrollPane(dataTable);
         tableScrollPane.setPreferredSize(new Dimension(450, 300));
         panel.add(tableScrollPane, gbc);
-
 
         add(panel);
         setSize(600, 500);

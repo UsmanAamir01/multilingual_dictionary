@@ -13,48 +13,55 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import bl.WordBO;
+import bl.IBLFacade;
 
 public class SearchView extends JPanel {
 	private JTextField searchField;
 	private JButton searchButton;
 	private JComboBox<String> searchTypeComboBox;
 	private JComboBox<String> languageComboBox;
-	private WordBO wordBo;
+	private final IBLFacade facade;
 
-	public SearchView(WordBO wordBo) {
-		this.wordBo = wordBo;
+	public SearchView(IBLFacade facade) {
+		this.facade = facade;
 		setLayout(new GridBagLayout());
 		setBackground(Color.WHITE);
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.insets = new Insets(10, 10, 10, 10);
+		
 		String[] searchTypes = { "Key", "Value" };
 		searchTypeComboBox = new JComboBox<>(searchTypes);
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		add(searchTypeComboBox, gbc);
+
 		JLabel searchLabel = new JLabel("Search Word:");
 		searchLabel.setFont(new Font("Arial", Font.PLAIN, 14));
 		gbc.gridx = 1;
 		add(searchLabel, gbc);
+
 		searchField = new JTextField(15);
 		gbc.gridx = 2;
 		add(searchField, gbc);
+
 		String[] languages = { "Arabic", "Urdu", "Persian" };
 		languageComboBox = new JComboBox<>(languages);
 		gbc.gridx = 3;
 		add(languageComboBox, gbc);
+
 		searchButton = new JButton("Search");
 		gbc.gridx = 4;
 		add(searchButton, gbc);
+
 		searchButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String wordText = searchField.getText();
 				String selectedLanguage = (String) languageComboBox.getSelectedItem();
+
 				if (!wordText.isEmpty()) {
-					String result = wordBo.getMeanings(wordText, selectedLanguage);
+					String result = facade.getMeanings(wordText, selectedLanguage);
 					if (!result.equals("Word not found.")) {
 						JOptionPane.showMessageDialog(SearchView.this, "Search result:\n" + result);
 					} else {

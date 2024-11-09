@@ -28,6 +28,9 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
+
+import bl.BLFacade;
+import bl.IBLFacade;
 import bl.UserBO;
 import bl.WordBO;
 
@@ -35,14 +38,14 @@ public class WordUI extends JFrame {
 	private JTextField usernameField;
 	private JPasswordField passwordField;
 	private JButton loginButton;
-	private WordBO wordBo;
+	private IBLFacade facade;
 	private JPanel sidebarPanel;
 	private JPanel mainContentPanel;
 	private JTextField searchField;
 	private JComboBox<String> languageComboBox;
 
-	public WordUI(WordBO wordBo, UserBO userBo) {
-		this.wordBo = wordBo;
+	public WordUI(IBLFacade facade, UserBO userBo) {
+		this.facade = facade;
 		setTitle("Multilingual Dictionary");
 		setSize(800, 600);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -207,19 +210,19 @@ public class WordUI extends JFrame {
 			String command = ((JButton) e.getSource()).getText();
 			switch (command) {
 			case "Add Word":
-				navigateTo(new AddWordView(wordBo, WordUI.this));
+				navigateTo(new AddWordView(facade, WordUI.this));
 				break;
 			case "View All Words":
-				navigateTo(new AllWordView(WordUI.this));
+				navigateTo(new AllWordView(facade, WordUI.this));
 				break;
 			case "Import File":
-				navigateTo(new DictionaryUI(wordBo, WordUI.this));
+				navigateTo(new DictionaryUI(facade, WordUI.this));
 				break;
 			case "View Word":
-				navigateTo(new ViewOnceWordView(wordBo, WordUI.this));
+				navigateTo(new ViewOnceWordView(facade, WordUI.this));
 				break;
 			case "Arabic Tagger/Stemmer":
-				navigateTo(new ArabicTaggerUI(WordUI.this));
+				navigateTo(new ArabicTaggerUI(facade, WordUI.this));
 				break;
 			case "Close":
 				System.exit(0);
@@ -232,7 +235,7 @@ public class WordUI extends JFrame {
 		String searchText = searchField.getText();
 		String selectedLanguage = (String) languageComboBox.getSelectedItem();
 		if (!searchText.isEmpty()) {
-			String result = wordBo.getMeanings(searchText, selectedLanguage);
+			String result = facade.getMeanings(searchText, selectedLanguage);
 			if (!result.equals("Word not found.") && !result.equals("Error retrieving meanings.")) {
 				JOptionPane.showMessageDialog(this,
 						"Searching for: " + searchText + " in " + selectedLanguage + "\n" + result);
@@ -263,8 +266,9 @@ public class WordUI extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		WordBO wordBo = new WordBO();
-		UserBO userBo = new UserBO();
-		new WordUI(wordBo, userBo).setVisible(true);
+		WordBO wordBO = new WordBO();
+		UserBO userBO = new UserBO();
+		IBLFacade facade = new BLFacade(wordBO, userBO);
+		new WordUI(facade, userBO).setVisible(true);
 	}
 }
