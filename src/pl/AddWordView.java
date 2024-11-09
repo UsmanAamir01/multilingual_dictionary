@@ -19,17 +19,17 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import bl.WordBO;
 import dto.Word;
+import bl.IBLFacade;
 
 public class AddWordView extends JFrame {
     private JTextField arabicWordTextField, urduMeaningTextField, persianMeaningTextField;
     private JButton addButton, backButton;
     private JFrame previousWindow;
-    private WordBO wordBO;
+    private final IBLFacade facade;
 
-    public AddWordView(WordBO wordBO, JFrame previousWindow) {
-        this.wordBO = wordBO;
+    public AddWordView(IBLFacade facade, JFrame previousWindow) {
+        this.facade = facade;
         this.previousWindow = previousWindow;
         setTitle("Add Word");
         setSize(500, 500);
@@ -115,7 +115,7 @@ public class AddWordView extends JFrame {
 
                 if (!arabicWordText.isEmpty() && !urduMeaning.isEmpty() && !persianMeaning.isEmpty()) {
                     Word word = new Word(arabicWordText, urduMeaning, persianMeaning);
-                    boolean success = wordBO.addWord(word);
+                    boolean success = facade.addWord(word);
 
                     if (success) {
                         JOptionPane.showMessageDialog(AddWordView.this, "Word added successfully!");

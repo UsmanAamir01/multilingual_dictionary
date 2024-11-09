@@ -18,18 +18,18 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
-import bl.WordBO;
+import bl.IBLFacade;
 
 public class RemoveWordView extends JFrame {
     private JTextField wordTextField;
     private JButton removeButton;
     private JButton backButton;
     private JFrame previousWindow;
-    private final WordBO wordBO;
+    private final IBLFacade facade;
 
-    public RemoveWordView(JFrame previousWindow, WordBO wordBO) {
+    public RemoveWordView(JFrame previousWindow, IBLFacade facade) {
         this.previousWindow = previousWindow;
-        this.wordBO = wordBO;
+        this.facade = facade;
         setTitle("Remove Word");
         setSize(500, 500);
         setLocationRelativeTo(null);
@@ -105,7 +105,7 @@ public class RemoveWordView extends JFrame {
             return;
         }
         try {
-            boolean success = wordBO.removeWord(wordText);
+            boolean success = facade.removeWord(wordText);
             if (success) {
                 JOptionPane.showMessageDialog(this, "Word removed successfully!");
                 wordTextField.setText("");

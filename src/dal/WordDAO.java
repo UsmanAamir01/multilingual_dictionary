@@ -291,18 +291,19 @@ public class WordDAO implements IWordDAO {
 	}
 
 	@Override
-	public String scrapeFarsiMeaning(String filePath) {
-		try {
-			Document doc = Jsoup.parse(new File(filePath), "UTF-8");
-			Element farsiMeaningElement = doc.select("td[id^=m]").get(1);
-			if (farsiMeaningElement != null) {
-				return farsiMeaningElement.text();
-			}
-		} catch (Exception e) {
-			System.err.println("Error scraping Farsi meaning: " + e.getMessage());
-		}
-		return null;
+	public String scrapeFarsiMeaning(String url) {
+	    try {
+	        Document doc = Jsoup.connect(url).get();
+	        Element farsiMeaningElement = doc.select("td[id^=m]").get(1);
+	        if (farsiMeaningElement != null) {
+	            return farsiMeaningElement.text();
+	        }
+	    } catch (Exception e) {
+	        System.err.println("Error scraping Farsi meaning: " + e.getMessage());
+	    }
+	    return null;
 	}
+
 
 	@Override
 	public void updateFarsiMeaning(String word, String farsiMeaning) {
@@ -324,7 +325,7 @@ public class WordDAO implements IWordDAO {
 			pstmt.setString(1, word);
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
-				return rs.getString("mean2");
+				return rs.getString("persian_meaning");
 			}
 		} catch (Exception e) {
 			System.err.println("Error retrieving Farsi meaning: " + e.getMessage());
