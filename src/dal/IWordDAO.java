@@ -31,14 +31,19 @@ public interface IWordDAO {
 	LinkedList<?> getStemmedWord(String arabicWord);
 
 	LinkedList<?> getPOSTaggedWord(String arabicWord);
-
-	String getFarsiMeaning(String word);
-
-	void updateFarsiMeaning(String word, String farsiMeaning);
-
-	String scrapeFarsiMeaning(String filePath);
-
-	void saveWordAndUrduMeaning(String word, String urduMeaning);
-
-	String[] scrapeWordAndUrduMeaning(String filePath);
+//
+//	String getFarsiMeaning(String word);
+//
+//	void updateFarsiMeaning(String word, String farsiMeaning);
+//
+//	String scrapeFarsiMeaning(String filePath);
+//
+//	void saveWordAndUrduMeaning(String word, String urduMeaning);
+//
+//	String[] scrapeWordAndUrduMeaning(String filePath);
+	  String[] scrapeWordAndUrduMeaning(String filePath);
+    void saveWordAndUrduMeaning(String word, String urduMeaning);
+    String scrapeFarsiMeaning(String filePath);
+    void updateFarsiMeaning(String word, String farsiMeaning);
+    String getFarsiMeaning(String word);
 }
