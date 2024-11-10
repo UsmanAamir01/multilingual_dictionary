@@ -1,157 +1,121 @@
+
 package pl;
 
-import bl.BLFacade;
-import bl.IBLFacade;
-import bl.UserBO;
 import bl.WordBO;
-import dto.Word;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.List;
+import java.awt.event.ActionListener;
 
 public class DictionaryScraperApp extends JFrame {
-    private final IBLFacade facade;
-    private final JTextArea outputArea;
-    private final JTextField urduFilePathField;
-    private final JTextField farsiFilePathField;
-    private final JLabel statusLabel;
+    private WordBO service;
+    private JTextField urduFilePathField;
+    private JTextField farsiFilePathField;
+    private JTextArea outputArea;
+    private JButton scrapeUrduButton;
+    private JButton scrapeFarsiButton;
 
-    public DictionaryScraperApp(IBLFacade facade) {
-        this.facade = facade;
+    public DictionaryScraperApp() {
+        service = new WordBO();
+        initializeUI();
+    }
 
+    private void initializeUI() {
         setTitle("Dictionary Scraper");
         setSize(500, 400);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(null);
 
-        outputArea = createOutputArea();
+        // Urdu File Path Input
+        JLabel urduLabel = new JLabel("Urdu File Path:");
+        urduLabel.setBounds(20, 20, 100, 30);
+        add(urduLabel);
+
         urduFilePathField = new JTextField();
+        urduFilePathField.setBounds(130, 20, 300, 30);
+        add(urduFilePathField);
+
+        scrapeUrduButton = new JButton("Scrape Urdu");
+        scrapeUrduButton.setBounds(20, 60, 150, 30);
+        add(scrapeUrduButton);
+
+        // Farsi File Path Input
+        JLabel farsiLabel = new JLabel("Farsi File Path:");
+        farsiLabel.setBounds(20, 100, 100, 30);
+        add(farsiLabel);
+
         farsiFilePathField = new JTextField();
-        statusLabel = new JLabel("Ready");
+        farsiFilePathField.setBounds(130, 100, 300, 30);
+        add(farsiFilePathField);
 
-        JPanel inputPanel = createInputPanel();
-        add(new JScrollPane(outputArea), BorderLayout.CENTER);
-        add(inputPanel, BorderLayout.NORTH);
-        add(statusLabel, BorderLayout.SOUTH);
+        scrapeFarsiButton = new JButton("Scrape Farsi");
+        scrapeFarsiButton.setBounds(20, 140, 150, 30);
+        add(scrapeFarsiButton);
 
-        setVisible(true);
-    }
+        // Output Area
+        outputArea = new JTextArea();
+        outputArea.setBounds(20, 180, 440, 150);
+        outputArea.setEditable(false);
+        add(outputArea);
 
-    private JTextArea createOutputArea() {
-        JTextArea textArea = new JTextArea();
-        textArea.setEditable(false);
-        textArea.setLineWrap(true);
-        textArea.setWrapStyleWord(true);
-        return textArea;
-    }
-
-    private JPanel createInputPanel() {
-        JPanel panel = new JPanel(new GridLayout(4, 2, 5, 5));
-
-        panel.add(new JLabel("Urdu File Path:"));
-        panel.add(urduFilePathField);
-        JButton scrapeUrduButton = new JButton("Scrape Urdu");
-        scrapeUrduButton.addActionListener(this::scrapeUrduAction);
-        panel.add(scrapeUrduButton);
-
-        panel.add(new JLabel("Farsi File Path:"));
-        panel.add(farsiFilePathField);
-        JButton scrapeFarsiButton = new JButton("Scrape Farsi");
-        scrapeFarsiButton.addActionListener(this::scrapeFarsiAction);
-        panel.add(scrapeFarsiButton);
-
-        JButton clearButton = new JButton("Clear Output");
-        clearButton.addActionListener(e -> outputArea.setText(""));
-        panel.add(clearButton);
-
-        return panel;
-    }
-
-    private void scrapeUrduAction(ActionEvent e) {
-        String urduFilePath = urduFilePathField.getText().trim();
-        if (urduFilePath.isEmpty()) {
-            updateStatus("Please provide a valid Urdu file path.");
-            return;
-        }
-        
-        updateStatus("Scraping Urdu file...");
-        new SwingWorker<List<Word>, Void>() {
+        // Action Listener for Scraping Urdu Data
+        scrapeUrduButton.addActionListener(new ActionListener() {
             @Override
-            protected List<Word> doInBackground() {
-                return facade.importDataFromFile(urduFilePath);
-            }
-
-            @Override
-            protected void done() {
-                try {
-                    List<Word> words = get();
-                    if (!words.isEmpty()) {
-                        outputArea.append("Scraped Urdu: " + words.get(0).getArabicWord() + ", " + words.get(0).getUrduMeaning() + "\n");
-                    } else {
-                        outputArea.append("No data scraped for Urdu file.\n");
-                    }
-                } catch (Exception ex) {
-                    outputArea.append("Error during Urdu scraping: " + ex.getMessage() + "\n");
+            public void actionPerformed(ActionEvent e) {
+                String urduFilePath = urduFilePathField.getText().trim();
+                if (urduFilePath.isEmpty()) {
+                    outputArea.append("Please provide a valid Urdu file path.\n");
+                    return;
                 }
-                updateStatus("Urdu scraping completed.");
-            }
-        }.execute();
-    }
 
-    private void scrapeFarsiAction(ActionEvent e) {
-        String farsiFilePath = farsiFilePathField.getText().trim();
-        if (farsiFilePath.isEmpty()) {
-            updateStatus("Please provide a valid Farsi file path.");
-            return;
-        }
-
-        String wordToUpdate = JOptionPane.showInputDialog(this, "Enter the word to update Farsi meaning:");
-        if (wordToUpdate == null || wordToUpdate.trim().isEmpty()) {
-            outputArea.append("Word cannot be empty.\n");
-            return;
-        }
-
-        updateStatus("Retrieving Farsi meaning for '" + wordToUpdate + "'...");
-        new SwingWorker<String, Void>() {
-            @Override
-            protected String doInBackground() {
-                String farsiMeaning = facade.getMeanings(wordToUpdate, "farsi");
-                if (farsiMeaning == null || farsiMeaning.isEmpty()) {
-                    farsiMeaning = facade.scrapeFarsiMeaning(farsiFilePath);
-                    if (farsiMeaning != null) {
-                        facade.updateFarsiMeaning(wordToUpdate, farsiMeaning);
+                new SwingWorker<Void, Void>() {
+                    @Override
+                    protected Void doInBackground() {
+                        String[] result = service.saveWordAndUrduMeaning(urduFilePath);
+                        if (result != null) {
+                            outputArea.append("Scraped Word: " + result[0] + ", Urdu Meaning: " + result[1] + "\n");
+                        }
+                        return null;
                     }
-                }
-                return farsiMeaning;
+                }.execute();
             }
+        });
 
+        // Action Listener for Scraping Farsi Data
+        scrapeFarsiButton.addActionListener(new ActionListener() {
             @Override
-            protected void done() {
-                try {
-                    String farsiMeaning = get();
-                    if (farsiMeaning != null) {
-                        outputArea.append("Farsi Meaning for '" + wordToUpdate + "': " + farsiMeaning + "\n");
-                    } else {
-                        outputArea.append("No Farsi meaning found for '" + wordToUpdate + "'.\n");
-                    }
-                } catch (Exception ex) {
-                    outputArea.append("Error during Farsi scraping: " + ex.getMessage() + "\n");
+            public void actionPerformed(ActionEvent e) {
+                String farsiFilePath = farsiFilePathField.getText().trim();
+                if (farsiFilePath.isEmpty()) {
+                    outputArea.append("Please provide a valid Farsi file path.\n");
+                    return;
                 }
-                updateStatus("Farsi scraping completed.");
-            }
-        }.execute();
-    }
 
-    private void updateStatus(String message) {
-        statusLabel.setText(message);
+                String wordToUpdate = JOptionPane.showInputDialog("Enter the word to update Farsi meaning:");
+                if (wordToUpdate == null || wordToUpdate.isEmpty()) {
+                    outputArea.append("Word cannot be empty.\n");
+                    return;
+                }
+
+                new SwingWorker<Void, Void>() {
+                    @Override
+                    protected Void doInBackground() {
+                        service.saveFarsiMeaning(wordToUpdate, farsiFilePath);
+                        String farsiMeaning = service.getFarsiMeaning(wordToUpdate);
+                        if (farsiMeaning != null) {
+                            outputArea.append("Farsi Meaning for '" + wordToUpdate + "': " + farsiMeaning + "\n");
+                        }
+                        return null;
+                    }
+                }.execute();
+            }
+        });
     }
 
     public static void main(String[] args) {
-        WordBO wordBO = new WordBO();
-        UserBO userBO = new UserBO();
-        IBLFacade facade = new BLFacade(wordBO, userBO);
-
-        SwingUtilities.invokeLater(() -> new DictionaryScraperApp(facade));
+        SwingUtilities.invokeLater(() -> {
+            DictionaryScraperApp app = new DictionaryScraperApp();
+            app.setVisible(true);
+        });
     }
 }

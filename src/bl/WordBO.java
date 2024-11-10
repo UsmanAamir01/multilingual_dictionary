@@ -142,29 +142,56 @@ public class WordBO implements IWordBO {
     }
     
 
-    @Override
+//    public String[] saveWordAndUrduMeaning(String filePath) {
+//        String[] wordAndUrduMeaning = wordDAOFacade.scrapeWordAndUrduMeaning(filePath);
+//        if (wordAndUrduMeaning != null) {
+//        	wordDAOFacade.saveWordAndUrduMeaning(wordAndUrduMeaning[0], wordAndUrduMeaning[1]);
+//        }
+//        return wordAndUrduMeaning;
+//    }
+//
+//    public void saveFarsiMeaning(String word, String filePath) {
+//        String farsiMeaning = wordDAOFacade.scrapeFarsiMeaning(filePath);
+//        if (farsiMeaning != null) {
+//        	wordDAOFacade.updateFarsiMeaning(word, farsiMeaning);
+//        }
+//    }
+//
+//    public String getFarsiMeaning(String word) {
+//        return wordDAOFacade.getFarsiMeaning(word);
+//    }
+
+    public String[] saveWordAndUrduMeaning(String filePath) {
+        String[] wordAndUrduMeaning = wordDAOFacade.scrapeWordAndUrduMeaning(filePath);
+
+        if (wordAndUrduMeaning != null) {
+            String word = wordAndUrduMeaning[0];
+            String urduMeaning = wordAndUrduMeaning[1];
+
+            wordDAOFacade.saveWordAndUrduMeaning(word, urduMeaning);
+            System.out.println("Word: " + word + ", Urdu Meaning: " + urduMeaning);
+            return wordAndUrduMeaning;
+        } else {
+            System.out.println("Failed to retrieve word and Urdu meaning.");
+            return null;
+        }
+    }
+
+    // Save Farsi Meaning
+    public void saveFarsiMeaning(String word, String filePath) {
+        String farsiMeaning = wordDAOFacade.scrapeFarsiMeaning(filePath);
+
+        if (farsiMeaning != null) {
+        	wordDAOFacade.updateFarsiMeaning(word, farsiMeaning);
+            System.out.println("Farsi Meaning stored: " + farsiMeaning);
+        } else {
+            System.out.println("Failed to retrieve Farsi meaning.");
+        }
+    }
+
+    // Get Farsi Meaning
     public String getFarsiMeaning(String word) {
         return wordDAOFacade.getFarsiMeaning(word);
-    }
-
-    @Override
-    public void updateFarsiMeaning(String word, String farsiMeaning) {
-        wordDAOFacade.updateFarsiMeaning(word, farsiMeaning);
-    }
-
-    @Override
-    public String scrapeFarsiMeaning(String filePath) {
-        return wordDAOFacade.scrapeFarsiMeaning(filePath);
-    }
-
-    @Override
-    public void saveWordAndUrduMeaning(String word, String urduMeaning) {
-        wordDAOFacade.saveWordAndUrduMeaning(word, urduMeaning);
-    }
-
-    @Override
-    public String[] scrapeWordAndUrduMeaning(String filePath) {
-        return wordDAOFacade.scrapeWordAndUrduMeaning(filePath);
     }
 
 }
