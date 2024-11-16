@@ -1,5 +1,6 @@
 package dal;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,13 +77,38 @@ public class WordDAOFacade implements IWordDAOFacade {
 	}
 
 	@Override
-	public String getPOSTaggedWord(String arabicWord) {
+	public LinkedList<?> getPOSTaggedWord(String arabicWord) {
 		return wordDAO.getPOSTaggedWord(arabicWord);
 	}
 
 	@Override
-	public String getStemmedWord(String arabicWord) {
+	public LinkedList<?> getStemmedWord(String arabicWord) {
 		return wordDAO.getStemmedWord(arabicWord);
+	}
+
+	@Override
+	public String getFarsiMeaning(String word) {
+		return wordDAO.getFarsiMeaning(word);
+	}
+
+	@Override
+	public void updateFarsiMeaning(String word, String farsiMeaning) {
+		wordDAO.updateFarsiMeaning(word, farsiMeaning);
+	}
+
+	@Override
+	public String scrapeFarsiMeaning(String filePath) {
+		return wordDAO.scrapeFarsiMeaning(filePath);
+	}
+
+	@Override
+	public void saveWordAndUrduMeaning(String word, String urduMeaning) {
+		wordDAO.saveWordAndUrduMeaning(word, urduMeaning);
+	}
+
+	@Override
+	public String[] scrapeWordAndUrduMeaning(String filePath) {
+		return wordDAO.scrapeWordAndUrduMeaning(filePath);
 	}
 
 }

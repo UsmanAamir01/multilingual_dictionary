@@ -20,19 +20,19 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import bl.WordBO;
 import dto.Word;
+import bl.IBLFacade;
 
 public class ViewOnceWordView extends JFrame {
-    private WordBO wordBo;
+    private IBLFacade facade;
     private JTextField arabicWordField;
     private JButton viewButton, backButton;
     private JLabel headingLabel;
     private JLabel arabicWordLabel, urduMeaningLabel, persianMeaningLabel;
     private JFrame parentFrame;
 
-    public ViewOnceWordView(WordBO wordBo, JFrame parentFrame) {
-        this.wordBo = wordBo;
+    public ViewOnceWordView(IBLFacade facade, JFrame parentFrame) {
+        this.facade = facade;
         this.parentFrame = parentFrame;
 
         setTitle("View Word Once");
@@ -78,7 +78,6 @@ public class ViewOnceWordView extends JFrame {
         gbc.gridy = 1;
         inputPanel.add(arabicWordField, gbc);
 
-        // Initialize labels for displaying results vertically
         arabicWordLabel = createMeaningLabel("");
         urduMeaningLabel = createMeaningLabel("");
         persianMeaningLabel = createMeaningLabel("");
@@ -130,7 +129,7 @@ public class ViewOnceWordView extends JFrame {
             return;
         }
 
-        Word word = wordBo.viewOnceWord(arabicWord);
+        Word word = facade.viewOnceWord(arabicWord);
         if (word != null) {
             arabicWordLabel.setText("Arabic Word: " + word.getArabicWord());
             urduMeaningLabel.setText("Urdu Meaning: " + word.getUrduMeaning());

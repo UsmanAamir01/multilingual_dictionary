@@ -1,6 +1,8 @@
 package bl;
 
 import dto.Word;
+
+import java.util.LinkedList;
 import java.util.List;
 
 public interface IWordBO {
@@ -24,9 +26,15 @@ public interface IWordBO {
 
 	List<String> getTaggedAndStemmedWords();
 
-	String getPOSTaggedWord(String arabicWord);
+	LinkedList<?> getPOSTaggedWord(String arabicWord);
 
-	String getStemmedWord(String arabicWord);
+	LinkedList<?> getStemmedWord(String arabicWord);
 
 	String performPOSTagging(String arabicText) throws Exception;
+	
+	
+	
+	String[] saveWordAndUrduMeaning(String filePath);
+	 void saveFarsiMeaning(String word, String filePath);
+	  String getFarsiMeaning(String word);
 }

@@ -1,1 +1,10 @@
 /WordDAO.class
+/AbstractDAOFactory.class
+/DAOFactoryProducer.class
+/FileDAOFactory.class
+/FileWordDAO.class
+/IDAOFactory.class
+/IWordDAO.class
+/IWordDAOFacade.class
+/MySQLDAOFactory.class
+/WordDAOFacade.class

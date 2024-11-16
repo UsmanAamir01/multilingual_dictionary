@@ -16,8 +16,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import bl.WordBO;
 import dto.Word;
+import bl.IBLFacade;
 
 public class UpdateWordView extends JFrame {
 	private JTextField wordTextField;
@@ -25,11 +25,11 @@ public class UpdateWordView extends JFrame {
 	private JButton updateButton;
 	private JButton backButton;
 	private JFrame previousWindow;
-	private final WordBO wordBO;
+	private final IBLFacade facade;
 
-	public UpdateWordView(JFrame previousWindow, WordBO wordBO) {
+	public UpdateWordView(JFrame previousWindow, IBLFacade facade) {
 		this.previousWindow = previousWindow;
-		this.wordBO = wordBO;
+		this.facade = facade;
 		setTitle("Update Word");
 		setSize(500, 400);
 		setLocationRelativeTo(null);
@@ -103,14 +103,13 @@ public class UpdateWordView extends JFrame {
 	}
 
 	private void showLanguageSelectionDialog() {
-		// Options for the user to select a language
 		String[] options = { "Persian", "Urdu" };
 		int choice = JOptionPane.showOptionDialog(this, "Select the language to update the meaning:",
 				"Language Selection", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
 				options[0]);
 
 		if (choice == JOptionPane.CLOSED_OPTION) {
-			return; // User closed the dialog
+			return; 
 		}
 
 		String selectedLanguage = options[choice];
@@ -129,7 +128,7 @@ public class UpdateWordView extends JFrame {
 
 		Word word = new Word(arabicWord, language.equals("Urdu") ? newMeaning : null,
 				language.equals("Persian") ? newMeaning : null);
-		boolean success = wordBO.updateWord(word);
+		boolean success = facade.updateWord(word); // Delegation to facade instead of wordBO
 		if (success) {
 			JOptionPane.showMessageDialog(this, "Word updated successfully!");
 			clearFields();

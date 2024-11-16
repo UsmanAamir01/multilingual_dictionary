@@ -1,5 +1,6 @@
 package dal;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import dto.Word;
@@ -27,7 +28,22 @@ public interface IWordDAO {
 
 	List<String> getTaggedAndStemmedWords();
 
-	String getPOSTaggedWord(String arabicWord);
+	LinkedList<?> getStemmedWord(String arabicWord);
 
-	String getStemmedWord(String arabicWord);
+	LinkedList<?> getPOSTaggedWord(String arabicWord);
+//
+//	String getFarsiMeaning(String word);
+//
+//	void updateFarsiMeaning(String word, String farsiMeaning);
+//
+//	String scrapeFarsiMeaning(String filePath);
+//
+//	void saveWordAndUrduMeaning(String word, String urduMeaning);
+//
+//	String[] scrapeWordAndUrduMeaning(String filePath);
+	  String[] scrapeWordAndUrduMeaning(String filePath);
+    void saveWordAndUrduMeaning(String word, String urduMeaning);
+    String scrapeFarsiMeaning(String filePath);
+    void updateFarsiMeaning(String word, String farsiMeaning);
+    String getFarsiMeaning(String word);
 }

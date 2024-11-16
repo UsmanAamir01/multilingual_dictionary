@@ -25,21 +25,21 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import bl.WordBO;
+import bl.IBLFacade;
 import dto.Word;
 
 public class AllWordView extends JFrame {
 	private JTable table;
 	private JLabel headingLabel, wordLabel, urduLabel, persianLabel;
-	private WordBO wordBO;
+	private final IBLFacade facade;
 	private JFrame previousWindow;
 	private JButton backButton, updateButton, removeButton;
 
-	public AllWordView(JFrame previousWindow) {
+	public AllWordView(IBLFacade facade, JFrame previousWindow) {
+		this.facade = facade;
 		this.previousWindow = previousWindow;
-		this.wordBO = new WordBO();
 
-		String[][] wordData = wordBO.getWordsWithMeanings();
+		String[][] wordData = facade.getWordsWithMeanings();
 		String[] columnNames = { "Arabic Word", "Urdu Meaning", "Persian Meaning" };
 		DefaultTableModel model = new DefaultTableModel(wordData, columnNames);
 		table = new JTable(model);
@@ -159,7 +159,7 @@ public class AllWordView extends JFrame {
 					String newPersianMeaning = JOptionPane.showInputDialog("Enter new Persian meaning:");
 					if (newUrduMeaning != null && newPersianMeaning != null) {
 						Word word = new Word(wordText, newUrduMeaning, newPersianMeaning);
-						boolean success = wordBO.updateWord(word);
+						boolean success = facade.updateWord(word);
 						if (success) {
 							JOptionPane.showMessageDialog(AllWordView.this, "Word updated successfully!");
 							table.setValueAt(newUrduMeaning, selectedRow, 1);
@@ -185,7 +185,7 @@ public class AllWordView extends JFrame {
 					int response = JOptionPane.showConfirmDialog(AllWordView.this,
 							"Are you sure you want to remove this word?", "Confirm Remove", JOptionPane.YES_NO_OPTION);
 					if (response == JOptionPane.YES_OPTION) {
-						boolean success = wordBO.removeWord(wordText);
+						boolean success = facade.removeWord(wordText);
 						if (success) {
 							JOptionPane.showMessageDialog(AllWordView.this, "Word removed successfully!");
 							((DefaultTableModel) table.getModel()).removeRow(selectedRow);
