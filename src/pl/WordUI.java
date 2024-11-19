@@ -106,7 +106,7 @@ public class WordUI extends JFrame {
 		getContentPane().removeAll();
 		setTitle("Dashboard");
 
-		sidebarPanel = new JPanel(new GridLayout(8, 1, 10, 10));
+		sidebarPanel = new JPanel(new GridLayout(9, 1, 10, 10));
 		sidebarPanel.setPreferredSize(new Dimension(200, 600));
 		sidebarPanel.setBackground(new Color(240, 240, 240));
 
@@ -114,7 +114,8 @@ public class WordUI extends JFrame {
 		JButton viewAllButton = createSidebarButton("View All Words");
 		JButton importFileButton = createSidebarButton("Import File");
 		JButton viewOnceButton = createSidebarButton("View Word");
-		JButton arabicTaggerButton = createSidebarButton("Arabic Tagger/Stemmer");
+		JButton arabicTaggerButton = createSidebarButton("Arabic Tagger-Stemmer");
+		JButton viewFavoritesButton = createSidebarButton("View Favourites");
 		JButton closeButton = createSidebarButton("Close");
 
 		SidebarButtonActionListener actionListener = new SidebarButtonActionListener();
@@ -123,6 +124,7 @@ public class WordUI extends JFrame {
 		importFileButton.addActionListener(actionListener);
 		viewOnceButton.addActionListener(actionListener);
 		arabicTaggerButton.addActionListener(actionListener);
+		viewFavoritesButton.addActionListener(actionListener);
 		closeButton.addActionListener(actionListener);
 
 		sidebarPanel.add(addWordButton);
@@ -130,6 +132,7 @@ public class WordUI extends JFrame {
 		sidebarPanel.add(importFileButton);
 		sidebarPanel.add(viewOnceButton);
 		sidebarPanel.add(arabicTaggerButton);
+		sidebarPanel.add(viewFavoritesButton);
 		sidebarPanel.add(closeButton);
 
 		mainContentPanel = new JPanel();
@@ -199,6 +202,9 @@ public class WordUI extends JFrame {
 			case "Arabic Tagger/Stemmer":
 				navigateTo(new ArabicTaggerUI(facade, WordUI.this));
 				break;
+			case "View Favourites":
+				navigateTo(new ViewFavorites(WordUI.this, facade));
+				break;
 			case "Close":
 				System.exit(0);
 				break;
@@ -215,51 +221,30 @@ public class WordUI extends JFrame {
 
 			if (!result.equals("Word not found.") && !result.equals("Error retrieving meanings.")) {
 				JOptionPane.showMessageDialog(this,
-						"Searching for: " + searchText + " in " + selectedLanguage + "\n" + result, "Search Result",
-						JOptionPane.INFORMATION_MESSAGE);
+						"Searching for: " + searchText + " in " + selectedLanguage + "\n\n" + result);
 			} else {
-				int choice = JOptionPane.showConfirmDialog(this,
-						"Word not found in the database. Would you like to scrape data for this word?", "Scrape Data",
-						JOptionPane.YES_NO_OPTION);
-
-				if (choice == JOptionPane.YES_OPTION) {
-					showScraperUI(selectedLanguage);
-				}
+				JOptionPane.showMessageDialog(this, result, "Search Result", JOptionPane.INFORMATION_MESSAGE);
 			}
-
-			searchField.setText("");
 		} else {
-			JOptionPane.showMessageDialog(this, "Please enter a word to search.", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Please enter a word to search.", "Search Error",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
-	private void showScraperUI(String language) {
-		DictionaryScraper scraper = new DictionaryScraper(facade, WordUI.this);
-		scraper.setVisible(true);
-		scraper.setTitle("Scraper for " + language);
-	}
-
 	private JButton createSidebarButton(String text) {
-		JButton button = new JButton(text);
-		button.setBackground(new Color(0, 102, 204));
-		button.setForeground(Color.WHITE);
-		button.setFont(new Font("Arial", Font.BOLD, 14));
-		button.setFocusPainted(false);
-		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		button.setOpaque(true);
-		button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		return button;
+		return createButton(text, new Color(0, 51, 153), Color.WHITE);
 	}
 
 	private void navigateTo(JFrame frame) {
 		frame.setVisible(true);
-		this.dispose();
+		WordUI.this.setVisible(false);
 	}
 
 	public static void main(String[] args) {
 		WordBO wordBO = new WordBO();
 		UserBO userBO = new UserBO();
 		IBLFacade facade = new BLFacade(wordBO, userBO);
-		new WordUI(facade, userBO).setVisible(true);
+		WordUI wordUI = new WordUI(facade, new UserBO());
+		wordUI.setVisible(true);
 	}
 }

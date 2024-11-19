@@ -90,7 +90,7 @@ public class FileWordDAO implements IWordDAO {
 			while ((line = reader.readLine()) != null) {
 				String[] parts = line.split(",");
 				if (parts.length == 3) {
-					words.add(new Word(parts[0].trim(), parts[1].trim(), parts[2].trim()));
+					words.add(new Word(parts[0].trim(), parts[1].trim(), parts[2].trim(), false));
 				}
 			}
 		} catch (IOException e) {
@@ -112,7 +112,7 @@ public class FileWordDAO implements IWordDAO {
 			while ((line = br.readLine()) != null) {
 				String[] parts = line.split(",");
 				if (parts.length == 3) {
-					importedWords.add(new Word(parts[0].trim(), parts[1].trim(), parts[2].trim()));
+					importedWords.add(new Word(parts[0].trim(), parts[1].trim(), parts[2].trim(), false));
 				}
 			}
 		} catch (IOException e) {
@@ -146,7 +146,7 @@ public class FileWordDAO implements IWordDAO {
 					if (arabicWord.toLowerCase().contains(searchTerm.toLowerCase())
 							|| urduMeaning.toLowerCase().contains(searchTerm.toLowerCase())
 							|| persianMeaning.toLowerCase().contains(searchTerm.toLowerCase())) {
-						result.add(new Word(arabicWord, urduMeaning, persianMeaning));
+						result.add(new Word(arabicWord, urduMeaning, persianMeaning, false));
 					}
 				}
 			}
@@ -224,31 +224,41 @@ public class FileWordDAO implements IWordDAO {
 
 	@Override
 	public String[] scrapeWordAndUrduMeaning(String filePath) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void saveWordAndUrduMeaning(String word, String urduMeaning) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public String scrapeFarsiMeaning(String filePath) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void updateFarsiMeaning(String word, String farsiMeaning) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public String getFarsiMeaning(String word) {
-		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void markAsFavorite(String word, boolean isFavorite) {
+		
+	}
+
+	@Override
+	public List<Word> getFavoriteWords() {
+		return null;
+	}
+
+	@Override
+	public boolean isWordFavorite(String arabicWord) {
+		return false;
 	}
 }

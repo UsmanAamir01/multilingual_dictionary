@@ -98,4 +98,19 @@ public class BLFacade implements IBLFacade {
 	public String getFarsiMeaning(String word) {
 		return wordBO.getFarsiMeaning(word);
 	}
+	
+	@Override
+    public void markWordAsFavorite(String word, boolean isFavorite) {
+        wordBO.markWordAsFavorite(word, isFavorite);
+    }
+
+    @Override
+    public List<Word> getFavoriteWords() {
+        return wordBO.getFavoriteWords();
+    }
+
+	@Override
+	public boolean isWordFavorite(String arabicWord) {
+		return wordBO.isWordFavorite(arabicWord);
+	}
 }

@@ -1,28 +1,8 @@
 package pl;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import bl.IBLFacade;
@@ -40,14 +20,20 @@ public class AllWordView extends JFrame {
 		this.previousWindow = previousWindow;
 
 		String[][] wordData = facade.getWordsWithMeanings();
-		String[] columnNames = { "Arabic Word", "Urdu Meaning", "Persian Meaning" };
-		DefaultTableModel model = new DefaultTableModel(wordData, columnNames);
+		String[] columnNames = { "Arabic Word", "Urdu Meaning", "Persian Meaning", "Favourites" };
+		DefaultTableModel model = new DefaultTableModel(wordData, columnNames) {
+			@Override
+			public Class<?> getColumnClass(int columnIndex) {
+				return columnIndex == 3 ? Icon.class : super.getColumnClass(columnIndex);
+			}
+		};
+
 		table = new JTable(model);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
 		setTableStyles();
 
-		headingLabel = createHeadingLabel("Word and Meanings");
+		headingLabel = createLabel("Word and Meanings", new Font("Arial", Font.BOLD, 24), new Color(25, 25, 112),
+				SwingConstants.CENTER);
 
 		wordLabel = createMeaningLabel("Arabic Word: ");
 		urduLabel = createMeaningLabel("Urdu Meaning: ");
@@ -59,30 +45,20 @@ public class AllWordView extends JFrame {
 		add(createFooterPanel(), BorderLayout.SOUTH);
 
 		setTitle("Word and Meaning Viewer");
-		setSize(600, 600);
+		setSize(800, 700);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setVisible(true);
 
-		this.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent event) {
-				dispose();
+		table.getSelectionModel().addListSelectionListener(event -> {
+			if (!event.getValueIsAdjusting()) {
+				int selectedRow = table.getSelectedRow();
+				if (selectedRow != -1)
+					updateLabels(selectedRow);
 			}
 		});
 
-		ListSelectionModel selectionModel = table.getSelectionModel();
-		selectionModel.addListSelectionListener(new ListSelectionListener() {
-			@Override
-			public void valueChanged(ListSelectionEvent event) {
-				if (!event.getValueIsAdjusting()) {
-					int selectedRow = table.getSelectedRow();
-					if (selectedRow != -1) {
-						updateLabels(selectedRow);
-					}
-				}
-			}
-		});
+		setFavoriteIcons();
 	}
 
 	private void setTableStyles() {
@@ -101,19 +77,15 @@ public class AllWordView extends JFrame {
 	}
 
 	private void updateLabels(int selectedRow) {
-		String arabicWord = (String) table.getValueAt(selectedRow, 0);
-		String urduMeaning = (String) table.getValueAt(selectedRow, 1);
-		String persianMeaning = (String) table.getValueAt(selectedRow, 2);
-		wordLabel.setText("Arabic Word: " + arabicWord);
-		urduLabel.setText("Urdu Meaning: " + urduMeaning);
-		persianLabel.setText("Persian Meaning: " + persianMeaning);
+		wordLabel.setText("Arabic Word: " + table.getValueAt(selectedRow, 0));
+		urduLabel.setText("Urdu Meaning: " + table.getValueAt(selectedRow, 1));
+		persianLabel.setText("Persian Meaning: " + table.getValueAt(selectedRow, 2));
 	}
 
-	private JLabel createHeadingLabel(String text) {
-		JLabel label = new JLabel(text, SwingConstants.CENTER);
-		label.setFont(new Font("Arial", Font.BOLD, 24));
-		label.setForeground(new Color(25, 25, 112));
-		label.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+	private JLabel createLabel(String text, Font font, Color color, int alignment) {
+		JLabel label = new JLabel(text, alignment);
+		label.setFont(font);
+		label.setForeground(color);
 		return label;
 	}
 
@@ -129,94 +101,111 @@ public class AllWordView extends JFrame {
 	}
 
 	private JPanel createFooterPanel() {
+
 		JPanel footerPanel = new JPanel();
 		footerPanel.setLayout(new BoxLayout(footerPanel, BoxLayout.Y_AXIS));
 		footerPanel.setBackground(new Color(248, 248, 255));
 		footerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		footerPanel.add(headingLabel);
-		footerPanel.add(wordLabel);
-		footerPanel.add(urduLabel);
-		footerPanel.add(persianLabel);
 
-		backButton = createButton("Back");
-		backButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				previousWindow.setVisible(true);
-				dispose();
-			}
+		JPanel labelsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+		labelsPanel.setBackground(new Color(248, 248, 255));
+		labelsPanel.add(wordLabel);
+		labelsPanel.add(urduLabel);
+		labelsPanel.add(persianLabel);
+
+		footerPanel.add(labelsPanel);
+
+		backButton = createButton("Back", new Color(30, 136, 229), e -> {
+			previousWindow.setVisible(true);
+			dispose();
 		});
 
-		updateButton = createButton("Update Word");
-		updateButton.setBackground(new Color(0, 128, 0));
-		updateButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				int selectedRow = table.getSelectedRow();
-				if (selectedRow != -1) {
-					String wordText = (String) table.getValueAt(selectedRow, 0);
-					String newUrduMeaning = JOptionPane.showInputDialog("Enter new Urdu meaning:");
-					String newPersianMeaning = JOptionPane.showInputDialog("Enter new Persian meaning:");
-					if (newUrduMeaning != null && newPersianMeaning != null) {
-						Word word = new Word(wordText, newUrduMeaning, newPersianMeaning);
-						boolean success = facade.updateWord(word);
-						if (success) {
-							JOptionPane.showMessageDialog(AllWordView.this, "Word updated successfully!");
-							table.setValueAt(newUrduMeaning, selectedRow, 1);
-							table.setValueAt(newPersianMeaning, selectedRow, 2);
-						} else {
-							JOptionPane.showMessageDialog(AllWordView.this, "Failed to update the word.");
-						}
-					}
-				} else {
-					JOptionPane.showMessageDialog(AllWordView.this, "Please select a word to update.");
-				}
-			}
-		});
+		updateButton = createButton("Update Word", new Color(0, 128, 0), e -> updateWord());
+		removeButton = createButton("Remove Word", new Color(255, 0, 0), e -> removeWord());
 
-		removeButton = createButton("Remove Word");
-		removeButton.setBackground(new Color(255, 0, 0));
-		removeButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				int selectedRow = table.getSelectedRow();
-				if (selectedRow != -1) {
-					String wordText = (String) table.getValueAt(selectedRow, 0);
-					int response = JOptionPane.showConfirmDialog(AllWordView.this,
-							"Are you sure you want to remove this word?", "Confirm Remove", JOptionPane.YES_NO_OPTION);
-					if (response == JOptionPane.YES_OPTION) {
-						boolean success = facade.removeWord(wordText);
-						if (success) {
-							JOptionPane.showMessageDialog(AllWordView.this, "Word removed successfully!");
-							((DefaultTableModel) table.getModel()).removeRow(selectedRow);
-						} else {
-							JOptionPane.showMessageDialog(AllWordView.this, "Failed to remove the word.");
-						}
-					}
-				} else {
-					JOptionPane.showMessageDialog(AllWordView.this, "Please select a word to remove.");
-				}
-			}
-		});
-		footerPanel.add(Box.createVerticalStrut(10));
-		footerPanel.add(updateButton);
-		footerPanel.add(Box.createVerticalStrut(10));
-		footerPanel.add(removeButton);
-		footerPanel.add(Box.createVerticalStrut(10));
-		footerPanel.add(backButton);
+		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+		buttonPanel.add(backButton);
+		buttonPanel.add(updateButton);
+		buttonPanel.add(removeButton);
+
+		footerPanel.add(buttonPanel);
 
 		return footerPanel;
 	}
 
-	private JButton createButton(String text) {
+	private JButton createButton(String text, Color color, ActionListener action) {
 		JButton button = new JButton(text);
-		button.setBackground(new Color(0, 123, 255));
+		button.setFont(new Font("Arial", Font.BOLD, 16));
+		button.setBackground(color);
 		button.setForeground(Color.WHITE);
-		button.setFont(new Font("Arial", Font.BOLD, 14));
-		button.setFocusPainted(false);
-		button.setBorder(BorderFactory.createEmptyBorder(10, 30, 10, 30));
-		button.setOpaque(true);
-		button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		button.setPreferredSize(new Dimension(200, 40));
+		button.addActionListener(action);
 		return button;
+	}
+
+	private void updateWord() {
+		int selectedRow = table.getSelectedRow();
+		if (selectedRow != -1) {
+			String wordText = (String) table.getValueAt(selectedRow, 0);
+			String newUrdu = JOptionPane.showInputDialog("Enter new Urdu meaning:");
+			String newPersian = JOptionPane.showInputDialog("Enter new Persian meaning:");
+			if (newUrdu != null && newPersian != null) {
+				Word word = new Word(wordText, newUrdu, newPersian);
+				if (facade.updateWord(word)) {
+					JOptionPane.showMessageDialog(this, "Word updated successfully!");
+					table.setValueAt(newUrdu, selectedRow, 1);
+					table.setValueAt(newPersian, selectedRow, 2);
+				} else {
+					JOptionPane.showMessageDialog(this, "Failed to update the word.");
+				}
+			}
+		} else {
+			JOptionPane.showMessageDialog(this, "Please select a word to update.");
+		}
+	}
+
+	private void removeWord() {
+		int selectedRow = table.getSelectedRow();
+		if (selectedRow != -1) {
+			String wordText = (String) table.getValueAt(selectedRow, 0);
+			if (JOptionPane.showConfirmDialog(this, "Are you sure you want to remove this word?", "Confirm Remove",
+					JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+				if (facade.removeWord(wordText)) {
+					JOptionPane.showMessageDialog(this, "Word removed successfully!");
+					((DefaultTableModel) table.getModel()).removeRow(selectedRow);
+				} else {
+					JOptionPane.showMessageDialog(this, "Failed to remove the word.");
+				}
+			}
+		} else {
+			JOptionPane.showMessageDialog(this, "Please select a word to remove.");
+		}
+	}
+
+	private void setFavoriteIcons() {
+		for (int row = 0; row < table.getRowCount(); row++) {
+			String word = (String) table.getValueAt(row, 0);
+			boolean isFavorite = facade.isWordFavorite(word);
+			Icon icon = new ImageIcon(
+					getClass().getResource(isFavorite ? "/images/icon_filledstar.png" : "/images/icon_hollowstar.png"));
+			table.setValueAt(icon, row, 3);
+		}
+
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int clickedRow = table.rowAtPoint(e.getPoint());
+				int clickedColumn = table.columnAtPoint(e.getPoint());
+				if (clickedColumn == 3) {
+					String word = (String) table.getValueAt(clickedRow, 0);
+					boolean isFavorite = facade.isWordFavorite(word);
+					boolean newStatus = !isFavorite;
+					facade.markWordAsFavorite(word, newStatus);
+					Icon newIcon = new ImageIcon(getClass()
+							.getResource(newStatus ? "/images/icon_filledstar.png" : "/images/icon_hollowstar.png"));
+					table.setValueAt(newIcon, clickedRow, 3);
+				}
+			}
+		});
 	}
 }
