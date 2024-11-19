@@ -37,4 +37,11 @@ public interface IWordBO {
 	void saveFarsiMeaning(String word, String filePath);
 
 	String getFarsiMeaning(String word);
+
+	List<Word> getFavoriteWords();
+
+	void markWordAsFavorite(String word, boolean isFavorite);
+
+	boolean isWordFavorite(String arabicWord);
+
 }

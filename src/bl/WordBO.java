@@ -176,5 +176,21 @@ public class WordBO implements IWordBO {
     public String getFarsiMeaning(String word) {
         return wordDAOFacade.getFarsiMeaning(word);
     }
+    
+    @Override
+    public void markWordAsFavorite(String arabicWord, boolean isFavorite) {
+        wordDAOFacade.markAsFavorite(arabicWord, isFavorite);
+    }
+
+
+    @Override
+    public List<Word> getFavoriteWords() {
+        return wordDAOFacade.getFavoriteWords();
+    }
+    
+    @Override
+    public boolean isWordFavorite(String arabicWord) {
+        return wordDAOFacade.isWordFavorite(arabicWord);
+    }
 
 }

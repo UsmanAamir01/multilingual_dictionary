@@ -10,6 +10,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,7 +68,7 @@ public class WordDAO implements IWordDAO {
 				String wordText = resultSet.getString("arabic_word");
 				String urduMeaning = resultSet.getString("urdu_meaning");
 				String persianMeaning = resultSet.getString("persian_meaning");
-				return new Word(wordText, urduMeaning, persianMeaning);
+				return new Word(wordText, urduMeaning, persianMeaning, false);
 			}
 		} catch (SQLException e) {
 			LOGGER.log(Level.SEVERE, "Database error", e);
@@ -124,7 +125,7 @@ public class WordDAO implements IWordDAO {
 				String arabicWord = rs.getString("arabic_word");
 				String urduMeaning = rs.getString("urdu_meaning");
 				String persianMeaning = rs.getString("persian_meaning");
-				wordList.add(new Word(arabicWord, urduMeaning, persianMeaning));
+				wordList.add(new Word(arabicWord, urduMeaning, persianMeaning, false));
 			}
 		} catch (SQLException e) {
 			LOGGER.log(Level.SEVERE, "Database error", e);
@@ -145,7 +146,7 @@ public class WordDAO implements IWordDAO {
 			while ((line = br.readLine()) != null) {
 				String[] parts = line.split(",");
 				if (parts.length >= 3) {
-					importedWords.add(new Word(parts[0].trim(), parts[1].trim(), parts[2].trim()));
+					importedWords.add(new Word(parts[0].trim(), parts[1].trim(), parts[2].trim(), false));
 				} else {
 					LOGGER.log(Level.WARNING, "Invalid line format: {0}", line);
 				}
@@ -179,7 +180,7 @@ public class WordDAO implements IWordDAO {
 			ResultSet resultSet = statement.executeQuery();
 			while (resultSet.next()) {
 				results.add(new Word(resultSet.getString("arabic_word"), resultSet.getString("urdu_meaning"),
-						resultSet.getString("persian_meaning")));
+						resultSet.getString("persian_meaning"), false));
 			}
 		} catch (SQLException e) {
 			LOGGER.log(Level.SEVERE, "Database error", e);
@@ -336,5 +337,53 @@ public class WordDAO implements IWordDAO {
 	            System.err.println("Error retrieving Farsi meaning: " + e.getMessage());
 	        }
 	        return null;
+	    }
+	    
+	    @Override
+	    public void markAsFavorite(String arabicWord, boolean isFavorite) {
+	        String query = "UPDATE dictionary SET isFavorite = ? WHERE arabic_word = ?";
+	        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+	            stmt.setBoolean(1, isFavorite);
+	            stmt.setString(2, arabicWord);
+	            stmt.executeUpdate();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+
+	    @Override
+	    public List<Word> getFavoriteWords() {
+	        List<Word> favoriteWords = new ArrayList<>();
+	        String query = "SELECT * FROM dictionary WHERE isFavorite = TRUE";
+	        try (Statement stmt = connection.createStatement()) {
+	            ResultSet rs = stmt.executeQuery(query);
+	            while (rs.next()) {
+	                favoriteWords.add(new Word(
+	                    rs.getString("arabic_word"),
+	                    rs.getString("urdu_meaning"),
+	                    rs.getString("persian_meaning"),
+	                    rs.getBoolean("isFavorite")
+	                ));
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	        return favoriteWords;
+	    }
+	    
+	    @Override
+	    public boolean isWordFavorite(String arabicWord) {
+	        String query = "SELECT isFavorite FROM dictionary WHERE arabic_word = ?";
+	        try (PreparedStatement statement = connection.prepareStatement(query)) {
+	            statement.setString(1, arabicWord);
+	            ResultSet resultSet = statement.executeQuery();
+	            if (resultSet.next()) {
+	                return resultSet.getBoolean("isFavorite");
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	        return false;
 	    }
 }
