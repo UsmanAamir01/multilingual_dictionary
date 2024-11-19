@@ -1,34 +1,9 @@
 package pl;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JSplitPane;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
-
+import javax.swing.*;
 import bl.BLFacade;
 import bl.IBLFacade;
 import bl.UserBO;
@@ -232,20 +207,36 @@ public class WordUI extends JFrame {
 	}
 
 	private void triggerSearch() {
-		String searchText = searchField.getText();
+		String searchText = searchField.getText().trim();
 		String selectedLanguage = (String) languageComboBox.getSelectedItem();
+
 		if (!searchText.isEmpty()) {
 			String result = facade.getMeanings(searchText, selectedLanguage);
+
 			if (!result.equals("Word not found.") && !result.equals("Error retrieving meanings.")) {
 				JOptionPane.showMessageDialog(this,
-						"Searching for: " + searchText + " in " + selectedLanguage + "\n" + result);
+						"Searching for: " + searchText + " in " + selectedLanguage + "\n" + result, "Search Result",
+						JOptionPane.INFORMATION_MESSAGE);
 			} else {
-				JOptionPane.showMessageDialog(this, result);
+				int choice = JOptionPane.showConfirmDialog(this,
+						"Word not found in the database. Would you like to scrape data for this word?", "Scrape Data",
+						JOptionPane.YES_NO_OPTION);
+
+				if (choice == JOptionPane.YES_OPTION) {
+					showScraperUI(selectedLanguage);
+				}
 			}
+
 			searchField.setText("");
 		} else {
 			JOptionPane.showMessageDialog(this, "Please enter a word to search.", "Error", JOptionPane.ERROR_MESSAGE);
 		}
+	}
+
+	private void showScraperUI(String language) {
+		DictionaryScraper scraper = new DictionaryScraper(facade, WordUI.this);
+		scraper.setVisible(true);
+		scraper.setTitle("Scraper for " + language);
 	}
 
 	private JButton createSidebarButton(String text) {
