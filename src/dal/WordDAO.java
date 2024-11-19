@@ -23,9 +23,9 @@ import org.jsoup.nodes.Element;
 import dto.Word;
 
 public class WordDAO implements IWordDAO {
-	private static final String URL = "jdbc:mysql://localhost:3306/a";
-	private static final String USER = "ranko";
-	private static final String PASSWORD = "huzaifa123";
+	private static final String URL = "jdbc:mysql://localhost:3306/Dictionarydb";
+	private static final String USER = "root";
+	private static final String PASSWORD = "";
 	private static final Logger LOGGER = Logger.getLogger(WordDAO.class.getName());
 	private Connection connection;
 	private Object posTaggerInstance;
@@ -265,153 +265,7 @@ public class WordDAO implements IWordDAO {
 			return null;
 		}
 	}
-//	public String[] scrapeWordAndUrduMeaning(String filePath) {
-//        try {
-//            Document doc = Jsoup.parse(new File(filePath), "UTF-8");
-//            Element wordElement = doc.select("td[id^=w]").first();
-//            Element meaningElement = doc.select("td[id^=m]").first();
-//            if (wordElement != null && meaningElement != null) {
-//                String word = wordElement.text().replaceAll("\\s*\\[.*?\\]", "");
-//                String urduMeaning = meaningElement.text();
-//                return new String[]{word, urduMeaning};
-//            }
-//        } catch (Exception e) {
-//            System.err.println("Error scraping word and Urdu meaning: " + e.getMessage());
-//        }
-//        return null;
-//    }
-//	public void saveWordAndUrduMeaning(String word, String urduMeaning) {
-//        String sql = "INSERT INTO dictionary (word, mean1) VALUES (?, ?)";
-//        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//            pstmt.setString(1, word);
-//            pstmt.setString(2, urduMeaning);
-//            pstmt.executeUpdate();
-//        } catch (Exception e) {
-//            System.err.println("Error saving word and Urdu meaning: " + e.getMessage());
-//        }
-//    }
-//	public String scrapeFarsiMeaning(String filePath) {
-//        try {
-//            Document doc = Jsoup.parse(new File(filePath), "UTF-8");
-//            Element farsiMeaningElement = doc.select("td[id^=m]").get(1); // Second meaning
-//            return farsiMeaningElement != null ? farsiMeaningElement.text() : null;
-//        } catch (Exception e) {
-//            System.err.println("Error scraping Farsi meaning: " + e.getMessage());
-//        }
-//        return null;
-//    }
-//	public void updateFarsiMeaning(String word, String farsiMeaning) {
-//        String sql = "UPDATE dictionary SET mean2 = ? WHERE word = ?";
-//        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//            pstmt.setString(1, farsiMeaning);
-//            pstmt.setString(2, word);
-//            pstmt.executeUpdate();
-//        } catch (Exception e) {
-//            System.err.println("Error updating Farsi meaning: " + e.getMessage());
-//        }
-//    }
-//	 public String getFarsiMeaning(String word) {
-//	        String sql = "SELECT mean2 FROM dictionary WHERE word = ?";
-//	        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//	            pstmt.setString(1, word);
-//	            ResultSet rs = pstmt.executeQuery();
-//	            if (rs.next()) {
-//	                return rs.getString("mean2");
-//	            }
-//	        } catch (Exception e) {
-//	            System.err.println("Error retrieving Farsi meaning: " + e.getMessage());
-//	        }
-//	        return null;
-//	    }
-//	
-//	 
-//	 
-//	 
-//	 
-//	 
-//	 
-//
-//	    private Connection connect() {
-//	        try {
-//	            return DriverManager.getConnection(url, user, password);
-//	        } catch (Exception e) {
-//	            System.err.println("Database connection failed: " + e.getMessage());
-//	            return null;
-//	        }
-//	    }
 
-	    // Scrape Word and Urdu Meaning from HTML file
-//	    public String[] scrapeWordAndUrduMeaning(String filePath) {
-//	        try {
-//	            Document doc = Jsoup.parse(new File(filePath), "UTF-8");
-//	            Element wordElement = doc.select("td[id^=w]").first();
-//	            Element meaningElement = doc.select("td[id^=m]").first();
-//
-//	            if (wordElement != null && meaningElement != null) {
-//	                String word = wordElement.text().replaceAll("\\s*\\[.*?\\]", "");
-//	                String urduMeaning = meaningElement.text();
-//	                return new String[]{word, urduMeaning};
-//	            }
-//	        } catch (Exception e) {
-//	            System.err.println("Error scraping word and Urdu meaning: " + e.getMessage());
-//	        }
-//	        return null;
-//	    }
-//
-//	    // Save Word and Urdu Meaning into Database
-//	    public void saveWordAndUrduMeaning(String word, String urduMeaning) {
-//	        String sql = "INSERT INTO dictionary (word, mean1) VALUES (?, ?)";
-//	        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//	            pstmt.setString(1, word);
-//	            pstmt.setString(2, urduMeaning);
-//	            pstmt.executeUpdate();
-//	            System.out.println("Record inserted successfully for word: " + word);
-//	        } catch (Exception e) {
-//	            System.err.println("Error saving word and Urdu meaning: " + e.getMessage());
-//	        }
-//	    }
-//
-//	    // Scrape Farsi Meaning from HTML file
-//	    public String scrapeFarsiMeaning(String filePath) {
-//	        try {
-//	            Document doc = Jsoup.parse(new File(filePath), "UTF-8");
-//	            Element farsiMeaningElement = doc.select("td[id^=m]").get(1); // Get second meaning (Farsi)
-//	            if (farsiMeaningElement != null) {
-//	                return farsiMeaningElement.text();
-//	            }
-//	        } catch (Exception e) {
-//	            System.err.println("Error scraping Farsi meaning: " + e.getMessage());
-//	        }
-//	        return null;
-//	    }
-//
-//	    // Update Farsi Meaning in Database (mean2)
-//	    public void updateFarsiMeaning(String word, String farsiMeaning) {
-//	        String sql = "UPDATE dictionary SET mean2 = ? WHERE word = ?";
-//	        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//	            pstmt.setString(1, farsiMeaning);
-//	            pstmt.setString(2, word);
-//	            pstmt.executeUpdate();
-//	            System.out.println("Farsi Meaning updated successfully for word: " + word);
-//	        } catch (Exception e) {
-//	            System.err.println("Error updating Farsi meaning: " + e.getMessage());
-//	        }
-//	    }
-//
-//	    // Get Farsi Meaning from Database
-//	    public String getFarsiMeaning(String word) {
-//	        String sql = "SELECT mean2 FROM dictionary WHERE word = ?";
-//	        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//	            pstmt.setString(1, word);
-//	            ResultSet rs = pstmt.executeQuery();
-//	            if (rs.next()) {
-//	                return rs.getString("mean2");
-//	            }
-//	        } catch (Exception e) {
-//	            System.err.println("Error retrieving Farsi meaning: " + e.getMessage());
-//	        }
-//	        return null;
-//	    }
 	 public String[] scrapeWordAndUrduMeaning(String filePath) {
 	        try {
 	            Document doc = Jsoup.parse(new File(filePath), "UTF-8");
