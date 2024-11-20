@@ -28,37 +28,27 @@ public class SearchView extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(10, 10, 10, 10);
-
-        // Back button
         backButton = createStyledButton("Back");
         backButton.setPreferredSize(new Dimension(100, 40));
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.LINE_START;
         inputPanel.add(backButton, gbc);
-
-        // Search type combo box
         searchTypeComboBox = new JComboBox<>(new String[] { "Key", "Value" });
         gbc.gridx = 1;
         inputPanel.add(searchTypeComboBox, gbc);
-
-        // Search label
         JLabel searchLabel = new JLabel("Search Word:");
         searchLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         gbc.gridx = 2;
         inputPanel.add(searchLabel, gbc);
-
-        // Search field
         searchField = new JTextField(15);
         gbc.gridx = 3;
         inputPanel.add(searchField, gbc);
 
-        // Language combo box
         languageComboBox = new JComboBox<>(new String[] { "Arabic", "Urdu", "Persian" });
         gbc.gridx = 4;
         inputPanel.add(languageComboBox, gbc);
 
-        // Search button
         searchButton = new JButton("Search");
         searchButton.setBackground(new Color(30, 144, 255));
         searchButton.setForeground(Color.WHITE);
@@ -66,7 +56,6 @@ public class SearchView extends JPanel {
         gbc.gridx = 5;
         inputPanel.add(searchButton, gbc);
 
-        // Result text area
         resultTextArea = new JTextArea();
         resultTextArea.setEditable(false);
         resultTextArea.setLineWrap(true);
@@ -115,7 +104,7 @@ public class SearchView extends JPanel {
             }
         });
     }
-
+    
     private void showScraperUI(String language) {
         DictionaryScraper scraper = new DictionaryScraper(facade, mainDashboard);
         scraper.setVisible(true);

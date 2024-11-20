@@ -142,22 +142,18 @@ public class WordUI extends JFrame {
         mainContentPanel.setLayout(new BoxLayout(mainContentPanel, BoxLayout.Y_AXIS));
         mainContentPanel.setBackground(Color.WHITE);
         mainContentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
         JLabel welcomeLabel = new JLabel("Welcome to the Dashboard!", SwingConstants.CENTER);
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 24));
         welcomeLabel.setForeground(new Color(0, 51, 153));
         welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         mainContentPanel.add(welcomeLabel);
         mainContentPanel.add(Box.createVerticalStrut(20));
-
         JPanel searchLanguagePanel = new JPanel();
         searchLanguagePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
         searchLanguagePanel.setBackground(Color.WHITE);
-
         String[] languages = { "Arabic", "Persian", "Urdu" };
         languageComboBox = new JComboBox<>(languages);
         languageComboBox.setPreferredSize(new Dimension(150, 30));
-
         searchField = new JTextField(15);
         JButton logoButton = new JButton();
         ImageIcon logoIcon = new ImageIcon("src/images/search-icon.png");
@@ -180,7 +176,6 @@ public class WordUI extends JFrame {
         splitPane.setDividerSize(0);
         splitPane.setDividerLocation(200);
         add(splitPane);
-
         revalidate();
         repaint();
     }
@@ -209,7 +204,7 @@ public class WordUI extends JFrame {
                     navigateTo(new ViewFavorites(WordUI.this, facade));
                     break;
                 case "Search History":
-                    navigateTo(new HistoryView(WordUI.this, facade)); // Open HistoryView
+                    navigateTo(new HistoryView(WordUI.this, facade));
                     break;
                 case "Close":
                     System.exit(0);
@@ -235,6 +230,7 @@ public class WordUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Please enter a word to search.", "Search Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
     private JButton createSidebarButton(String text) {
 		return createButton(text, new Color(0, 51, 153), Color.WHITE);
 	}
