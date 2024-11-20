@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -388,41 +389,37 @@ public class WordDAO implements IWordDAO {
 	    }
 	    @Override
 	    public void addSearchToHistory(Word word) {
-	        String query = "INSERT INTO SearchHistory (arabic_word, persian_meaning, urdu_meaning) VALUES (?, ?, ?)";
+	    	String query = "INSERT INTO SearchHistory (arabic_word, persian_meaning, urdu_meaning, timestamp) VALUES (?, ?, ?, ?)";
 	        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
 	             PreparedStatement stmt = conn.prepareStatement(query)) {
 	            stmt.setString(1, word.getArabicWord());
 	            stmt.setString(2, word.getPersianMeaning());
 	            stmt.setString(3, word.getUrduMeaning());
+	            stmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
 	            stmt.executeUpdate();
 	        } catch (SQLException e) {
-	            e.printStackTrace();
+	        	e.printStackTrace();
 	        }
 	    }
-
 	    @Override
 	    public List<Word> getRecentSearchHistory(int limit) {
 	        List<Word> history = new ArrayList<>();
 	        String query = "SELECT arabic_word, persian_meaning, urdu_meaning FROM SearchHistory ORDER BY timestamp DESC LIMIT ?";
 	        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
 	             PreparedStatement stmt = conn.prepareStatement(query)) {
-
 	            stmt.setInt(1, limit);
 	            ResultSet rs = stmt.executeQuery();
-
 	            while (rs.next()) {
-	                Word word = new Word(query, query, query);
-	                word.setArabicWord(rs.getString("arabic_word"));
-	                word.setPersianMeaning(rs.getString("persian_meaning"));
-	                word.setUrduMeaning(rs.getString("urdu_meaning"));
+	                Word word = new Word(
+	                    rs.getString("arabic_word"),
+	                    rs.getString("persian_meaning"),
+	                    rs.getString("urdu_meaning")
+	                );
 	                history.add(word);
 	            }
-
 	        } catch (SQLException e) {
-	            e.printStackTrace();
+	            System.err.println("Error retrieving search history: " + e.getMessage());
 	        }
-
 	        return history;
 	    }
-
 }

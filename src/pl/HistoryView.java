@@ -5,69 +5,81 @@ import dto.Word;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class HistoryView extends JFrame {
     private final IBLFacade facade;
     private JTable historyTable;
-    private JButton backButton;
     private JFrame previousWindow;
 
     public HistoryView(JFrame previousWindow, IBLFacade facade) {
         this.previousWindow = previousWindow;
         this.facade = facade;
-        initializeUI();
-    }
 
-    private void initializeUI() {
         setTitle("Search History");
-        setSize(800, 600); // matching WordUI's size
+        setSize(800, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        getContentPane().setBackground(new Color(245, 245, 245));
 
-        // Create the components of the page
+        JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
+        mainPanel.setBackground(Color.WHITE);
+
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        topPanel.setBackground(Color.WHITE);
+
+        JButton backButton = createStyledButton("Back", new Color(0, 123, 255));
+        backButton.addActionListener(e -> handleBackAction());
+        topPanel.add(backButton);
+
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.setBackground(Color.WHITE);
+
+        JLabel tableTitle = new JLabel("Recent Search History");
+        tableTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        tableTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        tableTitle.setForeground(new Color(34, 34, 34));
+
         historyTable = new JTable();
-        JButton backButton = createButton("Back", new Color(0, 51, 153), Color.WHITE);
+        historyTable.setFillsViewportHeight(true);
+        historyTable.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        historyTable.setRowHeight(25);
 
-        backButton.addActionListener(actionEvent -> handleBackAction());
+        JScrollPane scrollPane = new JScrollPane(historyTable);
+        scrollPane.setBackground(Color.WHITE);
+        scrollPane.getViewport().setBackground(Color.WHITE);
 
-        // Layout for the components
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(backButton, BorderLayout.WEST);
-        add(topPanel, BorderLayout.NORTH);
-        add(new JScrollPane(historyTable), BorderLayout.CENTER);
-
-        // Refresh the search history table
+        tablePanel.add(tableTitle, BorderLayout.NORTH);
+        tablePanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+        mainPanel.add(tablePanel, BorderLayout.CENTER);
+        setContentPane(mainPanel);
         refreshHistory();
     }
 
     private void refreshHistory() {
+        // Fetch recent search history
         List<Word> history = facade.getRecentSearchHistory(10);
 
-        List<String> arabicWords = new ArrayList<>();
-        List<String> persianMeanings = new ArrayList<>();
-        List<String> urduMeanings = new ArrayList<>();
-
-        for (Word word : history) {
-            arabicWords.add(word.getArabicWord());
-            persianMeanings.add(word.getPersianMeaning());
-            urduMeanings.add(word.getUrduMeaning());
-        }
-
+        // Extract data for the table
         String[] columns = {"Arabic Word", "Persian Meaning", "Urdu Meaning"};
         String[][] data = new String[history.size()][3];
 
         for (int i = 0; i < history.size(); i++) {
-            data[i][0] = arabicWords.get(i);
-            data[i][1] = persianMeanings.get(i);
-            data[i][2] = urduMeanings.get(i);
+            Word word = history.get(i);
+            data[i][0] = word.getArabicWord();
+            data[i][1] = word.getPersianMeaning();
+            data[i][2] = word.getUrduMeaning();
         }
 
-        historyTable.setModel(new DefaultTableModel(data, columns));
+        DefaultTableModel model = new DefaultTableModel(data, columns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; 
+            }
+        };
+
+        historyTable.setModel(model);
     }
 
     private void handleBackAction() {
@@ -75,15 +87,15 @@ public class HistoryView extends JFrame {
         previousWindow.setVisible(true);
     }
 
-    private JButton createButton(String text, Color backgroundColor, Color textColor) {
+    private JButton createStyledButton(String text, Color backgroundColor) {
         JButton button = new JButton(text);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
         button.setBackground(backgroundColor);
-        button.setForeground(textColor);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
-        button.setFocusPainted(false);
+        button.setForeground(Color.WHITE);
         button.setPreferredSize(new Dimension(120, 35));
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         return button;
     }
-    
 }
