@@ -1,34 +1,9 @@
 package pl;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JSplitPane;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
-
+import javax.swing.*;
 import bl.BLFacade;
 import bl.IBLFacade;
 import bl.UserBO;
@@ -131,7 +106,7 @@ public class WordUI extends JFrame {
 		getContentPane().removeAll();
 		setTitle("Dashboard");
 
-		sidebarPanel = new JPanel(new GridLayout(8, 1, 10, 10));
+		sidebarPanel = new JPanel(new GridLayout(9, 1, 10, 10));
 		sidebarPanel.setPreferredSize(new Dimension(200, 600));
 		sidebarPanel.setBackground(new Color(240, 240, 240));
 
@@ -139,7 +114,8 @@ public class WordUI extends JFrame {
 		JButton viewAllButton = createSidebarButton("View All Words");
 		JButton importFileButton = createSidebarButton("Import File");
 		JButton viewOnceButton = createSidebarButton("View Word");
-		JButton arabicTaggerButton = createSidebarButton("Arabic Tagger/Stemmer");
+		JButton arabicTaggerButton = createSidebarButton("Arabic Tagger-Stemmer");
+		JButton viewFavoritesButton = createSidebarButton("View Favourites");
 		JButton closeButton = createSidebarButton("Close");
 
 		SidebarButtonActionListener actionListener = new SidebarButtonActionListener();
@@ -148,6 +124,7 @@ public class WordUI extends JFrame {
 		importFileButton.addActionListener(actionListener);
 		viewOnceButton.addActionListener(actionListener);
 		arabicTaggerButton.addActionListener(actionListener);
+		viewFavoritesButton.addActionListener(actionListener);
 		closeButton.addActionListener(actionListener);
 
 		sidebarPanel.add(addWordButton);
@@ -155,6 +132,7 @@ public class WordUI extends JFrame {
 		sidebarPanel.add(importFileButton);
 		sidebarPanel.add(viewOnceButton);
 		sidebarPanel.add(arabicTaggerButton);
+		sidebarPanel.add(viewFavoritesButton);
 		sidebarPanel.add(closeButton);
 
 		mainContentPanel = new JPanel();
@@ -224,6 +202,9 @@ public class WordUI extends JFrame {
 			case "Arabic Tagger/Stemmer":
 				navigateTo(new ArabicTaggerUI(facade, WordUI.this));
 				break;
+			case "View Favourites":
+				navigateTo(new ViewFavorites(WordUI.this, facade));
+				break;
 			case "Close":
 				System.exit(0);
 				break;
@@ -232,43 +213,38 @@ public class WordUI extends JFrame {
 	}
 
 	private void triggerSearch() {
-		String searchText = searchField.getText();
+		String searchText = searchField.getText().trim();
 		String selectedLanguage = (String) languageComboBox.getSelectedItem();
+
 		if (!searchText.isEmpty()) {
 			String result = facade.getMeanings(searchText, selectedLanguage);
+
 			if (!result.equals("Word not found.") && !result.equals("Error retrieving meanings.")) {
 				JOptionPane.showMessageDialog(this,
-						"Searching for: " + searchText + " in " + selectedLanguage + "\n" + result);
+						"Searching for: " + searchText + " in " + selectedLanguage + "\n\n" + result);
 			} else {
-				JOptionPane.showMessageDialog(this, result);
+				JOptionPane.showMessageDialog(this, result, "Search Result", JOptionPane.INFORMATION_MESSAGE);
 			}
-			searchField.setText("");
 		} else {
-			JOptionPane.showMessageDialog(this, "Please enter a word to search.", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Please enter a word to search.", "Search Error",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	private JButton createSidebarButton(String text) {
-		JButton button = new JButton(text);
-		button.setBackground(new Color(0, 102, 204));
-		button.setForeground(Color.WHITE);
-		button.setFont(new Font("Arial", Font.BOLD, 14));
-		button.setFocusPainted(false);
-		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		button.setOpaque(true);
-		button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		return button;
+		return createButton(text, new Color(0, 51, 153), Color.WHITE);
 	}
 
 	private void navigateTo(JFrame frame) {
 		frame.setVisible(true);
-		this.dispose();
+		WordUI.this.setVisible(false);
 	}
 
 	public static void main(String[] args) {
 		WordBO wordBO = new WordBO();
 		UserBO userBO = new UserBO();
 		IBLFacade facade = new BLFacade(wordBO, userBO);
-		new WordUI(facade, userBO).setVisible(true);
+		WordUI wordUI = new WordUI(facade, new UserBO());
+		wordUI.setVisible(true);
 	}
 }

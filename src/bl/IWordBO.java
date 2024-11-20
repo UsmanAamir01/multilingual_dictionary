@@ -31,10 +31,17 @@ public interface IWordBO {
 	LinkedList<?> getStemmedWord(String arabicWord);
 
 	String performPOSTagging(String arabicText) throws Exception;
-	
-	
-	
+
 	String[] saveWordAndUrduMeaning(String filePath);
-	 void saveFarsiMeaning(String word, String filePath);
-	  String getFarsiMeaning(String word);
+
+	void saveFarsiMeaning(String word, String filePath);
+
+	String getFarsiMeaning(String word);
+
+	List<Word> getFavoriteWords();
+
+	void markWordAsFavorite(String word, boolean isFavorite);
+
+	boolean isWordFavorite(String arabicWord);
+
 }

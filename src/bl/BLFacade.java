@@ -65,7 +65,7 @@ public class BLFacade implements IBLFacade {
 	}
 
 	@Override
-	public  LinkedList<?> getPOSTaggedWord(String arabicWord) {
+	public LinkedList<?> getPOSTaggedWord(String arabicWord) {
 		return wordBO.getPOSTaggedWord(arabicWord);
 	}
 
@@ -83,17 +83,34 @@ public class BLFacade implements IBLFacade {
 	public boolean validateUser(String username, String password) {
 		return userBO.validateUser(username, password);
 	}
-	
+
 	@Override
 	public String[] saveWordAndUrduMeaning(String filePath) {
-      return wordBO.saveWordAndUrduMeaning(filePath);
-  }
+		return wordBO.saveWordAndUrduMeaning(filePath);
+	}
+
 	@Override
-     public void saveFarsiMeaning(String word, String filePath) {
-	  wordBO.saveFarsiMeaning(word, filePath);
-     }
+	public void saveFarsiMeaning(String word, String filePath) {
+		wordBO.saveFarsiMeaning(word, filePath);
+	}
+
 	@Override
-      public String getFarsiMeaning(String word) {
-       return wordBO.getFarsiMeaning(word);
-     }
+	public String getFarsiMeaning(String word) {
+		return wordBO.getFarsiMeaning(word);
+	}
+	
+	@Override
+    public void markWordAsFavorite(String word, boolean isFavorite) {
+        wordBO.markWordAsFavorite(word, isFavorite);
+    }
+
+    @Override
+    public List<Word> getFavoriteWords() {
+        return wordBO.getFavoriteWords();
+    }
+
+	@Override
+	public boolean isWordFavorite(String arabicWord) {
+		return wordBO.isWordFavorite(arabicWord);
+	}
 }

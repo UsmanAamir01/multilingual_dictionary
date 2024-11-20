@@ -111,4 +111,20 @@ public class WordDAOFacade implements IWordDAOFacade {
 		return wordDAO.scrapeWordAndUrduMeaning(filePath);
 	}
 
+	@Override
+	public void markAsFavorite(String arabicWord, boolean isFavorite) {
+		wordDAO.markAsFavorite(arabicWord, isFavorite);
+		
+	}
+
+	@Override
+	public List<Word> getFavoriteWords() {
+		return wordDAO.getFavoriteWords();
+	}
+
+	@Override
+	public boolean isWordFavorite(String arabicWord) {
+		return wordDAO.isWordFavorite(arabicWord);
+	}
+
 }

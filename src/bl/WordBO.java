@@ -142,24 +142,7 @@ public class WordBO implements IWordBO {
     }
     
 
-//    public String[] saveWordAndUrduMeaning(String filePath) {
-//        String[] wordAndUrduMeaning = wordDAOFacade.scrapeWordAndUrduMeaning(filePath);
-//        if (wordAndUrduMeaning != null) {
-//        	wordDAOFacade.saveWordAndUrduMeaning(wordAndUrduMeaning[0], wordAndUrduMeaning[1]);
-//        }
-//        return wordAndUrduMeaning;
-//    }
-//
-//    public void saveFarsiMeaning(String word, String filePath) {
-//        String farsiMeaning = wordDAOFacade.scrapeFarsiMeaning(filePath);
-//        if (farsiMeaning != null) {
-//        	wordDAOFacade.updateFarsiMeaning(word, farsiMeaning);
-//        }
-//    }
-//
-//    public String getFarsiMeaning(String word) {
-//        return wordDAOFacade.getFarsiMeaning(word);
-//    }
+
 
     public String[] saveWordAndUrduMeaning(String filePath) {
         String[] wordAndUrduMeaning = wordDAOFacade.scrapeWordAndUrduMeaning(filePath);
@@ -192,6 +175,22 @@ public class WordBO implements IWordBO {
     // Get Farsi Meaning
     public String getFarsiMeaning(String word) {
         return wordDAOFacade.getFarsiMeaning(word);
+    }
+    
+    @Override
+    public void markWordAsFavorite(String arabicWord, boolean isFavorite) {
+        wordDAOFacade.markAsFavorite(arabicWord, isFavorite);
+    }
+
+
+    @Override
+    public List<Word> getFavoriteWords() {
+        return wordDAOFacade.getFavoriteWords();
+    }
+    
+    @Override
+    public boolean isWordFavorite(String arabicWord) {
+        return wordDAOFacade.isWordFavorite(arabicWord);
     }
 
 }
