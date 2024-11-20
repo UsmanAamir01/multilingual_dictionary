@@ -47,4 +47,8 @@ public interface IWordDAO {
 	List<Word> getFavoriteWords();
 
 	boolean isWordFavorite(String arabicWord);
+
+	void addSearchToHistory(Word word);
+
+	List<Word> getRecentSearchHistory(int limit);
 }

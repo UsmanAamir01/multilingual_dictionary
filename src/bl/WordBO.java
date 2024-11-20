@@ -193,4 +193,17 @@ public class WordBO implements IWordBO {
         return wordDAOFacade.isWordFavorite(arabicWord);
     }
 
+	@Override
+	public void addSearchToHistory(Word word) {
+		wordDAOFacade.addSearchToHistory(word);
+		
+	}
+
+	@Override
+	public List<Word> getRecentSearchHistory(int limit) {
+		return wordDAOFacade.getRecentSearchHistory(limit);
+	}
+    
+    
+
 }

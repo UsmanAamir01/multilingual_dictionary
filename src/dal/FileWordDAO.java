@@ -261,4 +261,14 @@ public class FileWordDAO implements IWordDAO {
 	public boolean isWordFavorite(String arabicWord) {
 		return false;
 	}
+
+	@Override
+	public void addSearchToHistory(Word word) {
+		
+	}
+
+	@Override
+	public List<Word> getRecentSearchHistory(int limit) {
+		return null;
+	}
 }

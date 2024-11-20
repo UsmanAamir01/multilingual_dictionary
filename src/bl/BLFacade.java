@@ -113,4 +113,14 @@ public class BLFacade implements IBLFacade {
 	public boolean isWordFavorite(String arabicWord) {
 		return wordBO.isWordFavorite(arabicWord);
 	}
+
+	@Override
+	public void addSearchToHistory(Word word) {
+		 wordBO.addSearchToHistory(word);
+	}
+
+	@Override
+	public List<Word> getRecentSearchHistory(int limit) {
+		return wordBO.getRecentSearchHistory(limit);
+	}
 }

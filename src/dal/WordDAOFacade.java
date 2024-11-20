@@ -127,4 +127,17 @@ public class WordDAOFacade implements IWordDAOFacade {
 		return wordDAO.isWordFavorite(arabicWord);
 	}
 
+	@Override
+	public void addSearchToHistory(Word word) {
+		wordDAO.addSearchToHistory(word);
+		
+	}
+
+	@Override
+	public List<Word> getRecentSearchHistory(int limit) {
+		return wordDAO.getRecentSearchHistory(limit);
+	}
+	
+	
+
 }

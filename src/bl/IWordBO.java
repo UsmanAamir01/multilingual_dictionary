@@ -43,5 +43,10 @@ public interface IWordBO {
 	void markWordAsFavorite(String word, boolean isFavorite);
 
 	boolean isWordFavorite(String arabicWord);
+	
+
+	void addSearchToHistory(Word word);
+
+	List<Word> getRecentSearchHistory(int limit);
 
 }
