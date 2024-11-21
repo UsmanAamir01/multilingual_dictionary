@@ -57,4 +57,13 @@ public interface IWordDAO {
 	boolean insertLemmatizedWord(String originalWord, String lemmatizedWord);
 
 	String getLemmatizedWord(String originalWord);
+
+	List<String> segmentWords(String input);
+
+	List<String> segmentWordWithDiacritics(String word);
+
+	List<String> getProperSegmentation(String word);
+	
+	void saveSegmentedWords(List<String> segmentedWords);
+
 }

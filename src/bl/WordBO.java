@@ -1,11 +1,17 @@
 package bl;
 
+import com.qcri.farasa.segmenter.Farasa;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import dal.IWordDAOFacade;
 import dal.WordDAOFacade;
@@ -13,9 +19,15 @@ import dto.Word;
 
 public class WordBO implements IWordBO {
 	private IWordDAOFacade wordDAOFacade;
+	private final Farasa farasaSegmenter;
 
 	public WordBO() {
 		wordDAOFacade = new WordDAOFacade();
+		try {
+			farasaSegmenter = new Farasa();
+		} catch (Exception e) {
+			throw new RuntimeException("Failed to initialize Farasa segmenter.", e);
+		}
 	}
 
 	@Override
@@ -209,12 +221,4 @@ public class WordBO implements IWordBO {
 	}
 
 	@Override
-	public boolean insertLemmatizedWord(String originalWord, String lemmatizedWord) {
-		return wordDAOFacade.insertLemmatizedWord(originalWord, lemmatizedWord);
-	}
-
-	@Override
-	public String getLemmatizedWord(String originalWord) {
-		return wordDAOFacade.getLemmatizedWord(originalWord);
-	}
-}
+	public boolean insertLemmatizedWord(Str
