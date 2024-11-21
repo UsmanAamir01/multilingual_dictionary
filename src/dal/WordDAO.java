@@ -21,6 +21,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import com.qcri.farasa.segmenter.*;
+
+
 import dto.Word;
 
 public class WordDAO implements IWordDAO {
@@ -31,10 +34,16 @@ public class WordDAO implements IWordDAO {
 	private Connection connection;
 	private Object posTaggerInstance;
 	private Object stemmerInstance;
-
+	private Farasa farasaSegmenter;
+	
 	public WordDAO(Connection connection) {
-		this.connection = connection;
-	}
+        this.connection = connection;
+        try {
+            this.farasaSegmenter = new Farasa();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error initializing Farasa segmenter", e);
+        }
+    }
 
 	private Connection connect() {
 		try {
@@ -45,11 +54,12 @@ public class WordDAO implements IWordDAO {
 		}
 	}
 
-	public WordDAO() {
+	public WordDAO() throws SQLException {
 		try {
 			this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
-		} catch (SQLException e) {
-			LOGGER.log(Level.SEVERE, "Failed to connect to the database", e);
+			this.farasaSegmenter = new Farasa();
+		} catch (Exception e) {
+			LOGGER.log(Level.SEVERE, "Error initializing WordDAO or Farasa segmenter", e);
 		}
 	}
 
@@ -392,86 +402,149 @@ public class WordDAO implements IWordDAO {
 
 	@Override
 	public void addSearchToHistory(Word word) {
-	    String query = "INSERT INTO searchhistory (arabic_word, persian_meaning, urdu_meaning) VALUES (?, ?, ?)";
-	    try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-	         PreparedStatement stmt = conn.prepareStatement(query)) {
-	        stmt.setString(1, word.getArabicWord());
-	        stmt.setString(2, word.getPersianMeaning());
-	        stmt.setString(3, word.getUrduMeaning());
-	        stmt.executeUpdate();
-	    } catch (SQLException e) {
-	        System.err.println("Error adding search to history: " + e.getMessage());
-	    }
+		String query = "INSERT INTO searchhistory (arabic_word, persian_meaning, urdu_meaning) VALUES (?, ?, ?)";
+		try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+				PreparedStatement stmt = conn.prepareStatement(query)) {
+			stmt.setString(1, word.getArabicWord());
+			stmt.setString(2, word.getPersianMeaning());
+			stmt.setString(3, word.getUrduMeaning());
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			System.err.println("Error adding search to history: " + e.getMessage());
+		}
 	}
 
 	@Override
 	public List<Word> getRecentSearchHistory(int limit) {
-	    List<Word> history = new ArrayList<>();
-	    String query = "SELECT arabic_word, persian_meaning, urdu_meaning FROM searchhistory ORDER BY id DESC LIMIT ?";
-	    try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-	         PreparedStatement stmt = conn.prepareStatement(query)) {
-	        stmt.setInt(1, limit);
-	        try (ResultSet rs = stmt.executeQuery()) {
-	            while (rs.next()) {
-	                Word word = new Word(
-	                    rs.getString("arabic_word"),
-	                    rs.getString("persian_meaning"),
-	                    rs.getString("urdu_meaning")
-	                );
-	                history.add(word);
-	            }
+		List<Word> history = new ArrayList<>();
+		String query = "SELECT arabic_word, persian_meaning, urdu_meaning FROM searchhistory ORDER BY id DESC LIMIT ?";
+		try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+				PreparedStatement stmt = conn.prepareStatement(query)) {
+			stmt.setInt(1, limit);
+			try (ResultSet rs = stmt.executeQuery()) {
+				while (rs.next()) {
+					Word word = new Word(rs.getString("arabic_word"), rs.getString("persian_meaning"),
+							rs.getString("urdu_meaning"));
+					history.add(word);
+				}
+			}
+		} catch (SQLException e) {
+			System.err.println("Error retrieving search history: " + e.getMessage());
+		}
+		return history;
+	}
+
+	@Override
+	public boolean insertLemmatizedWord(String originalWord, String lemmatizedWord) {
+		String query = "INSERT INTO dictionary (original_word, lemmatized_word) VALUES (?, ?)";
+		try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
+			stmt.setString(1, originalWord);
+			stmt.setString(2, lemmatizedWord);
+			return stmt.executeUpdate() > 0;
+		} catch (SQLException e) {
+			LOGGER.log(Level.SEVERE, "Error inserting lemmatized word: " + originalWord, e);
+		}
+		return false;
+	}
+
+	@Override
+	public String getLemmatizedWord(String originalWord) {
+		String query = "SELECT lemmatized_word FROM dictionary WHERE original_word = ?";
+		try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
+			stmt.setString(1, originalWord);
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				return rs.getString("lemmatized_word");
+			}
+		} catch (SQLException e) {
+			LOGGER.log(Level.SEVERE, "Error retrieving lemmatized word for: " + originalWord, e);
+		}
+		return null;
+	}
+
+	@Override
+	public List<String> getAllLemmaztizedWords() {
+		List<String> words = new ArrayList<>();
+		String query = "SELECT original_word, lemmatized_word FROM dictionary";
+		try (Connection conn = connect();
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(query)) {
+			while (rs.next()) {
+				String originalWord = rs.getString("original_word");
+				String lemmatizedWord = rs.getString("lemmatized_word");
+				words.add("Original: " + originalWord + " | Lemmatized: " + lemmatizedWord);
+			}
+		} catch (SQLException e) {
+			LOGGER.log(Level.SEVERE, "Error retrieving all words", e);
+		}
+		return words;
+	}
+
+	@Override
+	public List<String> segmentWords(String input) {
+	    List<String> segmentedWords = new ArrayList<>();
+	    try {
+	        ArrayList<String> words = farasaSegmenter.segmentLine(input);
+	        for (String word : words) {
+	            segmentedWords.add(word);
+	        }
+	    } catch (Exception e) {
+	        LOGGER.log(Level.SEVERE, "Error segmenting words with Farasa", e);
+	    }
+	    return segmentedWords;
+	}
+
+	@Override
+	public List<String> segmentWordWithDiacritics(String word) {
+        List<String> segmentedWords = new ArrayList<>();
+        try {
+            ArrayList<String> segments = farasaSegmenter.segmentLine(word);
+            segmentedWords.addAll(segments);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error segmenting word with diacritics using Farasa", e);
+        }
+        return segmentedWords;
+    }
+	@Override
+	public List<String> getProperSegmentation(String word) {
+        List<String> segmentedWords = new ArrayList<>();
+        try {
+            String segmented = farasaSegmenter.getProperSegmentation(word);
+            String[] words = segmented.split(" ");
+            for (String w : words) {
+                segmentedWords.add(w);
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error getting proper segmentation using Farasa", e);
+        }
+        return segmentedWords;
+    }
+
+	@Override
+	public void saveSegmentedWords(List<String> segmentedWords) {
+	    Connection connection = null;
+	    PreparedStatement preparedStatement = null;
+	    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)){
+	        String insertQuery = "INSERT INTO SegmentedWords (word) VALUES (?)";
+	        for (String word : segmentedWords) {
+	            preparedStatement = connection.prepareStatement(insertQuery);
+	            preparedStatement.setString(1, word);
+	            preparedStatement.executeUpdate();
 	        }
 	    } catch (SQLException e) {
-	        System.err.println("Error retrieving search history: " + e.getMessage());
+	        
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (preparedStatement != null) {
+	                preparedStatement.close();
+	            }
+	            if (connection != null) {
+	                connection.close();
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
 	    }
-	    return history;
 	}
-	
-	 @Override
-	    public boolean insertLemmatizedWord(String originalWord, String lemmatizedWord) {
-	        String query = "INSERT INTO dictionary (original_word, lemmatized_word) VALUES (?, ?)";
-	        try (Connection conn = connect();
-	             PreparedStatement stmt = conn.prepareStatement(query)) {
-	            stmt.setString(1, originalWord);
-	            stmt.setString(2, lemmatizedWord);
-	            return stmt.executeUpdate() > 0;
-	        } catch (SQLException e) {
-	            LOGGER.log(Level.SEVERE, "Error inserting lemmatized word: " + originalWord, e);
-	        }
-	        return false;
-	    }
-
-	    @Override
-	    public String getLemmatizedWord(String originalWord) {
-	        String query = "SELECT lemmatized_word FROM dictionary WHERE original_word = ?";
-	        try (Connection conn = connect();
-	             PreparedStatement stmt = conn.prepareStatement(query)) {
-	            stmt.setString(1, originalWord);
-	            ResultSet rs = stmt.executeQuery();
-	            if (rs.next()) {
-	                return rs.getString("lemmatized_word");
-	            }
-	        } catch (SQLException e) {
-	            LOGGER.log(Level.SEVERE, "Error retrieving lemmatized word for: " + originalWord, e);
-	        }
-	        return null;
-	    }
-
-	    @Override
-	    public List<String> getAllLemmaztizedWords() {
-	        List<String> words = new ArrayList<>();
-	        String query = "SELECT original_word, lemmatized_word FROM dictionary";
-	        try (Connection conn = connect();
-	             Statement stmt = conn.createStatement();
-	             ResultSet rs = stmt.executeQuery(query)) {
-	            while (rs.next()) {
-	                String originalWord = rs.getString("original_word");
-	                String lemmatizedWord = rs.getString("lemmatized_word");
-	                words.add("Original: " + originalWord + " | Lemmatized: " + lemmatizedWord);
-	            }
-	        } catch (SQLException e) {
-	            LOGGER.log(Level.SEVERE, "Error retrieving all words", e);
-	        }
-	        return words;
-	    }
 }
