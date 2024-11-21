@@ -21,8 +21,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import com.qcri.farasa.segmenter.*;
-
+import com.qcri.farasa.segmenter.Farasa;
 
 import dto.Word;
 
@@ -35,15 +34,15 @@ public class WordDAO implements IWordDAO {
 	private Object posTaggerInstance;
 	private Object stemmerInstance;
 	private Farasa farasaSegmenter;
-	
+
 	public WordDAO(Connection connection) {
-        this.connection = connection;
-        try {
-            this.farasaSegmenter = new Farasa();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error initializing Farasa segmenter", e);
-        }
-    }
+		this.connection = connection;
+		try {
+			this.farasaSegmenter = new Farasa();
+		} catch (Exception e) {
+			LOGGER.log(Level.SEVERE, "Error initializing Farasa segmenter", e);
+		}
+	}
 
 	private Connection connect() {
 		try {
@@ -54,13 +53,13 @@ public class WordDAO implements IWordDAO {
 		}
 	}
 
-	public WordDAO() throws SQLException {
+	public WordDAO()  {
 		try {
 			this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
-			this.farasaSegmenter = new Farasa();
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Error initializing WordDAO or Farasa segmenter", e);
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
+
 	}
 
 	private Connection getConnection() throws SQLException {
@@ -482,69 +481,59 @@ public class WordDAO implements IWordDAO {
 
 	@Override
 	public List<String> segmentWords(String input) {
-	    List<String> segmentedWords = new ArrayList<>();
-	    try {
-	        ArrayList<String> words = farasaSegmenter.segmentLine(input);
-	        for (String word : words) {
-	            segmentedWords.add(word);
-	        }
-	    } catch (Exception e) {
-	        LOGGER.log(Level.SEVERE, "Error segmenting words with Farasa", e);
-	    }
-	    return segmentedWords;
+		List<String> segmentedWords = new ArrayList<>();
+		try {
+			ArrayList<String> words = farasaSegmenter.segmentLine(input);
+			for (String word : words) {
+				segmentedWords.add(word);
+			}
+		} catch (Exception e) {
+			LOGGER.log(Level.SEVERE, "Error segmenting words with Farasa", e);
+		}
+		return segmentedWords;
 	}
 
 	@Override
 	public List<String> segmentWordWithDiacritics(String word) {
-        List<String> segmentedWords = new ArrayList<>();
-        try {
-            ArrayList<String> segments = farasaSegmenter.segmentLine(word);
-            segmentedWords.addAll(segments);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error segmenting word with diacritics using Farasa", e);
-        }
-        return segmentedWords;
-    }
+		List<String> segmentedWords = new ArrayList<>();
+		try {
+			ArrayList<String> segments = farasaSegmenter.segmentLine(word);
+			segmentedWords.addAll(segments);
+		} catch (Exception e) {
+			LOGGER.log(Level.SEVERE, "Error segmenting word with diacritics using Farasa", e);
+		}
+		return segmentedWords;
+	}
+
 	@Override
 	public List<String> getProperSegmentation(String word) {
-        List<String> segmentedWords = new ArrayList<>();
-        try {
-            String segmented = farasaSegmenter.getProperSegmentation(word);
-            String[] words = segmented.split(" ");
-            for (String w : words) {
-                segmentedWords.add(w);
-            }
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error getting proper segmentation using Farasa", e);
-        }
-        return segmentedWords;
-    }
+		List<String> segmentedWords = new ArrayList<>();
+		try {
+			String segmented = farasaSegmenter.getProperSegmentation(word);
+			String[] words = segmented.split(" ");
+			for (String w : words) {
+				segmentedWords.add(w);
+			}
+		} catch (Exception e) {
+			LOGGER.log(Level.SEVERE, "Error getting proper segmentation using Farasa", e);
+		}
+		return segmentedWords;
+	}
 
 	@Override
 	public void saveSegmentedWords(List<String> segmentedWords) {
-	    Connection connection = null;
-	    PreparedStatement preparedStatement = null;
-	    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)){
-	        String insertQuery = "INSERT INTO SegmentedWords (word) VALUES (?)";
-	        for (String word : segmentedWords) {
-	            preparedStatement = connection.prepareStatement(insertQuery);
-	            preparedStatement.setString(1, word);
-	            preparedStatement.executeUpdate();
-	        }
-	    } catch (SQLException e) {
-	        
-	        e.printStackTrace();
-	    } finally {
-	        try {
-	            if (preparedStatement != null) {
-	                preparedStatement.close();
-	            }
-	            if (connection != null) {
-	                connection.close();
-	            }
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	    }
+		String insertQuery = "INSERT INTO SegmentedWords (word) VALUES (?)";
+		try (Connection connection = connect();
+				PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
+			for (String word : segmentedWords) {
+				preparedStatement.setString(1, word);
+				preparedStatement.addBatch();
+			}
+
+			preparedStatement.executeBatch();
+		} catch (SQLException e) {
+			LOGGER.log(Level.SEVERE, "Error saving segmented words", e);
+		}
 	}
+
 }

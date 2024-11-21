@@ -64,7 +64,7 @@ public class DictionaryApp extends JFrame{
                     String[] words = line.split("\\s+");
                     for (String word : words) {
                         // Fetch meanings from the facade
-                        String[] meanings = facade.getMeaning1(word);
+                        String[] meanings = facade.getMeaning(word);
                         String urduMeaning = meanings[0];
                         String persianMeaning = meanings[1];
 
