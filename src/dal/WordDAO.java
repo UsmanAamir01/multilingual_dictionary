@@ -11,7 +11,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,14 +35,16 @@ public class WordDAO implements IWordDAO {
 	public WordDAO(Connection connection) {
 		this.connection = connection;
 	}
+
 	private Connection connect() {
-        try {
-            return DriverManager.getConnection(URL, USER, PASSWORD);
-        } catch (Exception e) {
-            System.err.println("Database connection failed: " + e.getMessage());
-            return null;
-        }
-    }
+		try {
+			return DriverManager.getConnection(URL, USER, PASSWORD);
+		} catch (Exception e) {
+			System.err.println("Database connection failed: " + e.getMessage());
+			return null;
+		}
+	}
+
 	public WordDAO() {
 		try {
 			this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -226,6 +227,7 @@ public class WordDAO implements IWordDAO {
 		return meanings.toString();
 	}
 
+	@Override
 	public List<String> getTaggedAndStemmedWords() {
 		List<String> results = new ArrayList<>();
 		String query = "SELECT arabic_word FROM dictionary";
@@ -268,147 +270,148 @@ public class WordDAO implements IWordDAO {
 		}
 	}
 
-	 public String[] scrapeWordAndUrduMeaning(String filePath) {
-	        try {
-	            Document doc = Jsoup.parse(new File(filePath), "UTF-8");
-	            Element wordElement = doc.select("td[id^=w]").first();
-	            Element meaningElement = doc.select("td[id^=m]").first();
+	@Override
+	public String[] scrapeWordAndUrduMeaning(String filePath) {
+		try {
+			Document doc = Jsoup.parse(new File(filePath), "UTF-8");
+			Element wordElement = doc.select("td[id^=w]").first();
+			Element meaningElement = doc.select("td[id^=m]").first();
 
-	            if (wordElement != null && meaningElement != null) {
-	                String word = wordElement.text().replaceAll("\\s*\\[.*?\\]", "");
-	                String urduMeaning = meaningElement.text();
-	                return new String[]{word, urduMeaning};
-	            }
-	        } catch (Exception e) {
-	            System.err.println("Error scraping word and Urdu meaning: " + e.getMessage());
-	        }
-	        return null;
-	    }
+			if (wordElement != null && meaningElement != null) {
+				String word = wordElement.text().replaceAll("\\s*\\[.*?\\]", "");
+				String urduMeaning = meaningElement.text();
+				return new String[] { word, urduMeaning };
+			}
+		} catch (Exception e) {
+			System.err.println("Error scraping word and Urdu meaning: " + e.getMessage());
+		}
+		return null;
+	}
 
-	    // Save Word and Urdu Meaning into Database
-	    public void saveWordAndUrduMeaning(String word, String urduMeaning) {
-	        String sql = "INSERT INTO dictionary (arabic_word, urdu_meaning) VALUES (?, ?)";
-	        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-	            pstmt.setString(1, word);
-	            pstmt.setString(2, urduMeaning);
-	            pstmt.executeUpdate();
-	            System.out.println("Record inserted successfully for word: " + word);
-	        } catch (Exception e) {
-	            System.err.println("Error saving word and Urdu meaning: " + e.getMessage());
-	        }
-	    }
+	// Save Word and Urdu Meaning into Database
+	@Override
+	public void saveWordAndUrduMeaning(String word, String urduMeaning) {
+		String sql = "INSERT INTO dictionary (arabic_word, urdu_meaning) VALUES (?, ?)";
+		try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, word);
+			pstmt.setString(2, urduMeaning);
+			pstmt.executeUpdate();
+			System.out.println("Record inserted successfully for word: " + word);
+		} catch (Exception e) {
+			System.err.println("Error saving word and Urdu meaning: " + e.getMessage());
+		}
+	}
 
-	    // Scrape Farsi Meaning from HTML file
-	    public String scrapeFarsiMeaning(String filePath) {
-	        try {
-	            Document doc = Jsoup.parse(new File(filePath), "UTF-8");
-	            Element farsiMeaningElement = doc.select("td[id^=m]").get(1); // Get second meaning (Farsi)
-	            if (farsiMeaningElement != null) {
-	                return farsiMeaningElement.text();
-	            }
-	        } catch (Exception e) {
-	            System.err.println("Error scraping Farsi meaning: " + e.getMessage());
-	        }
-	        return null;
-	    }
+	// Scrape Farsi Meaning from HTML file
+	@Override
+	public String scrapeFarsiMeaning(String filePath) {
+		try {
+			Document doc = Jsoup.parse(new File(filePath), "UTF-8");
+			Element farsiMeaningElement = doc.select("td[id^=m]").get(1); // Get second meaning (Farsi)
+			if (farsiMeaningElement != null) {
+				return farsiMeaningElement.text();
+			}
+		} catch (Exception e) {
+			System.err.println("Error scraping Farsi meaning: " + e.getMessage());
+		}
+		return null;
+	}
 
-	    // Update Farsi Meaning in Database
-	    public void updateFarsiMeaning(String word, String farsiMeaning) {
-	        String sql = "UPDATE dictionary SET persian_meaning = ? WHERE arabic_word = ?";
-	        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-	            pstmt.setString(1, farsiMeaning);
-	            pstmt.setString(2, word);
-	            pstmt.executeUpdate();
-	            System.out.println("Farsi Meaning updated successfully for word: " + word);
-	        } catch (Exception e) {
-	            System.err.println("Error updating Farsi meaning: " + e.getMessage());
-	        }
-	    }
+	// Update Farsi Meaning in Database
+	@Override
+	public void updateFarsiMeaning(String word, String farsiMeaning) {
+		String sql = "UPDATE dictionary SET persian_meaning = ? WHERE arabic_word = ?";
+		try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, farsiMeaning);
+			pstmt.setString(2, word);
+			pstmt.executeUpdate();
+			System.out.println("Farsi Meaning updated successfully for word: " + word);
+		} catch (Exception e) {
+			System.err.println("Error updating Farsi meaning: " + e.getMessage());
+		}
+	}
 
-	    // Get Farsi Meaning from Database
-	    public String getFarsiMeaning(String word) {
-	        String sql = "SELECT persian_meaning FROM dictionary WHERE arabic_word = ?";
-	        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-	            pstmt.setString(1, word);
-	            ResultSet rs = pstmt.executeQuery();
-	            if (rs.next()) {
-	                return rs.getString("persian_meaning");
-	            }
-	        } catch (Exception e) {
-	            System.err.println("Error retrieving Farsi meaning: " + e.getMessage());
-	        }
-	        return null;
-	    }
-	    
-	    @Override
-	    public void markAsFavorite(String arabicWord, boolean isFavorite) {
-	        String query = "UPDATE dictionary SET isFavorite = ? WHERE arabic_word = ?";
-	        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-	            stmt.setBoolean(1, isFavorite);
-	            stmt.setString(2, arabicWord);
-	            stmt.executeUpdate();
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	    }
+	// Get Farsi Meaning from Database
+	@Override
+	public String getFarsiMeaning(String word) {
+		String sql = "SELECT persian_meaning FROM dictionary WHERE arabic_word = ?";
+		try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, word);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return rs.getString("persian_meaning");
+			}
+		} catch (Exception e) {
+			System.err.println("Error retrieving Farsi meaning: " + e.getMessage());
+		}
+		return null;
+	}
 
+	@Override
+	public void markAsFavorite(String arabicWord, boolean isFavorite) {
+		String query = "UPDATE dictionary SET isFavorite = ? WHERE arabic_word = ?";
+		try (PreparedStatement stmt = connection.prepareStatement(query)) {
+			stmt.setBoolean(1, isFavorite);
+			stmt.setString(2, arabicWord);
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
-	    @Override
-	    public List<Word> getFavoriteWords() {
-	        List<Word> favoriteWords = new ArrayList<>();
-	        String query = "SELECT * FROM dictionary WHERE isFavorite = TRUE";
-	        try (Statement stmt = connection.createStatement()) {
-	            ResultSet rs = stmt.executeQuery(query);
-	            while (rs.next()) {
-	                favoriteWords.add(new Word(
-	                    rs.getString("arabic_word"),
-	                    rs.getString("urdu_meaning"),
-	                    rs.getString("persian_meaning"),
-	                    rs.getBoolean("isFavorite")
-	                ));
-	            }
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	        return favoriteWords;
+	@Override
+	public List<Word> getFavoriteWords() {
+		List<Word> favoriteWords = new ArrayList<>();
+		String query = "SELECT * FROM dictionary WHERE isFavorite = TRUE";
+		try (Statement stmt = connection.createStatement()) {
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				favoriteWords.add(new Word(rs.getString("arabic_word"), rs.getString("urdu_meaning"),
+						rs.getString("persian_meaning"), rs.getBoolean("isFavorite")));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return favoriteWords;
+	}
+
+	@Override
+	public boolean isWordFavorite(String arabicWord) {
+		String query = "SELECT isFavorite FROM dictionary WHERE arabic_word = ?";
+		try (PreparedStatement statement = connection.prepareStatement(query)) {
+			statement.setString(1, arabicWord);
+			ResultSet resultSet = statement.executeQuery();
+			if (resultSet.next()) {
+				return resultSet.getBoolean("isFavorite");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public void addSearchToHistory(Word word) {
+	    String query = "INSERT INTO searchhistory (arabic_word, persian_meaning, urdu_meaning) VALUES (?, ?, ?)";
+	    try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+	         PreparedStatement stmt = conn.prepareStatement(query)) {
+	        stmt.setString(1, word.getArabicWord());
+	        stmt.setString(2, word.getPersianMeaning());
+	        stmt.setString(3, word.getUrduMeaning());
+	        stmt.executeUpdate();
+	    } catch (SQLException e) {
+	        System.err.println("Error adding search to history: " + e.getMessage());
 	    }
-	    
-	    @Override
-	    public boolean isWordFavorite(String arabicWord) {
-	        String query = "SELECT isFavorite FROM dictionary WHERE arabic_word = ?";
-	        try (PreparedStatement statement = connection.prepareStatement(query)) {
-	            statement.setString(1, arabicWord);
-	            ResultSet resultSet = statement.executeQuery();
-	            if (resultSet.next()) {
-	                return resultSet.getBoolean("isFavorite");
-	            }
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	        return false;
-	    }
-	    @Override
-	    public void addSearchToHistory(Word word) {
-	    	String query = "INSERT INTO SearchHistory (arabic_word, persian_meaning, urdu_meaning, timestamp) VALUES (?, ?, ?, ?)";
-	        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-	             PreparedStatement stmt = conn.prepareStatement(query)) {
-	            stmt.setString(1, word.getArabicWord());
-	            stmt.setString(2, word.getPersianMeaning());
-	            stmt.setString(3, word.getUrduMeaning());
-	            stmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
-	            stmt.executeUpdate();
-	        } catch (SQLException e) {
-	        	e.printStackTrace();
-	        }
-	    }
-	    @Override
-	    public List<Word> getRecentSearchHistory(int limit) {
-	        List<Word> history = new ArrayList<>();
-	        String query = "SELECT arabic_word, persian_meaning, urdu_meaning FROM SearchHistory ORDER BY timestamp DESC LIMIT ?";
-	        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-	             PreparedStatement stmt = conn.prepareStatement(query)) {
-	            stmt.setInt(1, limit);
-	            ResultSet rs = stmt.executeQuery();
+	}
+
+	@Override
+	public List<Word> getRecentSearchHistory(int limit) {
+	    List<Word> history = new ArrayList<>();
+	    String query = "SELECT arabic_word, persian_meaning, urdu_meaning FROM searchhistory ORDER BY id DESC LIMIT ?";
+	    try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+	         PreparedStatement stmt = conn.prepareStatement(query)) {
+	        stmt.setInt(1, limit);
+	        try (ResultSet rs = stmt.executeQuery()) {
 	            while (rs.next()) {
 	                Word word = new Word(
 	                    rs.getString("arabic_word"),
@@ -417,9 +420,58 @@ public class WordDAO implements IWordDAO {
 	                );
 	                history.add(word);
 	            }
-	        } catch (SQLException e) {
-	            System.err.println("Error retrieving search history: " + e.getMessage());
 	        }
-	        return history;
+	    } catch (SQLException e) {
+	        System.err.println("Error retrieving search history: " + e.getMessage());
+	    }
+	    return history;
+	}
+	
+	 @Override
+	    public boolean insertLemmatizedWord(String originalWord, String lemmatizedWord) {
+	        String query = "INSERT INTO dictionary (original_word, lemmatized_word) VALUES (?, ?)";
+	        try (Connection conn = connect();
+	             PreparedStatement stmt = conn.prepareStatement(query)) {
+	            stmt.setString(1, originalWord);
+	            stmt.setString(2, lemmatizedWord);
+	            return stmt.executeUpdate() > 0;
+	        } catch (SQLException e) {
+	            LOGGER.log(Level.SEVERE, "Error inserting lemmatized word: " + originalWord, e);
+	        }
+	        return false;
+	    }
+
+	    @Override
+	    public String getLemmatizedWord(String originalWord) {
+	        String query = "SELECT lemmatized_word FROM dictionary WHERE original_word = ?";
+	        try (Connection conn = connect();
+	             PreparedStatement stmt = conn.prepareStatement(query)) {
+	            stmt.setString(1, originalWord);
+	            ResultSet rs = stmt.executeQuery();
+	            if (rs.next()) {
+	                return rs.getString("lemmatized_word");
+	            }
+	        } catch (SQLException e) {
+	            LOGGER.log(Level.SEVERE, "Error retrieving lemmatized word for: " + originalWord, e);
+	        }
+	        return null;
+	    }
+
+	    @Override
+	    public List<String> getAllLemmaztizedWords() {
+	        List<String> words = new ArrayList<>();
+	        String query = "SELECT original_word, lemmatized_word FROM dictionary";
+	        try (Connection conn = connect();
+	             Statement stmt = conn.createStatement();
+	             ResultSet rs = stmt.executeQuery(query)) {
+	            while (rs.next()) {
+	                String originalWord = rs.getString("original_word");
+	                String lemmatizedWord = rs.getString("lemmatized_word");
+	                words.add("Original: " + originalWord + " | Lemmatized: " + lemmatizedWord);
+	            }
+	        } catch (SQLException e) {
+	            LOGGER.log(Level.SEVERE, "Error retrieving all words", e);
+	        }
+	        return words;
 	    }
 }

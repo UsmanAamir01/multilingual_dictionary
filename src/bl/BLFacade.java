@@ -1,9 +1,9 @@
 package bl;
 
-import dto.Word;
-
 import java.util.LinkedList;
 import java.util.List;
+
+import dto.Word;
 
 public class BLFacade implements IBLFacade {
 	private IWordBO wordBO;
@@ -98,7 +98,7 @@ public class BLFacade implements IBLFacade {
 	public String getFarsiMeaning(String word) {
 		return wordBO.getFarsiMeaning(word);
 	}
-	
+
 	@Override
     public void markWordAsFavorite(String word, boolean isFavorite) {
         wordBO.markWordAsFavorite(word, isFavorite);
@@ -122,5 +122,20 @@ public class BLFacade implements IBLFacade {
 	@Override
 	public List<Word> getRecentSearchHistory(int limit) {
 		return wordBO.getRecentSearchHistory(limit);
+	}
+
+	@Override
+	public List<String> getAllLemmaztizedWords() {
+		return wordBO.getAllLemmaztizedWords();
+	}
+
+	@Override
+	public boolean insertLemmatizedWord(String originalWord, String lemmatizedWord) {
+		return wordBO.insertLemmatizedWord(originalWord, lemmatizedWord);
+	}
+
+	@Override
+	public String getLemmatizedWord(String originalWord) {
+		return wordBO.getLemmatizedWord(originalWord);
 	}
 }
