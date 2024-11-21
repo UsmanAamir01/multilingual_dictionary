@@ -221,4 +221,15 @@ public class WordBO implements IWordBO {
 	}
 
 	@Override
-	public boolean insertLemmatizedWord(Str
+	//public boolean insertLemmatizedWord(Str
+			
+	public String[] getMeaning1(String word) {
+        String[] meanings =  wordDAOFacade.getMeaningsFromDB(word);
+        if (meanings[0] == null && meanings[1] == null) { // If not found, lemmatize
+            String rootWord = getLemmatizedWord(word); // Delegate to wordBO
+            meanings = wordDAOFacade.getMeaningsFromDB(rootWord);
+        }
+        return meanings;
+    }	
+}
+			

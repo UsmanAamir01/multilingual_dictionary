@@ -152,5 +152,8 @@ public class WordDAOFacade implements IWordDAOFacade {
 	public String getLemmatizedWord(String originalWord) {
 		return wordDAO.getLemmatizedWord(originalWord);
 	}
+	public String[] getMeaningsFromDB(String word) {
+		return wordDAO.getMeaningsFromDB(word);
+	}
 
 }

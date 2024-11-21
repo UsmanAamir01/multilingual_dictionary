@@ -289,4 +289,34 @@ public class FileWordDAO implements IWordDAO {
 	public String getLemmatizedWord(String originalWord) {
 		return null;
 	}
+
+	@Override
+	public List<String> segmentWords(String input) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<String> segmentWordWithDiacritics(String word) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<String> getProperSegmentation(String word) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void saveSegmentedWords(List<String> segmentedWords) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public String[] getMeaningsFromDB(String word) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

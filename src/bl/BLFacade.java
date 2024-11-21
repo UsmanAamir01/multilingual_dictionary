@@ -138,4 +138,13 @@ public class BLFacade implements IBLFacade {
 	public String getLemmatizedWord(String originalWord) {
 		return wordBO.getLemmatizedWord(originalWord);
 	}
+	public String[] getMeaning1(String word) {
+        return wordBO.getMeaning1(word);
+    }
+
+	@Override
+	public List<String> segmentWords(String input) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

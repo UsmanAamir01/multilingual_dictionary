@@ -55,5 +55,6 @@ public interface IWordBO {
 	String getLemmatizedWord(String originalWord);
 
 	List<String> segmentWords(String input);
-
+	String[] getMeaning1(String word);
+}
 	

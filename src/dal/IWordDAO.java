@@ -66,4 +66,6 @@ public interface IWordDAO {
 	
 	void saveSegmentedWords(List<String> segmentedWords);
 
+	String[] getMeaningsFromDB(String word);
+
 }

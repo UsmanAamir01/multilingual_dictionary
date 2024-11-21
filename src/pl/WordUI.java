@@ -143,6 +143,7 @@ public class WordUI extends JFrame {
         JButton arabicTaggerButton = createSidebarButton("Arabic Tagger-Stemmer");
         JButton viewFavoritesButton = createSidebarButton("View Favourites");
         JButton searchHistoryButton = createSidebarButton("Search History");
+        JButton Customdictionary = createSidebarButton("Custom Dictionary");
         JButton closeButton = createSidebarButton("Close");
 
         SidebarButtonActionListener actionListener = new SidebarButtonActionListener();
@@ -154,7 +155,7 @@ public class WordUI extends JFrame {
         viewFavoritesButton.addActionListener(actionListener);
         searchHistoryButton.addActionListener(actionListener);
         closeButton.addActionListener(actionListener);
-
+        Customdictionary.addActionListener(actionListener);
         sidebarPanel.add(addWordButton);
         sidebarPanel.add(viewAllButton);
         sidebarPanel.add(importFileButton);
@@ -163,7 +164,7 @@ public class WordUI extends JFrame {
         sidebarPanel.add(viewFavoritesButton);
         sidebarPanel.add(searchHistoryButton);
         sidebarPanel.add(closeButton);
-
+        sidebarPanel.add(Customdictionary);
         mainContentPanel = new JPanel();
         mainContentPanel.setLayout(new BoxLayout(mainContentPanel, BoxLayout.Y_AXIS));
         mainContentPanel.setBackground(Color.WHITE);
@@ -232,6 +233,11 @@ public class WordUI extends JFrame {
                 case "Search History":
                     navigateTo(new HistoryView(WordUI.this, facade));
                     break;
+                case "Custom Dictionary":
+                    DictionaryApp dictionaryApp = new DictionaryApp(facade, WordUI.this);
+                    navigateTo(dictionaryApp);
+                    break;
+
                 case "Close":
                     System.exit(0);
                     break;
