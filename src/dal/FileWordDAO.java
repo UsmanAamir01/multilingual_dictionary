@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
 import dto.Word;
 
 public class FileWordDAO implements IWordDAO {
@@ -200,6 +201,7 @@ public class FileWordDAO implements IWordDAO {
 		return results;
 	}
 
+	@Override
 	public LinkedList<?> getPOSTaggedWord(String arabicWord) {
 		LinkedList<Object> posTaggedResult = new LinkedList<>();
 		try {
@@ -211,6 +213,7 @@ public class FileWordDAO implements IWordDAO {
 		return posTaggedResult;
 	}
 
+	@Override
 	public LinkedList<?> getStemmedWord(String arabicWord) {
 		LinkedList<Object> stemmedResult = new LinkedList<>();
 		try {
@@ -229,7 +232,7 @@ public class FileWordDAO implements IWordDAO {
 
 	@Override
 	public void saveWordAndUrduMeaning(String word, String urduMeaning) {
-		
+
 	}
 
 	@Override
@@ -239,7 +242,7 @@ public class FileWordDAO implements IWordDAO {
 
 	@Override
 	public void updateFarsiMeaning(String word, String farsiMeaning) {
-		
+
 	}
 
 	@Override
@@ -249,7 +252,7 @@ public class FileWordDAO implements IWordDAO {
 
 	@Override
 	public void markAsFavorite(String word, boolean isFavorite) {
-		
+
 	}
 
 	@Override
@@ -264,11 +267,26 @@ public class FileWordDAO implements IWordDAO {
 
 	@Override
 	public void addSearchToHistory(Word word) {
-		
+
 	}
 
 	@Override
 	public List<Word> getRecentSearchHistory(int limit) {
+		return null;
+	}
+
+	@Override
+	public List<String> getAllLemmaztizedWords() {
+		return null;
+	}
+
+	@Override
+	public boolean insertLemmatizedWord(String originalWord, String lemmatizedWord) {
+		return false;
+	}
+
+	@Override
+	public String getLemmatizedWord(String originalWord) {
 		return null;
 	}
 }

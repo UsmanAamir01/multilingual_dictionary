@@ -114,7 +114,7 @@ public class WordDAOFacade implements IWordDAOFacade {
 	@Override
 	public void markAsFavorite(String arabicWord, boolean isFavorite) {
 		wordDAO.markAsFavorite(arabicWord, isFavorite);
-		
+
 	}
 
 	@Override
@@ -130,14 +130,27 @@ public class WordDAOFacade implements IWordDAOFacade {
 	@Override
 	public void addSearchToHistory(Word word) {
 		wordDAO.addSearchToHistory(word);
-		
+
 	}
 
 	@Override
 	public List<Word> getRecentSearchHistory(int limit) {
 		return wordDAO.getRecentSearchHistory(limit);
 	}
-	
-	
+
+	@Override
+	public List<String> getAllLemmaztizedWords() {
+		return wordDAO.getAllLemmaztizedWords();
+	}
+
+	@Override
+	public boolean insertLemmatizedWord(String originalWord, String lemmatizedWord) {
+		return wordDAO.insertLemmatizedWord(originalWord, lemmatizedWord);
+	}
+
+	@Override
+	public String getLemmatizedWord(String originalWord) {
+		return wordDAO.getLemmatizedWord(originalWord);
+	}
 
 }

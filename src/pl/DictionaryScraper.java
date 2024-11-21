@@ -1,9 +1,23 @@
 package pl;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.WindowConstants;
+
 import bl.IBLFacade;
 
 public class DictionaryScraper extends JFrame {
@@ -24,7 +38,7 @@ public class DictionaryScraper extends JFrame {
     private void initializeUI() {
         setTitle("Dictionary Scraper");
         setSize(600, 450);
-        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
 
@@ -76,7 +90,7 @@ public class DictionaryScraper extends JFrame {
         outputArea.setEditable(false);
         outputArea.setFont(new Font("Arial", Font.PLAIN, 14));
         JScrollPane scrollPane = new JScrollPane(outputArea);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         gbc.gridx = 0;
         gbc.gridy = 4;
         gbc.gridwidth = 2;
