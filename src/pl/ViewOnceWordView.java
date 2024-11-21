@@ -20,8 +20,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import dto.Word;
 import bl.IBLFacade;
+import dto.Word;
 
 public class ViewOnceWordView extends JFrame {
     private IBLFacade facade;

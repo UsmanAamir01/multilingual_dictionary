@@ -19,8 +19,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import dto.Word;
 import bl.IBLFacade;
+import dto.Word;
 
 public class AddWordView extends JFrame {
     private JTextField arabicWordTextField, urduMeaningTextField, persianMeaningTextField;

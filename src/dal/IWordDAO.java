@@ -51,4 +51,10 @@ public interface IWordDAO {
 	void addSearchToHistory(Word word);
 
 	List<Word> getRecentSearchHistory(int limit);
+
+	List<String> getAllLemmaztizedWords();
+
+	boolean insertLemmatizedWord(String originalWord, String lemmatizedWord);
+
+	String getLemmatizedWord(String originalWord);
 }

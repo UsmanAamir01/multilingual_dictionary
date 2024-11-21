@@ -10,8 +10,10 @@ public class Word {
         this.arabicWord = arabicWord;
         this.urduMeaning = urduMeaning;
         this.persianMeaning = persianMeaning;
-        this.isFavorite = false; 
+        this.isFavorite = false;
     }
+
+
 
     public Word(String arabicWord, String urduMeaning, String persianMeaning, boolean isFavorite) {
         this.arabicWord = arabicWord;

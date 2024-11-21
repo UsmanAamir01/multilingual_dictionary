@@ -1,12 +1,26 @@
 package pl;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
+
 import bl.IBLFacade;
 import dto.Word;
-import java.util.List;
 
 public class ViewFavorites extends JFrame {
 	private IBLFacade facade;
@@ -28,7 +42,7 @@ public class ViewFavorites extends JFrame {
 		JPanel headerPanel = new JPanel(new BorderLayout());
 		headerPanel.setBackground(new Color(0, 123, 255));
 		headerPanel.setPreferredSize(new Dimension(700, 70));
-		JLabel titleLabel = new JLabel("My Favourites", JLabel.CENTER);
+		JLabel titleLabel = new JLabel("My Favourites", SwingConstants.CENTER);
 		titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
 		titleLabel.setForeground(Color.WHITE);
 		headerPanel.add(titleLabel, BorderLayout.CENTER);

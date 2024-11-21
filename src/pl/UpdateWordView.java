@@ -9,6 +9,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -16,8 +17,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import dto.Word;
+
 import bl.IBLFacade;
+import dto.Word;
 
 public class UpdateWordView extends JFrame {
 	private JTextField wordTextField;
@@ -109,7 +111,7 @@ public class UpdateWordView extends JFrame {
 				options[0]);
 
 		if (choice == JOptionPane.CLOSED_OPTION) {
-			return; 
+			return;
 		}
 
 		String selectedLanguage = options[choice];

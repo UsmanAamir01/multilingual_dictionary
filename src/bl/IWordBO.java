@@ -1,9 +1,9 @@
 package bl;
 
-import dto.Word;
-
 import java.util.LinkedList;
 import java.util.List;
+
+import dto.Word;
 
 public interface IWordBO {
 	boolean updateWord(Word word);
@@ -43,10 +43,15 @@ public interface IWordBO {
 	void markWordAsFavorite(String word, boolean isFavorite);
 
 	boolean isWordFavorite(String arabicWord);
-	
 
 	void addSearchToHistory(Word word);
 
 	List<Word> getRecentSearchHistory(int limit);
+
+	List<String> getAllLemmaztizedWords();
+
+	boolean insertLemmatizedWord(String originalWord, String lemmatizedWord);
+
+	String getLemmatizedWord(String originalWord);
 
 }

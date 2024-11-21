@@ -1,14 +1,15 @@
 package bl;
 
+import java.io.File;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.LinkedList;
+import java.util.List;
+
 import dal.IWordDAOFacade;
 import dal.WordDAOFacade;
 import dto.Word;
-import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.lang.reflect.Method;
-import java.util.LinkedList;
-import java.util.List;
 
 public class WordBO implements IWordBO {
 	private IWordDAOFacade wordDAOFacade;
@@ -140,6 +141,7 @@ public class WordBO implements IWordBO {
 		return resultText.toString();
 	}
 
+	@Override
 	public String[] saveWordAndUrduMeaning(String filePath) {
 		String[] wordAndUrduMeaning = wordDAOFacade.scrapeWordAndUrduMeaning(filePath);
 
@@ -157,6 +159,7 @@ public class WordBO implements IWordBO {
 	}
 
 	// Save Farsi Meaning
+	@Override
 	public void saveFarsiMeaning(String word, String filePath) {
 		String farsiMeaning = wordDAOFacade.scrapeFarsiMeaning(filePath);
 
@@ -169,6 +172,7 @@ public class WordBO implements IWordBO {
 	}
 
 	// Get Farsi Meaning
+	@Override
 	public String getFarsiMeaning(String word) {
 		return wordDAOFacade.getFarsiMeaning(word);
 	}
@@ -197,5 +201,20 @@ public class WordBO implements IWordBO {
 	@Override
 	public List<Word> getRecentSearchHistory(int limit) {
 		return wordDAOFacade.getRecentSearchHistory(limit);
+	}
+
+	@Override
+	public List<String> getAllLemmaztizedWords() {
+		return wordDAOFacade.getAllLemmaztizedWords();
+	}
+
+	@Override
+	public boolean insertLemmatizedWord(String originalWord, String lemmatizedWord) {
+		return wordDAOFacade.insertLemmatizedWord(originalWord, lemmatizedWord);
+	}
+
+	@Override
+	public String getLemmatizedWord(String originalWord) {
+		return wordDAOFacade.getLemmatizedWord(originalWord);
 	}
 }

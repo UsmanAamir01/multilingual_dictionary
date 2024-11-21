@@ -1,12 +1,25 @@
 package pl;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
+import javax.swing.table.DefaultTableModel;
+
 import bl.IBLFacade;
 import dto.Word;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.util.List;
 
 public class HistoryView extends JFrame {
     private final IBLFacade facade;
@@ -20,7 +33,7 @@ public class HistoryView extends JFrame {
         setTitle("Search History");
         setSize(800, 600);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
         mainPanel.setBackground(Color.WHITE);
@@ -58,10 +71,8 @@ public class HistoryView extends JFrame {
     }
 
     private void refreshHistory() {
-        // Fetch recent search history
-        List<Word> history = facade.getRecentSearchHistory(10);
 
-        // Extract data for the table
+        List<Word> history = facade.getRecentSearchHistory(10);
         String[] columns = {"Arabic Word", "Persian Meaning", "Urdu Meaning"};
         String[][] data = new String[history.size()][3];
 
@@ -75,7 +86,7 @@ public class HistoryView extends JFrame {
         DefaultTableModel model = new DefaultTableModel(data, columns) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; 
+                return false;
             }
         };
 
