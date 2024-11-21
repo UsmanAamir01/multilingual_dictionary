@@ -314,9 +314,4 @@ public class FileWordDAO implements IWordDAO {
 		
 	}
 
-	@Override
-	public String[] getMeaningsFromDB(String word) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

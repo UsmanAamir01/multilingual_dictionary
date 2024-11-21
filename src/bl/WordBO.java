@@ -21,13 +21,9 @@ public class WordBO implements IWordBO {
 	private IWordDAOFacade wordDAOFacade;
 	private final Farasa farasaSegmenter;
 
-	public WordBO() {
+	public WordBO(Farasa farasaSegmenter) {
+		this.farasaSegmenter = farasaSegmenter;
 		wordDAOFacade = new WordDAOFacade();
-		try {
-			farasaSegmenter = new Farasa();
-		} catch (Exception e) {
-			throw new RuntimeException("Failed to initialize Farasa segmenter.", e);
-		}
 	}
 
 	@Override
@@ -221,15 +217,18 @@ public class WordBO implements IWordBO {
 	}
 
 	@Override
-	//public boolean insertLemmatizedWord(Str
-			
-	public String[] getMeaning1(String word) {
-        String[] meanings =  wordDAOFacade.getMeaningsFromDB(word);
-        if (meanings[0] == null && meanings[1] == null) { // If not found, lemmatize
-            String rootWord = getLemmatizedWord(word); // Delegate to wordBO
-            meanings = wordDAOFacade.getMeaningsFromDB(rootWord);
-        }
-        return meanings;
-    }	
+	public boolean insertLemmatizedWord(String originalWord, String lemmatizedWord) {
+		return wordDAOFacade.insertLemmatizedWord(originalWord, lemmatizedWord);
+	}
+
+	@Override
+	public String getLemmatizedWord(String originalWord) {
+		return wordDAOFacade.getLemmatizedWord(originalWord);
+	}
+
+	@Override
+	public List<String> segmentWords(String input) {
+		return wordDAOFacade.segmentWords(input);
+	}
+
 }
-			
