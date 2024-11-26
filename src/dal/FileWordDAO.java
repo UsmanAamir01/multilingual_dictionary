@@ -289,4 +289,12 @@ public class FileWordDAO implements IWordDAO {
 	public String getLemmatizedWord(String originalWord) {
 		return null;
 	}
+
+
+	@Override
+	public List<String> segmentWordWithDiacritics(String word) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

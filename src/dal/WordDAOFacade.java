@@ -153,4 +153,9 @@ public class WordDAOFacade implements IWordDAOFacade {
 		return wordDAO.getLemmatizedWord(originalWord);
 	}
 
+	@Override
+	public List<String> segmentWordWithDiacritics(String word) {
+		return wordDAO.segmentWordWithDiacritics(word);
+	}
+
 }

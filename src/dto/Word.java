@@ -41,7 +41,10 @@ public class Word {
     public String getPersianMeaning() {
         return persianMeaning;
     }
-
+    
+    public String getMeaning() {
+    	return "Olalla";
+    }
     public void setPersianMeaning(String persianMeaning) {
         this.persianMeaning = persianMeaning;
     }

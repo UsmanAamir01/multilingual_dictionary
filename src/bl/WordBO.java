@@ -19,15 +19,9 @@ import dto.Word;
 
 public class WordBO implements IWordBO {
 	private IWordDAOFacade wordDAOFacade;
-	private final Farasa farasaSegmenter;
 
 	public WordBO() {
 		wordDAOFacade = new WordDAOFacade();
-		try {
-			farasaSegmenter = new Farasa();
-		} catch (Exception e) {
-			throw new RuntimeException("Failed to initialize Farasa segmenter.", e);
-		}
 	}
 
 	@Override
@@ -221,4 +215,24 @@ public class WordBO implements IWordBO {
 	}
 
 	@Override
-	public boolean insertLemmatizedWord(Str
+	public boolean insertLemmatizedWord(String originalWord, String lemmatizedWord) {
+		return wordDAOFacade.insertLemmatizedWord(originalWord, lemmatizedWord);
+	}
+
+	@Override
+	public String getLemmatizedWord(String originalWord) {
+		return wordDAOFacade.getLemmatizedWord(originalWord);
+	}
+
+    public List<String> getSegmentedWordsWithDiacritics(String word) {
+        try {
+            return wordDAOFacade.segmentWordWithDiacritics(word);
+        } catch (Exception e) {
+            System.out.println("Error during word segmentation: segmentWordWithDiacritics" + e.getMessage());
+            return null;
+        }
+    }
+
+
+
+}
