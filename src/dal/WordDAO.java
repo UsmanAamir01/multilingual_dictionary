@@ -1,5 +1,6 @@
 package dal;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -12,8 +13,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,12 +37,9 @@ public class WordDAO implements IWordDAO {
 	private Connection connection;
 	private Object posTaggerInstance;
 	private Object stemmerInstance;
-	private Farasa farasaSegmenter;
-
 	public WordDAO(Connection connection) {
 		this.connection = connection;
 		try {
-			this.farasaSegmenter = new Farasa();
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "Error initializing Farasa segmenter", e);
 		}
@@ -479,61 +480,65 @@ public class WordDAO implements IWordDAO {
 		return words;
 	}
 
-	@Override
-	public List<String> segmentWords(String input) {
-		List<String> segmentedWords = new ArrayList<>();
-		try {
-			ArrayList<String> words = farasaSegmenter.segmentLine(input);
-			for (String word : words) {
-				segmentedWords.add(word);
-			}
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Error segmenting words with Farasa", e);
-		}
-		return segmentedWords;
-	}
-
+	
+	
 	@Override
 	public List<String> segmentWordWithDiacritics(String word) {
-		List<String> segmentedWords = new ArrayList<>();
-		try {
-			ArrayList<String> segments = farasaSegmenter.segmentLine(word);
-			segmentedWords.addAll(segments);
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Error segmenting word with diacritics using Farasa", e);
-		}
-		return segmentedWords;
+	    Map<Integer, Character> diacriticalMarks = new HashMap<>();
+	    StringBuilder strippedWord = new StringBuilder();
+
+	    for (int i = 0; i < word.length(); i++) {
+	        char c = word.charAt(i);
+	        if (isDiacriticalMark(c)) {
+	            diacriticalMarks.put(strippedWord.length() - 1, c);
+	        } else {
+	            strippedWord.append(c);
+	        }
+	    }
+
+	    try {
+	    	Farasa farasaSegmenter = new Farasa();
+	        ArrayList<String> segmentedWords = farasaSegmenter.segmentLine(strippedWord.toString());
+	        ArrayList<String> segmentedWithDiacritics = reapplyDiacritics(segmentedWords, diacriticalMarks);
+	        return splitByCommasAndPlus(segmentedWithDiacritics);
+	    } catch (Exception e) {
+	        System.err.println("Error during segmentation: segmentWordWithDiacritics dao" + e.getMessage());
+	        return null;
+	    }
 	}
 
-	@Override
-	public List<String> getProperSegmentation(String word) {
-		List<String> segmentedWords = new ArrayList<>();
-		try {
-			String segmented = farasaSegmenter.getProperSegmentation(word);
-			String[] words = segmented.split(" ");
-			for (String w : words) {
-				segmentedWords.add(w);
-			}
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Error getting proper segmentation using Farasa", e);
-		}
-		return segmentedWords;
+	private boolean isDiacriticalMark(char c) {
+	    return (c >= 0x064B && c <= 0x0652);
 	}
 
-	@Override
-	public void saveSegmentedWords(List<String> segmentedWords) {
-		String insertQuery = "INSERT INTO SegmentedWords (word) VALUES (?)";
-		try (Connection connection = connect();
-				PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
-			for (String word : segmentedWords) {
-				preparedStatement.setString(1, word);
-				preparedStatement.addBatch();
-			}
+	private ArrayList<String> reapplyDiacritics(ArrayList<String> segments, Map<Integer, Character> diacriticalMarks) {
+	    ArrayList<String> result = new ArrayList<>();
+	    StringBuilder currentSegment = new StringBuilder();
+	    int positionInOriginal = 0;
 
-			preparedStatement.executeBatch();
-		} catch (SQLException e) {
-			LOGGER.log(Level.SEVERE, "Error saving segmented words", e);
-		}
+	    for (String segment : segments) {
+	        currentSegment.setLength(0);
+	        for (int i = 0; i < segment.length(); i++) {
+	            char c = segment.charAt(i);
+	            currentSegment.append(c);
+	            if (diacriticalMarks.containsKey(positionInOriginal)) {
+	                currentSegment.append(diacriticalMarks.get(positionInOriginal));
+	            }
+	            positionInOriginal++;
+	        }
+	        result.add(currentSegment.toString());
+	    }
+
+	    return result;
+	}
+
+	private List<String> splitByCommasAndPlus(List<String> segmentedWords) {
+	    List<String> result = new ArrayList<>();
+	    for (String segment : segmentedWords) {
+	        String[] parts = segment.split("[,+]");
+	        result.addAll(Arrays.asList(parts));
+	    }
+	    return result;
 	}
 
 }
