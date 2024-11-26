@@ -12,6 +12,7 @@ public class WordDAOFacade implements IWordDAOFacade {
 	public WordDAOFacade(IWordDAO wordDAO) {
 		this.wordDAO = wordDAO;
 	}
+
 	public WordDAOFacade() {
 		this.wordDAO = new WordDAO();
 	}
@@ -153,25 +154,8 @@ public class WordDAOFacade implements IWordDAOFacade {
 	}
 
 	@Override
-	public List<String> segmentWords(String input) {
-		return wordDAO.segmentWords(input);
-	}
-
-	@Override
 	public List<String> segmentWordWithDiacritics(String word) {
 		return wordDAO.segmentWordWithDiacritics(word);
 	}
-
-	@Override
-	public List<String> getProperSegmentation(String word) {
-		return wordDAO.getProperSegmentation(word);
-	}
-
-	@Override
-	public void saveSegmentedWords(List<String> segmentedWords) {
-		wordDAO.saveSegmentedWords(segmentedWords);
-		
-	}
-
 
 }

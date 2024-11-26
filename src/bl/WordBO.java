@@ -19,10 +19,8 @@ import dto.Word;
 
 public class WordBO implements IWordBO {
 	private IWordDAOFacade wordDAOFacade;
-	private final Farasa farasaSegmenter;
 
-	public WordBO(Farasa farasaSegmenter) {
-		this.farasaSegmenter = farasaSegmenter;
+	public WordBO() {
 		wordDAOFacade = new WordDAOFacade();
 	}
 
@@ -226,9 +224,15 @@ public class WordBO implements IWordBO {
 		return wordDAOFacade.getLemmatizedWord(originalWord);
 	}
 
-	@Override
-	public List<String> segmentWords(String input) {
-		return wordDAOFacade.segmentWords(input);
-	}
+    public List<String> getSegmentedWordsWithDiacritics(String word) {
+        try {
+            return wordDAOFacade.segmentWordWithDiacritics(word);
+        } catch (Exception e) {
+            System.out.println("Error during word segmentation: segmentWordWithDiacritics" + e.getMessage());
+            return null;
+        }
+    }
+
+
 
 }
