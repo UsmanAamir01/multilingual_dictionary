@@ -72,21 +72,6 @@ public class WordDAOFacade implements IWordDAOFacade {
 	}
 
 	@Override
-	public List<String> getTaggedAndStemmedWords() {
-		return wordDAO.getTaggedAndStemmedWords();
-	}
-
-	@Override
-	public LinkedList<?> getPOSTaggedWord(String arabicWord) {
-		return wordDAO.getPOSTaggedWord(arabicWord);
-	}
-
-	@Override
-	public LinkedList<?> getStemmedWord(String arabicWord) {
-		return wordDAO.getStemmedWord(arabicWord);
-	}
-
-	@Override
 	public String getFarsiMeaning(String word) {
 		return wordDAO.getFarsiMeaning(word);
 	}
@@ -156,6 +141,17 @@ public class WordDAOFacade implements IWordDAOFacade {
 	@Override
 	public List<String> segmentWordWithDiacritics(String word) {
 		return wordDAO.segmentWordWithDiacritics(word);
+	}
+
+	@Override
+	public String fetchArabicWord() throws Exception {
+		return wordDAO.fetchArabicWord();
+	}
+
+	@Override
+	public void saveResults(String word, String stem, String root, String pos) throws Exception {
+		wordDAO.saveResults(word, stem, root, pos);
+		
 	}
 
 }

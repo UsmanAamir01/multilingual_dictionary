@@ -26,11 +26,9 @@ public interface IWordDAO {
 
 	String getMeanings(String searchText, String language);
 
-	List<String> getTaggedAndStemmedWords();
+	public String fetchArabicWord() throws Exception;
 
-	LinkedList<?> getStemmedWord(String arabicWord);
-
-	LinkedList<?> getPOSTaggedWord(String arabicWord);
+	public void saveResults(String word, String stem, String root, String pos) throws Exception;
 
 	String[] scrapeWordAndUrduMeaning(String filePath);
 

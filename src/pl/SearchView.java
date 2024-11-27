@@ -89,32 +89,42 @@ public class SearchView extends JPanel {
 	}
 
 	private void handleSearchAction() {
+	    String wordText = searchField.getText().trim();
+	    String selectedLanguage = (String) languageComboBox.getSelectedItem();
 
-		String wordText = searchField.getText().trim();
-		String selectedLanguage = (String) languageComboBox.getSelectedItem();
+	    if (wordText.isEmpty()) {
+	        JOptionPane.showMessageDialog(this, "Please enter a word to search.", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
 
-		if (wordText.isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Please enter a word to search.", "Error", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
+	    String result = facade.getMeanings(wordText, selectedLanguage);
 
-		String result = facade.getMeanings(wordText, selectedLanguage);
-
-		if (!"Word not found.".equals(result)) {
-			resultTextArea.setText(result);
-			Word word = new Word("Arabic".equals(selectedLanguage) ? wordText : null,
-					"Persian".equals(selectedLanguage) ? result : null,
-					"Urdu".equals(selectedLanguage) ? result : null);
-			facade.addSearchToHistory(word);
-		} else {
-			int choice = JOptionPane.showConfirmDialog(this,
-					"Word not found in the database. Would you like to scrape data for this word?", "Scrape Data",
-					JOptionPane.YES_NO_OPTION);
-			if (choice == JOptionPane.YES_OPTION) {
-				showScraperUI(selectedLanguage);
-			}
-		}
+	    if (result != null && !"Word not found.".equals(result)) {
+	        resultTextArea.setText(result);
+	        
+	        Word word = null;
+	        if ("Arabic".equals(selectedLanguage)) {
+	            word = new Word(wordText, null, null);
+	            		facade.addSearchToHistory(word);
+	        } else if ("Persian".equals(selectedLanguage)) {
+	            word = new Word(null, wordText, null);
+	            facade.addSearchToHistory(word);
+	        } else if ("Urdu".equals(selectedLanguage)) {
+	            word = new Word(null, null, wordText);
+	            facade.addSearchToHistory(word);
+	        }
+	        
+	        facade.addSearchToHistory(word);
+	    } else {
+	        int choice = JOptionPane.showConfirmDialog(this,
+	                "Word not found in the database. Would you like to scrape data for this word?", "Scrape Data",
+	                JOptionPane.YES_NO_OPTION);
+	        if (choice == JOptionPane.YES_OPTION) {
+	            showScraperUI(selectedLanguage);
+	        }
+	    }
 	}
+
 
 	private void handleBackAction() {
 		setVisible(false);
