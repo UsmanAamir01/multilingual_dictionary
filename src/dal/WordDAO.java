@@ -1,6 +1,5 @@
 package dal;
 
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -37,6 +36,7 @@ public class WordDAO implements IWordDAO {
 	private Connection connection;
 	private Object posTaggerInstance;
 	private Object stemmerInstance;
+
 	public WordDAO(Connection connection) {
 		this.connection = connection;
 		try {
@@ -54,7 +54,7 @@ public class WordDAO implements IWordDAO {
 		}
 	}
 
-	public WordDAO()  {
+	public WordDAO() {
 		try {
 			this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
 		} catch (SQLException e) {
@@ -237,46 +237,34 @@ public class WordDAO implements IWordDAO {
 		return meanings.toString();
 	}
 
-	@Override
-	public List<String> getTaggedAndStemmedWords() {
-		List<String> results = new ArrayList<>();
-		String query = "SELECT arabic_word FROM dictionary";
-		try (PreparedStatement statement = getConnection().prepareStatement(query);
-				ResultSet resultSet = statement.executeQuery()) {
-			while (resultSet.next()) {
-				String arabicWord = resultSet.getString("arabic_word");
-				LinkedList<?> stemmedWord = getStemmedWord(arabicWord);
-				LinkedList<?> taggedWord = getPOSTaggedWord(arabicWord);
-				results.add("Original: " + arabicWord + " | Stemmed: " + stemmedWord + " | Tagged: " + taggedWord);
-			}
-		} catch (SQLException e) {
-			LOGGER.log(Level.SEVERE, "Database error", e);
-		}
-		return results;
 
+	
+	@Override
+	public String fetchArabicWord() throws Exception {
+	    String arabicWord = null;
+	    String query = "SELECT arabic_word FROM dictionary"; 
+	    try (Connection connection = connect();
+	         PreparedStatement statement = connection.prepareStatement(query);
+	         ResultSet resultSet = statement.executeQuery()) {
+
+	        if (resultSet.next()) {
+	            arabicWord = resultSet.getString("arabic_word");
+	        }
+	    }
+	    return arabicWord;
 	}
 
 	@Override
-	public LinkedList<?> getPOSTaggedWord(String arabicWord) {
-		try {
-			Method tagMethod = posTaggerInstance.getClass().getMethod("analyzedWords", String.class);
-			LinkedList<?> posTaggedResult = (LinkedList<?>) tagMethod.invoke(posTaggerInstance, arabicWord);
-			return posTaggedResult;
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "POS tagging error", e);
-			return null;
-		}
-	}
+	public void saveResults(String word, String stem, String root, String pos) throws Exception {
+		String insertQuery = "INSERT INTO processed_words (original_word, stem, root, pos) VALUES (?, ?, ?, ?)";
+		try (Connection connection = connect();
+				PreparedStatement statement = connection.prepareStatement(insertQuery)) {
 
-	@Override
-	public LinkedList<?> getStemmedWord(String arabicWord) {
-		try {
-			Method stemMethod = stemmerInstance.getClass().getMethod("stemWords", String.class);
-			LinkedList<?> stemmedResult = (LinkedList<?>) stemMethod.invoke(stemmerInstance, arabicWord);
-			return stemmedResult;
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Stemming error", e);
-			return null;
+			statement.setString(1, word);
+			statement.setString(2, stem);
+			statement.setString(3, root);
+			statement.setString(4, pos);
+			statement.executeUpdate();
 		}
 	}
 
@@ -298,7 +286,6 @@ public class WordDAO implements IWordDAO {
 		return null;
 	}
 
-	// Save Word and Urdu Meaning into Database
 	@Override
 	public void saveWordAndUrduMeaning(String word, String urduMeaning) {
 		String sql = "INSERT INTO dictionary (arabic_word, urdu_meaning) VALUES (?, ?)";
@@ -312,7 +299,6 @@ public class WordDAO implements IWordDAO {
 		}
 	}
 
-	// Scrape Farsi Meaning from HTML file
 	@Override
 	public String scrapeFarsiMeaning(String filePath) {
 		try {
@@ -327,7 +313,6 @@ public class WordDAO implements IWordDAO {
 		return null;
 	}
 
-	// Update Farsi Meaning in Database
 	@Override
 	public void updateFarsiMeaning(String word, String farsiMeaning) {
 		String sql = "UPDATE dictionary SET persian_meaning = ? WHERE arabic_word = ?";
@@ -341,7 +326,6 @@ public class WordDAO implements IWordDAO {
 		}
 	}
 
-	// Get Farsi Meaning from Database
 	@Override
 	public String getFarsiMeaning(String word) {
 		String sql = "SELECT persian_meaning FROM dictionary WHERE arabic_word = ?";
@@ -402,17 +386,21 @@ public class WordDAO implements IWordDAO {
 
 	@Override
 	public void addSearchToHistory(Word word) {
-		String query = "INSERT INTO searchhistory (arabic_word, persian_meaning, urdu_meaning) VALUES (?, ?, ?)";
-		try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-				PreparedStatement stmt = conn.prepareStatement(query)) {
-			stmt.setString(1, word.getArabicWord());
-			stmt.setString(2, word.getPersianMeaning());
-			stmt.setString(3, word.getUrduMeaning());
-			stmt.executeUpdate();
-		} catch (SQLException e) {
-			System.err.println("Error adding search to history: " + e.getMessage());
-		}
+	    String query = "INSERT INTO searchhistory (arabic_word, persian_meaning, urdu_meaning) VALUES (?, ?, ?)";
+	    try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+	            PreparedStatement stmt = conn.prepareStatement(query)) {
+	        
+	        
+	        stmt.setString(1, word.getArabicWord() != null ? word.getArabicWord() : null);
+	        stmt.setString(2, word.getPersianMeaning() != null ? word.getPersianMeaning() : null);
+	        stmt.setString(3, word.getUrduMeaning() != null ? word.getUrduMeaning() : null);
+	        
+	        stmt.executeUpdate();
+	    } catch (SQLException e) {
+	        System.err.println("Error adding search to history: " + e.getMessage());
+	    }
 	}
+
 
 	@Override
 	public List<Word> getRecentSearchHistory(int limit) {
@@ -480,65 +468,63 @@ public class WordDAO implements IWordDAO {
 		return words;
 	}
 
-	
-	
 	@Override
 	public List<String> segmentWordWithDiacritics(String word) {
-	    Map<Integer, Character> diacriticalMarks = new HashMap<>();
-	    StringBuilder strippedWord = new StringBuilder();
+		Map<Integer, Character> diacriticalMarks = new HashMap<>();
+		StringBuilder strippedWord = new StringBuilder();
 
-	    for (int i = 0; i < word.length(); i++) {
-	        char c = word.charAt(i);
-	        if (isDiacriticalMark(c)) {
-	            diacriticalMarks.put(strippedWord.length() - 1, c);
-	        } else {
-	            strippedWord.append(c);
-	        }
-	    }
+		for (int i = 0; i < word.length(); i++) {
+			char c = word.charAt(i);
+			if (isDiacriticalMark(c)) {
+				diacriticalMarks.put(strippedWord.length() - 1, c);
+			} else {
+				strippedWord.append(c);
+			}
+		}
 
-	    try {
-	    	Farasa farasaSegmenter = new Farasa();
-	        ArrayList<String> segmentedWords = farasaSegmenter.segmentLine(strippedWord.toString());
-	        ArrayList<String> segmentedWithDiacritics = reapplyDiacritics(segmentedWords, diacriticalMarks);
-	        return splitByCommasAndPlus(segmentedWithDiacritics);
-	    } catch (Exception e) {
-	        System.err.println("Error during segmentation: segmentWordWithDiacritics dao" + e.getMessage());
-	        return null;
-	    }
+		try {
+			Farasa farasaSegmenter = new Farasa();
+			ArrayList<String> segmentedWords = farasaSegmenter.segmentLine(strippedWord.toString());
+			ArrayList<String> segmentedWithDiacritics = reapplyDiacritics(segmentedWords, diacriticalMarks);
+			return splitByCommasAndPlus(segmentedWithDiacritics);
+		} catch (Exception e) {
+			System.err.println("Error during segmentation: segmentWordWithDiacritics dao" + e.getMessage());
+			return null;
+		}
 	}
 
 	private boolean isDiacriticalMark(char c) {
-	    return (c >= 0x064B && c <= 0x0652);
+		return (c >= 0x064B && c <= 0x0652);
 	}
 
 	private ArrayList<String> reapplyDiacritics(ArrayList<String> segments, Map<Integer, Character> diacriticalMarks) {
-	    ArrayList<String> result = new ArrayList<>();
-	    StringBuilder currentSegment = new StringBuilder();
-	    int positionInOriginal = 0;
+		ArrayList<String> result = new ArrayList<>();
+		StringBuilder currentSegment = new StringBuilder();
+		int positionInOriginal = 0;
 
-	    for (String segment : segments) {
-	        currentSegment.setLength(0);
-	        for (int i = 0; i < segment.length(); i++) {
-	            char c = segment.charAt(i);
-	            currentSegment.append(c);
-	            if (diacriticalMarks.containsKey(positionInOriginal)) {
-	                currentSegment.append(diacriticalMarks.get(positionInOriginal));
-	            }
-	            positionInOriginal++;
-	        }
-	        result.add(currentSegment.toString());
-	    }
+		for (String segment : segments) {
+			currentSegment.setLength(0);
+			for (int i = 0; i < segment.length(); i++) {
+				char c = segment.charAt(i);
+				currentSegment.append(c);
+				if (diacriticalMarks.containsKey(positionInOriginal)) {
+					currentSegment.append(diacriticalMarks.get(positionInOriginal));
+				}
+				positionInOriginal++;
+			}
+			result.add(currentSegment.toString());
+		}
 
-	    return result;
+		return result;
 	}
 
 	private List<String> splitByCommasAndPlus(List<String> segmentedWords) {
-	    List<String> result = new ArrayList<>();
-	    for (String segment : segmentedWords) {
-	        String[] parts = segment.split("[,+]");
-	        result.addAll(Arrays.asList(parts));
-	    }
-	    return result;
+		List<String> result = new ArrayList<>();
+		for (String segment : segmentedWords) {
+			String[] parts = segment.split("[,+]");
+			result.addAll(Arrays.asList(parts));
+		}
+		return result;
 	}
 
 }

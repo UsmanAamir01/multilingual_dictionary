@@ -188,42 +188,6 @@ public class FileWordDAO implements IWordDAO {
 		return meanings.toString();
 	}
 
-	@Override
-	public List<String> getTaggedAndStemmedWords() {
-		List<String> results = new ArrayList<>();
-		List<Word> words = getAllWords();
-		for (Word word : words) {
-			String arabicWord = word.getArabicWord();
-			LinkedList<?> stemmedWord = getStemmedWord(arabicWord);
-			LinkedList<?> taggedWord = getPOSTaggedWord(arabicWord);
-			results.add("Original: " + arabicWord + " | Stemmed: " + stemmedWord + " | Tagged: " + taggedWord);
-		}
-		return results;
-	}
-
-	@Override
-	public LinkedList<?> getPOSTaggedWord(String arabicWord) {
-		LinkedList<Object> posTaggedResult = new LinkedList<>();
-		try {
-			Method tagMethod = posTaggerInstance.getClass().getMethod("analyzedWords", String.class);
-			posTaggedResult = (LinkedList<Object>) tagMethod.invoke(posTaggerInstance, arabicWord);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return posTaggedResult;
-	}
-
-	@Override
-	public LinkedList<?> getStemmedWord(String arabicWord) {
-		LinkedList<Object> stemmedResult = new LinkedList<>();
-		try {
-			Method stemMethod = stemmerInstance.getClass().getMethod("stemWords", String.class);
-			stemmedResult = (LinkedList<Object>) stemMethod.invoke(stemmerInstance, arabicWord);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return stemmedResult;
-	}
 
 	@Override
 	public String[] scrapeWordAndUrduMeaning(String filePath) {
@@ -293,8 +257,16 @@ public class FileWordDAO implements IWordDAO {
 
 	@Override
 	public List<String> segmentWordWithDiacritics(String word) {
-		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String fetchArabicWord() throws Exception {
+		return null;
+	}
+
+	@Override
+	public void saveResults(String word, String stem, String root, String pos) throws Exception {		
 	}
 
 }

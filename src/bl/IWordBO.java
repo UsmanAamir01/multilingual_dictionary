@@ -24,13 +24,9 @@ public interface IWordBO {
 
 	String getMeanings(String searchText, String language);
 
-	List<String> getTaggedAndStemmedWords();
+	public String processWord(String arabicText) throws Exception;
 
-	LinkedList<?> getPOSTaggedWord(String arabicWord);
-
-	LinkedList<?> getStemmedWord(String arabicWord);
-
-	String performPOSTagging(String arabicText) throws Exception;
+	public void saveResults(String word, String stem, String root, String pos) throws Exception;
 
 	String[] saveWordAndUrduMeaning(String filePath);
 
@@ -56,4 +52,3 @@ public interface IWordBO {
 
 	List<String> getSegmentedWordsWithDiacritics(String word);
 }
-	
