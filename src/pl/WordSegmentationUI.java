@@ -31,7 +31,7 @@ public class WordSegmentationUI extends JFrame {
         this.previousWindow = previousWindow;
 
         setTitle("Word Segmentation");
-        setSize(700, 600);
+        setSize(900, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
