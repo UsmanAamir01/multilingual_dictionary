@@ -70,6 +70,10 @@ public class WordBO implements IWordBO {
 
 	@Override
 	public String searchWord(String searchTerm) {
+		if (searchTerm == null || searchTerm.trim().isEmpty()) {
+			return "Please enter a valid word to search.";
+		}
+
 		List<Word> results = wordDAOFacade.searchWord(searchTerm);
 		if (!results.isEmpty()) {
 			StringBuilder sb = new StringBuilder();
@@ -89,50 +93,34 @@ public class WordBO implements IWordBO {
 	}
 
 	@Override
-	public List<String> getTaggedAndStemmedWords() {
-		return wordDAOFacade.getTaggedAndStemmedWords();
-	}
-
-	@Override
-	public LinkedList<?> getPOSTaggedWord(String arabicWord) {
-		return wordDAOFacade.getPOSTaggedWord(arabicWord);
-	}
-
-	@Override
-	public LinkedList<?> getStemmedWord(String arabicWord) {
-		return wordDAOFacade.getStemmedWord(arabicWord);
-	}
-
-	@Override
-	public String performPOSTagging(String arabicText) throws Exception {
+	public String processWord(String arabicText) throws Exception {
 		StringBuilder resultText = new StringBuilder();
 		try (URLClassLoader classLoader = new URLClassLoader(
 				new URL[] { new File("/mnt/data/AlKhalil-2.1.21.jar").toURI().toURL() })) {
-			Class<?> posTaggerClass = classLoader.loadClass("AlKhalil2.AnalyzedWords");
-			Object posTaggerInstance = posTaggerClass.getDeclaredConstructor().newInstance();
-			Method tagMethod = posTaggerClass.getMethod("analyzedWords", String.class);
-			Object result = tagMethod.invoke(posTaggerInstance, arabicText);
+
+			Class<?> lemmatizerClass = classLoader.loadClass("AlKhalil2.AnalyzedWords");
+			Object lemmatizerInstance = lemmatizerClass.getDeclaredConstructor().newInstance();
+
+			Method tagMethod = lemmatizerClass.getMethod("analyzedWords", String.class);
+			Object result = tagMethod.invoke(lemmatizerInstance, arabicText);
 
 			if (result instanceof LinkedList) {
 				LinkedList<?> wordList = (LinkedList<?>) result;
 				if (!wordList.isEmpty()) {
 					for (Object word : wordList) {
-						Method getVoweledWordMethod = word.getClass().getMethod("getVoweledWord");
 						Method getStemMethod = word.getClass().getMethod("getStem");
-						Method getWordTypeMethod = word.getClass().getMethod("getWordType");
 						Method getWordRootMethod = word.getClass().getMethod("getWordRoot");
 						Method getPosMethod = word.getClass().getMethod("getPos");
 
-						String voweledWord = (String) getVoweledWordMethod.invoke(word);
 						String stem = (String) getStemMethod.invoke(word);
-						String wordType = (String) getWordTypeMethod.invoke(word);
 						String wordRoot = (String) getWordRootMethod.invoke(word);
 						String pos = (String) getPosMethod.invoke(word);
 
-						resultText.append("Voweled Word: ").append(voweledWord).append("\n")
-								.append("Stem of the Word: ").append(stem).append("\n").append("Type of the Word: ")
-								.append(wordType).append("\n").append("Root of the Word: ").append(wordRoot)
-								.append("\n").append("Part of Speech (POS): ").append(pos).append("\n\n");
+						resultText.append("Original Word: ").append(arabicText).append("\n").append("Stem: ")
+								.append(stem).append("\n").append("Root: ").append(wordRoot).append("\n")
+								.append("POS: ").append(pos).append("\n");
+
+						return stem + "," + wordRoot + "," + pos;
 					}
 				} else {
 					resultText.append("Tags Not Found!");
@@ -141,10 +129,15 @@ public class WordBO implements IWordBO {
 				resultText.append("Unexpected result type: ").append(result.getClass().getName());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new Exception("Error during POS tagging", e);
+			throw new Exception("Error during lemmatization", e);
 		}
 		return resultText.toString();
+	}
+
+	@Override
+	public void saveResults(String word, String stem, String root, String pos) throws Exception {
+		wordDAOFacade.saveResults(word, stem, root, pos);
+
 	}
 
 	@Override
@@ -164,7 +157,6 @@ public class WordBO implements IWordBO {
 		}
 	}
 
-	// Save Farsi Meaning
 	@Override
 	public void saveFarsiMeaning(String word, String filePath) {
 		String farsiMeaning = wordDAOFacade.scrapeFarsiMeaning(filePath);
@@ -177,7 +169,6 @@ public class WordBO implements IWordBO {
 		}
 	}
 
-	// Get Farsi Meaning
 	@Override
 	public String getFarsiMeaning(String word) {
 		return wordDAOFacade.getFarsiMeaning(word);
@@ -224,15 +215,13 @@ public class WordBO implements IWordBO {
 		return wordDAOFacade.getLemmatizedWord(originalWord);
 	}
 
-    public List<String> getSegmentedWordsWithDiacritics(String word) {
-        try {
-            return wordDAOFacade.segmentWordWithDiacritics(word);
-        } catch (Exception e) {
-            System.out.println("Error during word segmentation: segmentWordWithDiacritics" + e.getMessage());
-            return null;
-        }
-    }
-
-
+	public List<String> getSegmentedWordsWithDiacritics(String word) {
+		try {
+			return wordDAOFacade.segmentWordWithDiacritics(word);
+		} catch (Exception e) {
+			System.out.println("Error during word segmentation: segmentWordWithDiacritics" + e.getMessage());
+			return null;
+		}
+	}
 
 }

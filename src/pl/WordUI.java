@@ -140,7 +140,7 @@ public class WordUI extends JFrame {
 		JButton viewAllButton = createSidebarButton("View All Words");
 		JButton importFileButton = createSidebarButton("Import File");
 		JButton viewOnceButton = createSidebarButton("View Word");
-		JButton arabicTaggerButton = createSidebarButton("Arabic Tagger-Stemmer");
+		JButton arabicTaggerButton = createSidebarButton("Word Normalization");
 		JButton viewFavoritesButton = createSidebarButton("View Favourites");
 		JButton searchHistoryButton = createSidebarButton("Search History");
 		JButton Customdictionary = createSidebarButton("Custom Dictionary");
@@ -224,8 +224,8 @@ public class WordUI extends JFrame {
 			case "View Word":
 				navigateTo(new ViewOnceWordView(facade, WordUI.this));
 				break;
-			case "Arabic Tagger-Stemmer":
-				navigateTo(new ArabicTaggerUI(facade, WordUI.this));
+			case "Word Normalization":
+				navigateTo(new ArabicWordProcessingView(facade, WordUI.this));
 				break;
 			case "View Favourites":
 				navigateTo(new ViewFavorites(WordUI.this, facade));
@@ -257,7 +257,7 @@ public class WordUI extends JFrame {
 	private void triggerSearch() {
 		String searchText = searchField.getText().trim();
 		String selectedLanguage = (String) languageComboBox.getSelectedItem();
-
+		
 		if (!searchText.isEmpty()) {
 			String result = facade.getMeanings(searchText, selectedLanguage);
 
@@ -278,7 +278,6 @@ public class WordUI extends JFrame {
 					showSegmentationUI();
 				}
 			}
-			searchField.setText("");
 		} else {
 			JOptionPane.showMessageDialog(this, "Please enter a word to search.", "Error", JOptionPane.ERROR_MESSAGE);
 		}

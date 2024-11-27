@@ -59,25 +59,6 @@ public class BLFacade implements IBLFacade {
 		return wordBO.getMeanings(searchText, language);
 	}
 
-	@Override
-	public List<String> getTaggedAndStemmedWords() {
-		return wordBO.getTaggedAndStemmedWords();
-	}
-
-	@Override
-	public LinkedList<?> getPOSTaggedWord(String arabicWord) {
-		return wordBO.getPOSTaggedWord(arabicWord);
-	}
-
-	@Override
-	public LinkedList<?> getStemmedWord(String arabicWord) {
-		return wordBO.getStemmedWord(arabicWord);
-	}
-
-	@Override
-	public String performPOSTagging(String arabicText) throws Exception {
-		return wordBO.performPOSTagging(arabicText);
-	}
 
 	@Override
 	public boolean validateUser(String username, String password) {
@@ -100,14 +81,14 @@ public class BLFacade implements IBLFacade {
 	}
 
 	@Override
-    public void markWordAsFavorite(String word, boolean isFavorite) {
-        wordBO.markWordAsFavorite(word, isFavorite);
-    }
+	public void markWordAsFavorite(String word, boolean isFavorite) {
+		wordBO.markWordAsFavorite(word, isFavorite);
+	}
 
-    @Override
-    public List<Word> getFavoriteWords() {
-        return wordBO.getFavoriteWords();
-    }
+	@Override
+	public List<Word> getFavoriteWords() {
+		return wordBO.getFavoriteWords();
+	}
 
 	@Override
 	public boolean isWordFavorite(String arabicWord) {
@@ -116,7 +97,7 @@ public class BLFacade implements IBLFacade {
 
 	@Override
 	public void addSearchToHistory(Word word) {
-		 wordBO.addSearchToHistory(word);
+		wordBO.addSearchToHistory(word);
 	}
 
 	@Override
@@ -138,12 +119,20 @@ public class BLFacade implements IBLFacade {
 	public String getLemmatizedWord(String originalWord) {
 		return wordBO.getLemmatizedWord(originalWord);
 	}
-	// public String[] getMeaning(String word) {
-       //  return word
-  //  }
-	
-    public List<String> getSegmentedWordsWithDiacritics(String word){
-    	return wordBO.getSegmentedWordsWithDiacritics(word);
-    }
-	
+
+	public List<String> getSegmentedWordsWithDiacritics(String word) {
+		return wordBO.getSegmentedWordsWithDiacritics(word);
+	}
+
+	@Override
+	public String processWord(String arabicText) throws Exception {
+		return wordBO.processWord(arabicText);
+	}
+
+	@Override
+	public void saveResults(String word, String stem, String root, String pos) throws Exception {
+		 wordBO.saveResults(word, stem, root, pos);
+		
+	}
+
 }
