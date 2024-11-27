@@ -34,6 +34,7 @@ import bl.BLFacade;
 import bl.IBLFacade;
 import bl.UserBO;
 import bl.WordBO;
+import dto.Word;
 
 public class WordUI extends JFrame {
 	private JTextField usernameField;
@@ -257,7 +258,7 @@ public class WordUI extends JFrame {
 	private void triggerSearch() {
 		String searchText = searchField.getText().trim();
 		String selectedLanguage = (String) languageComboBox.getSelectedItem();
-		
+
 		if (!searchText.isEmpty()) {
 			String result = facade.getMeanings(searchText, selectedLanguage);
 
@@ -265,6 +266,11 @@ public class WordUI extends JFrame {
 				JOptionPane.showMessageDialog(this,
 						"Searching for: " + searchText + " in " + selectedLanguage + "\n" + result, "Search Result",
 						JOptionPane.INFORMATION_MESSAGE);
+
+				Word word = createWordBasedOnLanguage(searchText, selectedLanguage);
+
+				facade.addSearchToHistory(word);
+
 			} else {
 				Object[] options = { "Scrape Data", "Segment Word" };
 				int choice = JOptionPane.showOptionDialog(this,
@@ -280,6 +286,20 @@ public class WordUI extends JFrame {
 			}
 		} else {
 			JOptionPane.showMessageDialog(this, "Please enter a word to search.", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	private Word createWordBasedOnLanguage(String wordText, String selectedLanguage) {
+
+		switch (selectedLanguage) {
+		case "Arabic":
+			return new Word(wordText, null, null);
+		case "Persian":
+			return new Word(null, wordText, null);
+		case "Urdu":
+			return new Word(null, null, wordText);
+		default:
+			return null;
 		}
 	}
 
