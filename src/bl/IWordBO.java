@@ -24,9 +24,9 @@ public interface IWordBO {
 
 	String getMeanings(String searchText, String language);
 
-	public String processWord(String arabicText) throws Exception;
+	String processWord(String arabicText) throws Exception;
 
-	public void saveResults(String word, String stem, String root, String pos) throws Exception;
+	void saveResults(String word, String stem, String root, String pos) throws Exception;
 
 	String[] saveWordAndUrduMeaning(String filePath);
 
@@ -51,4 +51,6 @@ public interface IWordBO {
 	String getLemmatizedWord(String originalWord);
 
 	List<String> getSegmentedWordsWithDiacritics(String word);
+
+	List<String> getRecentSearchSuggestions();
 }

@@ -58,4 +58,5 @@ public interface IWordDAO {
 
 	List<String> segmentWordWithDiacritics(String word);
 
+	List<String> getRecentSearchSuggestions();
 }

@@ -151,7 +151,11 @@ public class WordDAOFacade implements IWordDAOFacade {
 	@Override
 	public void saveResults(String word, String stem, String root, String pos) throws Exception {
 		wordDAO.saveResults(word, stem, root, pos);
-		
+
 	}
 
+	@Override
+	public List<String> getRecentSearchSuggestions() {
+		return wordDAO.getRecentSearchSuggestions();
+	}
 }

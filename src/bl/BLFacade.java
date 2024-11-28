@@ -59,7 +59,6 @@ public class BLFacade implements IBLFacade {
 		return wordBO.getMeanings(searchText, language);
 	}
 
-
 	@Override
 	public boolean validateUser(String username, String password) {
 		return userBO.validateUser(username, password);
@@ -131,8 +130,12 @@ public class BLFacade implements IBLFacade {
 
 	@Override
 	public void saveResults(String word, String stem, String root, String pos) throws Exception {
-		 wordBO.saveResults(word, stem, root, pos);
-		
+		wordBO.saveResults(word, stem, root, pos);
+
 	}
 
+	@Override
+	public List<String> getRecentSearchSuggestions() {
+		return wordBO.getRecentSearchSuggestions();
+	}
 }

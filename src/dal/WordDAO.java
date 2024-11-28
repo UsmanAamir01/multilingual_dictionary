@@ -237,21 +237,19 @@ public class WordDAO implements IWordDAO {
 		return meanings.toString();
 	}
 
-
-	
 	@Override
 	public String fetchArabicWord() throws Exception {
-	    String arabicWord = null;
-	    String query = "SELECT arabic_word FROM dictionary"; 
-	    try (Connection connection = connect();
-	         PreparedStatement statement = connection.prepareStatement(query);
-	         ResultSet resultSet = statement.executeQuery()) {
+		String arabicWord = null;
+		String query = "SELECT arabic_word FROM dictionary";
+		try (Connection connection = connect();
+				PreparedStatement statement = connection.prepareStatement(query);
+				ResultSet resultSet = statement.executeQuery()) {
 
-	        if (resultSet.next()) {
-	            arabicWord = resultSet.getString("arabic_word");
-	        }
-	    }
-	    return arabicWord;
+			if (resultSet.next()) {
+				arabicWord = resultSet.getString("arabic_word");
+			}
+		}
+		return arabicWord;
 	}
 
 	@Override
@@ -386,21 +384,19 @@ public class WordDAO implements IWordDAO {
 
 	@Override
 	public void addSearchToHistory(Word word) {
-	    String query = "INSERT INTO searchhistory (arabic_word, persian_meaning, urdu_meaning) VALUES (?, ?, ?)";
-	    try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-	            PreparedStatement stmt = conn.prepareStatement(query)) {
-	        
-	        
-	        stmt.setString(1, word.getArabicWord() != null ? word.getArabicWord() : null);
-	        stmt.setString(2, word.getPersianMeaning() != null ? word.getPersianMeaning() : null);
-	        stmt.setString(3, word.getUrduMeaning() != null ? word.getUrduMeaning() : null);
-	        
-	        stmt.executeUpdate();
-	    } catch (SQLException e) {
-	        System.err.println("Error adding search to history: " + e.getMessage());
-	    }
-	}
+		String query = "INSERT INTO searchhistory (arabic_word, persian_meaning, urdu_meaning) VALUES (?, ?, ?)";
+		try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+				PreparedStatement stmt = conn.prepareStatement(query)) {
 
+			stmt.setString(1, word.getArabicWord() != null ? word.getArabicWord() : null);
+			stmt.setString(2, word.getPersianMeaning() != null ? word.getPersianMeaning() : null);
+			stmt.setString(3, word.getUrduMeaning() != null ? word.getUrduMeaning() : null);
+
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			System.err.println("Error adding search to history: " + e.getMessage());
+		}
+	}
 
 	@Override
 	public List<Word> getRecentSearchHistory(int limit) {
@@ -527,4 +523,21 @@ public class WordDAO implements IWordDAO {
 		return result;
 	}
 
+	public List<String> getRecentSearchSuggestions() {
+		List<String> recentSuggestions = new ArrayList<>();
+		String query = "SELECT arabic_word FROM searchhistory ORDER BY search_time DESC LIMIT 5";
+																									
+
+		try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery(query)) {
+
+			while (rs.next()) {
+				recentSuggestions.add(rs.getString("arabic_word"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return recentSuggestions;
+	}
 }
