@@ -188,7 +188,6 @@ public class FileWordDAO implements IWordDAO {
 		return meanings.toString();
 	}
 
-
 	@Override
 	public String[] scrapeWordAndUrduMeaning(String filePath) {
 		return null;
@@ -254,7 +253,6 @@ public class FileWordDAO implements IWordDAO {
 		return null;
 	}
 
-
 	@Override
 	public List<String> segmentWordWithDiacritics(String word) {
 		return null;
@@ -266,7 +264,11 @@ public class FileWordDAO implements IWordDAO {
 	}
 
 	@Override
-	public void saveResults(String word, String stem, String root, String pos) throws Exception {		
+	public void saveResults(String word, String stem, String root, String pos) throws Exception {
 	}
 
+	@Override
+	public List<String> getRecentSearchSuggestions() {
+		return null;
+	}
 }

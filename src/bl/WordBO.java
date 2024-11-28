@@ -224,4 +224,8 @@ public class WordBO implements IWordBO {
 		}
 	}
 
+	@Override
+	public List<String> getRecentSearchSuggestions() {
+		return wordDAOFacade.getRecentSearchSuggestions();
+	}
 }
