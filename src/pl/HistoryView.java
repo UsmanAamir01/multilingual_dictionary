@@ -41,7 +41,7 @@ public class HistoryView extends JFrame {
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topPanel.setBackground(Color.WHITE);
 
-        JButton backButton = createStyledButton("Back", new Color(0, 123, 255));
+        JButton backButton = createStyledButton("Back",new Color(0, 51, 153));
         backButton.addActionListener(e -> handleBackAction());
         topPanel.add(backButton);
 
@@ -72,7 +72,7 @@ public class HistoryView extends JFrame {
 
     private void refreshHistory() {
 
-        List<Word> history = facade.getRecentSearchHistory(10);
+        List<Word> history = facade.getRecentSearchHistory(7);
         String[] columns = {"Arabic Word", "Persian Meaning", "Urdu Meaning"};
         String[][] data = new String[history.size()][3];
 

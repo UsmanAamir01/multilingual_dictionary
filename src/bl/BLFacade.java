@@ -104,20 +104,6 @@ public class BLFacade implements IBLFacade {
 		return wordBO.getRecentSearchHistory(limit);
 	}
 
-	@Override
-	public List<String> getAllLemmaztizedWords() {
-		return wordBO.getAllLemmaztizedWords();
-	}
-
-	@Override
-	public boolean insertLemmatizedWord(String originalWord, String lemmatizedWord) {
-		return wordBO.insertLemmatizedWord(originalWord, lemmatizedWord);
-	}
-
-	@Override
-	public String getLemmatizedWord(String originalWord) {
-		return wordBO.getLemmatizedWord(originalWord);
-	}
 
 	public List<String> getSegmentedWordsWithDiacritics(String word) {
 		return wordBO.getSegmentedWordsWithDiacritics(word);
@@ -137,5 +123,13 @@ public class BLFacade implements IBLFacade {
 	@Override
 	public List<String> getRecentSearchSuggestions() {
 		return wordBO.getRecentSearchSuggestions();
+	}
+	public String[] getMeaning1(String word) throws Exception {
+        return wordBO.getMeaning1(word);
+    }
+
+	@Override
+	public String[] getMeaningsFromDB(String word) {
+		return wordBO.getMeaningsFromDB(word);
 	}
 }

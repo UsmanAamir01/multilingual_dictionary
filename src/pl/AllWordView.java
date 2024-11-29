@@ -44,6 +44,11 @@ public class AllWordView extends JFrame {
 		String[] columnNames = { "Arabic Word", "Urdu Meaning", "Persian Meaning", "Favourites" };
 		DefaultTableModel model = new DefaultTableModel(wordData, columnNames) {
 			@Override
+			public boolean isCellEditable(int row, int column) {
+				return column == 3;
+			}
+
+			@Override
 			public Class<?> getColumnClass(int columnIndex) {
 				return columnIndex == 3 ? Icon.class : super.getColumnClass(columnIndex);
 			}
@@ -136,7 +141,7 @@ public class AllWordView extends JFrame {
 
 		footerPanel.add(labelsPanel);
 
-		backButton = createButton("Back", new Color(30, 136, 229), e -> {
+		backButton = createButton("Back", new Color(0, 51, 153), e -> {
 			previousWindow.setVisible(true);
 			dispose();
 		});
