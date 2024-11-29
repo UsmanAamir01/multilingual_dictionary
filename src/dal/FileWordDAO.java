@@ -238,20 +238,7 @@ public class FileWordDAO implements IWordDAO {
 		return null;
 	}
 
-	@Override
-	public List<String> getAllLemmaztizedWords() {
-		return null;
-	}
-
-	@Override
-	public boolean insertLemmatizedWord(String originalWord, String lemmatizedWord) {
-		return false;
-	}
-
-	@Override
-	public String getLemmatizedWord(String originalWord) {
-		return null;
-	}
+	
 
 	@Override
 	public List<String> segmentWordWithDiacritics(String word) {
@@ -269,6 +256,11 @@ public class FileWordDAO implements IWordDAO {
 
 	@Override
 	public List<String> getRecentSearchSuggestions() {
+		return null;
+	}
+
+	@Override
+	public String[] getMeaningsFromDB(String word) {
 		return null;
 	}
 }

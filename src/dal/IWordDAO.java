@@ -43,6 +43,8 @@ public interface IWordDAO {
 	void markAsFavorite(String arabicWord, boolean isFavorite);
 
 	List<Word> getFavoriteWords();
+	
+	String[] getMeaningsFromDB(String word);
 
 	boolean isWordFavorite(String arabicWord);
 
@@ -50,13 +52,8 @@ public interface IWordDAO {
 
 	List<Word> getRecentSearchHistory(int limit);
 
-	List<String> getAllLemmaztizedWords();
-
-	boolean insertLemmatizedWord(String originalWord, String lemmatizedWord);
-
-	String getLemmatizedWord(String originalWord);
-
 	List<String> segmentWordWithDiacritics(String word);
 
 	List<String> getRecentSearchSuggestions();
+	
 }

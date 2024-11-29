@@ -419,52 +419,6 @@ public class WordDAO implements IWordDAO {
 	}
 
 	@Override
-	public boolean insertLemmatizedWord(String originalWord, String lemmatizedWord) {
-		String query = "INSERT INTO dictionary (original_word, lemmatized_word) VALUES (?, ?)";
-		try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
-			stmt.setString(1, originalWord);
-			stmt.setString(2, lemmatizedWord);
-			return stmt.executeUpdate() > 0;
-		} catch (SQLException e) {
-			LOGGER.log(Level.SEVERE, "Error inserting lemmatized word: " + originalWord, e);
-		}
-		return false;
-	}
-
-	@Override
-	public String getLemmatizedWord(String originalWord) {
-		String query = "SELECT lemmatized_word FROM dictionary WHERE original_word = ?";
-		try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
-			stmt.setString(1, originalWord);
-			ResultSet rs = stmt.executeQuery();
-			if (rs.next()) {
-				return rs.getString("lemmatized_word");
-			}
-		} catch (SQLException e) {
-			LOGGER.log(Level.SEVERE, "Error retrieving lemmatized word for: " + originalWord, e);
-		}
-		return null;
-	}
-
-	@Override
-	public List<String> getAllLemmaztizedWords() {
-		List<String> words = new ArrayList<>();
-		String query = "SELECT original_word, lemmatized_word FROM dictionary";
-		try (Connection conn = connect();
-				Statement stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(query)) {
-			while (rs.next()) {
-				String originalWord = rs.getString("original_word");
-				String lemmatizedWord = rs.getString("lemmatized_word");
-				words.add("Original: " + originalWord + " | Lemmatized: " + lemmatizedWord);
-			}
-		} catch (SQLException e) {
-			LOGGER.log(Level.SEVERE, "Error retrieving all words", e);
-		}
-		return words;
-	}
-
-	@Override
 	public List<String> segmentWordWithDiacritics(String word) {
 		Map<Integer, Character> diacriticalMarks = new HashMap<>();
 		StringBuilder strippedWord = new StringBuilder();
@@ -526,7 +480,6 @@ public class WordDAO implements IWordDAO {
 	public List<String> getRecentSearchSuggestions() {
 		List<String> recentSuggestions = new ArrayList<>();
 		String query = "SELECT arabic_word FROM searchhistory ORDER BY search_time DESC LIMIT 5";
-																									
 
 		try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
 				Statement stmt = conn.createStatement();
@@ -540,4 +493,29 @@ public class WordDAO implements IWordDAO {
 		}
 		return recentSuggestions;
 	}
+
+	@Override
+	public String[] getMeaningsFromDB(String word) {
+		String[] meanings = new String[2];
+		String query = "SELECT persian_meaning, urdu_meaning FROM dictionary WHERE arabic_word = ?";
+
+		try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+				PreparedStatement stmt = conn.prepareStatement(query)) {
+
+			stmt.setString(1, word);
+
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+
+					meanings[0] = rs.getString("urdu_meaning");
+					meanings[1] = rs.getString("persian_meaning");
+				}
+			}
+		} catch (SQLException e) {
+			System.err.println("Error retrieving meanings for word: " + e.getMessage());
+		}
+
+		return meanings;
+	}
+
 }

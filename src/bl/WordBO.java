@@ -200,20 +200,6 @@ public class WordBO implements IWordBO {
 		return wordDAOFacade.getRecentSearchHistory(limit);
 	}
 
-	@Override
-	public List<String> getAllLemmaztizedWords() {
-		return wordDAOFacade.getAllLemmaztizedWords();
-	}
-
-	@Override
-	public boolean insertLemmatizedWord(String originalWord, String lemmatizedWord) {
-		return wordDAOFacade.insertLemmatizedWord(originalWord, lemmatizedWord);
-	}
-
-	@Override
-	public String getLemmatizedWord(String originalWord) {
-		return wordDAOFacade.getLemmatizedWord(originalWord);
-	}
 
 	public List<String> getSegmentedWordsWithDiacritics(String word) {
 		try {
@@ -227,5 +213,18 @@ public class WordBO implements IWordBO {
 	@Override
 	public List<String> getRecentSearchSuggestions() {
 		return wordDAOFacade.getRecentSearchSuggestions();
+	}
+	@Override
+	public String[] getMeaning1(String word) throws Exception {
+        String[] meanings =  wordDAOFacade.getMeaningsFromDB(word);
+        if (meanings[0] == null && meanings[1] == null) {
+            String rootWord = processWord(word);
+            meanings = wordDAOFacade.getMeaningsFromDB(rootWord);
+        }
+        return meanings;
+    }
+	@Override
+	public String[] getMeaningsFromDB(String word) {
+		return wordDAOFacade.getMeaningsFromDB(word);
 	}
 }

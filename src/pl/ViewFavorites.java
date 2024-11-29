@@ -40,7 +40,7 @@ public class ViewFavorites extends JFrame {
 		setResizable(false);
 
 		JPanel headerPanel = new JPanel(new BorderLayout());
-		headerPanel.setBackground(new Color(0, 123, 255));
+		headerPanel.setBackground(new Color(0, 51, 153));
 		headerPanel.setPreferredSize(new Dimension(700, 70));
 		JLabel titleLabel = new JLabel("My Favourites", SwingConstants.CENTER);
 		titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
@@ -72,7 +72,7 @@ public class ViewFavorites extends JFrame {
 		closeButton = createButton("Close", new Color(220, 53, 69), new Color(255, 255, 255));
 		closeButton.addActionListener(e -> dispose());
 
-		backButton = createButton("Back", new Color(40, 167, 69), new Color(255, 255, 255));
+		backButton = createButton("Back",  new Color(0, 51, 153), new Color(255, 255, 255));
 		backButton.addActionListener(e -> {
 			previousWindow.setVisible(true);
 			dispose();
