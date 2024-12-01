@@ -30,7 +30,7 @@ public interface IWordDAO {
 
 	public void saveResults(String word, String stem, String root, String pos) throws Exception;
 
-	String[] scrapeWordAndUrduMeaning(String filePath);
+	String[] scrapeWordAndUrduMeaning(String url);
 
 	void saveWordAndUrduMeaning(String word, String urduMeaning);
 

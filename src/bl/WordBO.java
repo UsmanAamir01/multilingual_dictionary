@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import dal.IWordDAOFacade;
 import dal.WordDAOFacade;
 import dto.Word;
-
+import dal.WordDAO;
 public class WordBO implements IWordBO {
 	private IWordDAOFacade wordDAOFacade;
 
@@ -141,33 +141,38 @@ public class WordBO implements IWordBO {
 	}
 
 	@Override
-	public String[] saveWordAndUrduMeaning(String filePath) {
-		String[] wordAndUrduMeaning = wordDAOFacade.scrapeWordAndUrduMeaning(filePath);
+	public void saveWordAndUrduMeaning(String URL) {
+        Runnable task = () -> {
+            String[] wordAndUrduMeaning = wordDAOFacade.scrapeWordAndUrduMeaning(URL);
 
-		if (wordAndUrduMeaning != null) {
-			String word = wordAndUrduMeaning[0];
-			String urduMeaning = wordAndUrduMeaning[1];
+            if (wordAndUrduMeaning != null) {
+                String word = wordAndUrduMeaning[0];
+                String urduMeaning = wordAndUrduMeaning[1];
 
-			wordDAOFacade.saveWordAndUrduMeaning(word, urduMeaning);
-			System.out.println("Word: " + word + ", Urdu Meaning: " + urduMeaning);
-			return wordAndUrduMeaning;
-		} else {
-			System.out.println("Failed to retrieve word and Urdu meaning.");
-			return null;
-		}
-	}
+                wordDAOFacade.saveWordAndUrduMeaning(word, urduMeaning);
+                System.out.println("Thread: Word: " + word + ", Urdu Meaning: " + urduMeaning);
+            } else {
+                System.out.println("Thread: Failed to retrieve word and Urdu meaning.");
+            }
+        };
+        new Thread(task).start();
+    }
 
 	@Override
-	public void saveFarsiMeaning(String word, String filePath) {
-		String farsiMeaning = wordDAOFacade.scrapeFarsiMeaning(filePath);
+	 public void saveFarsiMeaning(String word, String filePath) {
+        Runnable task = () -> {
+            String farsiMeaning = wordDAOFacade.scrapeFarsiMeaning(filePath);
 
-		if (farsiMeaning != null) {
-			wordDAOFacade.updateFarsiMeaning(word, farsiMeaning);
-			System.out.println("Farsi Meaning stored: " + farsiMeaning);
-		} else {
-			System.out.println("Failed to retrieve Farsi meaning.");
-		}
-	}
+            if (farsiMeaning != null) {
+            	wordDAOFacade.updateFarsiMeaning(word, farsiMeaning);
+                System.out.println("Thread: Farsi Meaning stored: " + farsiMeaning);
+            } else {
+                System.out.println("Thread: Failed to retrieve Farsi meaning.");
+            }
+        };
+        new Thread(task).start();
+    }
+
 
 	@Override
 	public String getFarsiMeaning(String word) {
@@ -227,4 +232,6 @@ public class WordBO implements IWordBO {
 	public String[] getMeaningsFromDB(String word) {
 		return wordDAOFacade.getMeaningsFromDB(word);
 	}
+
+	
 }

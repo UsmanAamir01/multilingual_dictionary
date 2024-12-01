@@ -65,8 +65,8 @@ public class BLFacade implements IBLFacade {
 	}
 
 	@Override
-	public String[] saveWordAndUrduMeaning(String filePath) {
-		return wordBO.saveWordAndUrduMeaning(filePath);
+	public void saveWordAndUrduMeaning(String URL) {
+		 wordBO.saveWordAndUrduMeaning(URL);
 	}
 
 	@Override
@@ -132,4 +132,6 @@ public class BLFacade implements IBLFacade {
 	public String[] getMeaningsFromDB(String word) {
 		return wordBO.getMeaningsFromDB(word);
 	}
+
+
 }
