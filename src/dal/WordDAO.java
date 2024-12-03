@@ -23,15 +23,16 @@ import java.util.logging.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import com.qcri.farasa.segmenter.Farasa;
 
 import dto.Word;
 
 public class WordDAO implements IWordDAO {
-	private static final String URL = "jdbc:mysql://localhost:3306/Dictionarydb";
-	private static final String USER = "root";
-	private static final String PASSWORD = "";
+	private static final String URL = "jdbc:mysql://localhost:3306/a";
+	private static final String USER = "ranko";
+	private static final String PASSWORD = "huzaifa123";
 	private static final Logger LOGGER = Logger.getLogger(WordDAO.class.getName());
 	private Connection connection;
 	private Object posTaggerInstance;
@@ -267,77 +268,98 @@ public class WordDAO implements IWordDAO {
 	}
 
 	@Override
-	public String[] scrapeWordAndUrduMeaning(String filePath) {
-		try {
-			Document doc = Jsoup.parse(new File(filePath), "UTF-8");
-			Element wordElement = doc.select("td[id^=w]").first();
-			Element meaningElement = doc.select("td[id^=m]").first();
+	public String[] scrapeWordAndUrduMeaning(String url) {
+        try {
+            // Set User-Agent to mimic Microsoft Edge
+            Document doc = Jsoup.connect(url)
+                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64")
+                    .get();
 
-			if (wordElement != null && meaningElement != null) {
-				String word = wordElement.text().replaceAll("\\s*\\[.*?\\]", "");
-				String urduMeaning = meaningElement.text();
-				return new String[] { word, urduMeaning };
-			}
-		} catch (Exception e) {
-			System.err.println("Error scraping word and Urdu meaning: " + e.getMessage());
-		}
-		return null;
-	}
+            // Extract word and meaning
+            Element wordElement = doc.select("td[id^=w]").first();
+            Element meaningElement = doc.select("td[id^=m]").first();
+
+            if (wordElement != null && meaningElement != null) {
+                String word = wordElement.text().replaceAll("\\s*\\[.*?\\]", "");
+                String urduMeaning = meaningElement.text();
+                return new String[]{word, urduMeaning};
+            }
+        } catch (Exception e) {
+            System.err.println("Error scraping word and Urdu meaning from URL: " + e.getMessage());
+        }
+        return null;
+    }
 
 	@Override
+
 	public void saveWordAndUrduMeaning(String word, String urduMeaning) {
-		String sql = "INSERT INTO dictionary (arabic_word, urdu_meaning) VALUES (?, ?)";
-		try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, word);
-			pstmt.setString(2, urduMeaning);
-			pstmt.executeUpdate();
-			System.out.println("Record inserted successfully for word: " + word);
-		} catch (Exception e) {
-			System.err.println("Error saving word and Urdu meaning: " + e.getMessage());
-		}
+	    String sql = "INSERT INTO dictionary (arabic_word, urdu_meaning) VALUES (?, ?)";
+	    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        pstmt.setString(1, word); // Arabic word
+	        pstmt.setString(2, urduMeaning); // Urdu meaning
+	        pstmt.executeUpdate();
+	        System.out.println("Record inserted successfully for word: " + word);
+	    } catch (Exception e) {
+	        System.err.println("Error saving word and Urdu meaning: " + e.getMessage());
+	    }
 	}
 
+
 	@Override
-	public String scrapeFarsiMeaning(String filePath) {
-		try {
-			Document doc = Jsoup.parse(new File(filePath), "UTF-8");
-			Element farsiMeaningElement = doc.select("td[id^=m]").get(1); // Get second meaning (Farsi)
-			if (farsiMeaningElement != null) {
-				return farsiMeaningElement.text();
-			}
-		} catch (Exception e) {
-			System.err.println("Error scraping Farsi meaning: " + e.getMessage());
-		}
-		return null;
+	public String scrapeFarsiMeaning(String url) {
+	    try {
+	        // Set User-Agent to mimic Microsoft Edge
+	        Document doc = Jsoup.connect(url)
+	                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.64")
+	                .get();
+
+	        // Extract the list of elements with 'id' starting with 'm'
+	        Elements farsiMeaningElements = doc.select("td[id^=m]");
+
+	        // Check if there are at least two such elements
+	        if (farsiMeaningElements.size() > 1) {
+	            Element farsiMeaningElement = farsiMeaningElements.get(1);  // Get the second element
+	            if (farsiMeaningElement != null) {
+	                return farsiMeaningElement.text();
+	            }
+	        } else {
+	            System.err.println("Farsi meaning not found (not enough elements).");
+	        }
+	    } catch (Exception e) {
+	        System.err.println("Error scraping Farsi meaning from URL: " + e.getMessage());
+	    }
+	    return null;
 	}
+
 
 	@Override
 	public void updateFarsiMeaning(String word, String farsiMeaning) {
-		String sql = "UPDATE dictionary SET persian_meaning = ? WHERE arabic_word = ?";
-		try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, farsiMeaning);
-			pstmt.setString(2, word);
-			pstmt.executeUpdate();
-			System.out.println("Farsi Meaning updated successfully for word: " + word);
-		} catch (Exception e) {
-			System.err.println("Error updating Farsi meaning: " + e.getMessage());
-		}
+	    String sql = "UPDATE dictionary SET persian_meaning = ? WHERE arabic_word = ?";
+	    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	        pstmt.setString(1, farsiMeaning); // Set the Persian meaning
+	        pstmt.setString(2, word); // Set the Arabic word
+	        pstmt.executeUpdate();
+	        System.out.println("Farsi Meaning updated successfully for word: " + word);
+	    } catch (Exception e) {
+	        System.err.println("Error updating Farsi meaning: " + e.getMessage());
+	    }
 	}
 
-	@Override
-	public String getFarsiMeaning(String word) {
-		String sql = "SELECT persian_meaning FROM dictionary WHERE arabic_word = ?";
-		try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setString(1, word);
-			ResultSet rs = pstmt.executeQuery();
-			if (rs.next()) {
-				return rs.getString("persian_meaning");
-			}
-		} catch (Exception e) {
-			System.err.println("Error retrieving Farsi meaning: " + e.getMessage());
-		}
-		return null;
-	}
+
+    @Override
+    public String getFarsiMeaning(String word) {
+        String sql = "SELECT persian_meaning FROM dictionary WHERE arabic_word = ?";
+        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, word); // Use the Arabic word to fetch the meaning
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("persian_meaning");
+            }
+        } catch (Exception e) {
+            System.err.println("Error retrieving Farsi meaning: " + e.getMessage());
+        }
+        return null;
+    }
 
 	@Override
 	public void markAsFavorite(String arabicWord, boolean isFavorite) {
@@ -419,52 +441,6 @@ public class WordDAO implements IWordDAO {
 	}
 
 	@Override
-	public boolean insertLemmatizedWord(String originalWord, String lemmatizedWord) {
-		String query = "INSERT INTO dictionary (original_word, lemmatized_word) VALUES (?, ?)";
-		try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
-			stmt.setString(1, originalWord);
-			stmt.setString(2, lemmatizedWord);
-			return stmt.executeUpdate() > 0;
-		} catch (SQLException e) {
-			LOGGER.log(Level.SEVERE, "Error inserting lemmatized word: " + originalWord, e);
-		}
-		return false;
-	}
-
-	@Override
-	public String getLemmatizedWord(String originalWord) {
-		String query = "SELECT lemmatized_word FROM dictionary WHERE original_word = ?";
-		try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(query)) {
-			stmt.setString(1, originalWord);
-			ResultSet rs = stmt.executeQuery();
-			if (rs.next()) {
-				return rs.getString("lemmatized_word");
-			}
-		} catch (SQLException e) {
-			LOGGER.log(Level.SEVERE, "Error retrieving lemmatized word for: " + originalWord, e);
-		}
-		return null;
-	}
-
-	@Override
-	public List<String> getAllLemmaztizedWords() {
-		List<String> words = new ArrayList<>();
-		String query = "SELECT original_word, lemmatized_word FROM dictionary";
-		try (Connection conn = connect();
-				Statement stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(query)) {
-			while (rs.next()) {
-				String originalWord = rs.getString("original_word");
-				String lemmatizedWord = rs.getString("lemmatized_word");
-				words.add("Original: " + originalWord + " | Lemmatized: " + lemmatizedWord);
-			}
-		} catch (SQLException e) {
-			LOGGER.log(Level.SEVERE, "Error retrieving all words", e);
-		}
-		return words;
-	}
-
-	@Override
 	public List<String> segmentWordWithDiacritics(String word) {
 		Map<Integer, Character> diacriticalMarks = new HashMap<>();
 		StringBuilder strippedWord = new StringBuilder();
@@ -526,7 +502,6 @@ public class WordDAO implements IWordDAO {
 	public List<String> getRecentSearchSuggestions() {
 		List<String> recentSuggestions = new ArrayList<>();
 		String query = "SELECT arabic_word FROM searchhistory ORDER BY search_time DESC LIMIT 5";
-																									
 
 		try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
 				Statement stmt = conn.createStatement();
@@ -540,4 +515,29 @@ public class WordDAO implements IWordDAO {
 		}
 		return recentSuggestions;
 	}
+
+	@Override
+	public String[] getMeaningsFromDB(String word) {
+		String[] meanings = new String[2];
+		String query = "SELECT persian_meaning, urdu_meaning FROM dictionary WHERE arabic_word = ?";
+
+		try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+				PreparedStatement stmt = conn.prepareStatement(query)) {
+
+			stmt.setString(1, word);
+
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+
+					meanings[0] = rs.getString("urdu_meaning");
+					meanings[1] = rs.getString("persian_meaning");
+				}
+			}
+		} catch (SQLException e) {
+			System.err.println("Error retrieving meanings for word: " + e.getMessage());
+		}
+
+		return meanings;
+	}
+
 }

@@ -1,23 +1,9 @@
 package pl;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.WindowConstants;
-
+import javax.swing.*;
 import bl.IBLFacade;
 
 public class DictionaryScraper extends JFrame {
@@ -33,7 +19,6 @@ public class DictionaryScraper extends JFrame {
         mainDashboard.setVisible(false);
         initializeUI();
     }
-
 
     private void initializeUI() {
         setTitle("Dictionary Scraper");
@@ -105,51 +90,84 @@ public class DictionaryScraper extends JFrame {
         gbc.gridwidth = 2;
         add(backButton, gbc);
 
-        scrapeUrduButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String urduFilePath = urduFilePathField.getText().trim();
-                if (urduFilePath.isEmpty()) {
-                    outputArea.append("Please provide a valid Urdu file path.\n");
-                    return;
-                }
-
-                String[] result = facade.saveWordAndUrduMeaning(urduFilePath);
-                if (result != null) {
-                    outputArea.append("Scraped Word: " + result[0] + ", Urdu Meaning: " + result[1] + "\n");
-                }
+        scrapeUrduButton.addActionListener(e -> {
+            String urduFilePath = urduFilePathField.getText().trim();
+            if (urduFilePath.isEmpty()) {
+                outputArea.append("Please provide a valid Urdu file path.\n");
+                return;
             }
+            new ScrapeTask("Urdu", urduFilePath, null).execute();
         });
 
-        scrapeFarsiButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String farsiFilePath = farsiFilePathField.getText().trim();
-                if (farsiFilePath.isEmpty()) {
-                    outputArea.append("Please provide a valid Persian file path.\n");
-                    return;
-                }
-
-                String wordToUpdate = JOptionPane.showInputDialog("Enter the word to update Persian meaning:");
-                if (wordToUpdate == null || wordToUpdate.isEmpty()) {
-                    outputArea.append("Word cannot be empty.\n");
-                    return;
-                }
-
-                facade.saveFarsiMeaning(wordToUpdate, farsiFilePath);
-                String farsiMeaning = facade.getFarsiMeaning(wordToUpdate);
-                if (farsiMeaning != null) {
-                    outputArea.append("Farsi Meaning for '" + wordToUpdate + "': " + farsiMeaning + "\n");
-                }
+        scrapeFarsiButton.addActionListener(e -> {
+            String farsiFilePath = farsiFilePathField.getText().trim();
+            if (farsiFilePath.isEmpty()) {
+                outputArea.append("Please provide a valid Persian file path.\n");
+                return;
             }
+
+            String wordToUpdate = JOptionPane.showInputDialog("Enter the word to update Persian meaning:");
+            if (wordToUpdate == null || wordToUpdate.isEmpty()) {
+                outputArea.append("Word cannot be empty.\n");
+                return;
+            }
+
+            new ScrapeTask("Farsi", farsiFilePath, wordToUpdate).execute();
         });
 
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                DictionaryScraper.this.setVisible(false);
-                mainDashboard.setVisible(true);
-            }
+        backButton.addActionListener(e -> {
+            DictionaryScraper.this.setVisible(false);
+            mainDashboard.setVisible(true);
         });
+    }
+
+    private class ScrapeTask extends SwingWorker<Void, String> {
+        private final String taskType;
+        private final String filePath;
+        private final String wordToUpdate;
+
+        public ScrapeTask(String taskType, String filePath, String wordToUpdate) {
+            this.taskType = taskType;
+            this.filePath = filePath;
+            this.wordToUpdate = wordToUpdate;
+        }
+
+        @Override
+        protected Void doInBackground() {
+            try {
+                if ("Urdu".equals(taskType)) {
+                    // Since saveWordAndUrduMeaning is a void method, just call it without expecting a return value
+                    facade.saveWordAndUrduMeaning(filePath);  // No need to capture any result
+
+                    // Provide feedback after scraping the Urdu file
+                    publish("Urdu scraping completed for file: " + filePath + "\n");
+
+                } else if ("Farsi".equals(taskType)) {
+                    // Update the Farsi meaning for the provided word (still void method)
+                    facade.saveFarsiMeaning(wordToUpdate, filePath);  // No need to capture any result
+
+                    // Now retrieve the updated Farsi meaning
+                    String farsiMeaning = facade.getFarsiMeaning(wordToUpdate);
+
+                    // Check if the Farsi meaning was found and provide feedback
+                    if (farsiMeaning != null) {
+                        publish("Farsi Meaning for '" + wordToUpdate + "': " + farsiMeaning + "\n");
+                    } else {
+                        publish("Farsi meaning found for '" + wordToUpdate + "'.\n");
+                    }
+                }
+            } catch (Exception ex) {
+                // If any error occurs, print it to the output area
+                publish("Error: " + ex.getMessage() + "\n");
+            }
+            return null;
+        }
+
+        @Override
+        protected void process(java.util.List<String> chunks) {
+            for (String message : chunks) {
+                outputArea.append(message);
+            }
+        }
     }
 }

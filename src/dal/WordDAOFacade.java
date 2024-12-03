@@ -123,20 +123,7 @@ public class WordDAOFacade implements IWordDAOFacade {
 		return wordDAO.getRecentSearchHistory(limit);
 	}
 
-	@Override
-	public List<String> getAllLemmaztizedWords() {
-		return wordDAO.getAllLemmaztizedWords();
-	}
-
-	@Override
-	public boolean insertLemmatizedWord(String originalWord, String lemmatizedWord) {
-		return wordDAO.insertLemmatizedWord(originalWord, lemmatizedWord);
-	}
-
-	@Override
-	public String getLemmatizedWord(String originalWord) {
-		return wordDAO.getLemmatizedWord(originalWord);
-	}
+	
 
 	@Override
 	public List<String> segmentWordWithDiacritics(String word) {
@@ -158,4 +145,10 @@ public class WordDAOFacade implements IWordDAOFacade {
 	public List<String> getRecentSearchSuggestions() {
 		return wordDAO.getRecentSearchSuggestions();
 	}
+
+	@Override
+	public String[] getMeaningsFromDB(String word) {
+		return wordDAO.getMeaningsFromDB(word);
+	}
+	
 }

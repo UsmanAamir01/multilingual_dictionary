@@ -30,7 +30,7 @@ public interface IWordDAO {
 
 	public void saveResults(String word, String stem, String root, String pos) throws Exception;
 
-	String[] scrapeWordAndUrduMeaning(String filePath);
+	String[] scrapeWordAndUrduMeaning(String url);
 
 	void saveWordAndUrduMeaning(String word, String urduMeaning);
 
@@ -43,6 +43,8 @@ public interface IWordDAO {
 	void markAsFavorite(String arabicWord, boolean isFavorite);
 
 	List<Word> getFavoriteWords();
+	
+	String[] getMeaningsFromDB(String word);
 
 	boolean isWordFavorite(String arabicWord);
 
@@ -50,13 +52,8 @@ public interface IWordDAO {
 
 	List<Word> getRecentSearchHistory(int limit);
 
-	List<String> getAllLemmaztizedWords();
-
-	boolean insertLemmatizedWord(String originalWord, String lemmatizedWord);
-
-	String getLemmatizedWord(String originalWord);
-
 	List<String> segmentWordWithDiacritics(String word);
 
 	List<String> getRecentSearchSuggestions();
+	
 }

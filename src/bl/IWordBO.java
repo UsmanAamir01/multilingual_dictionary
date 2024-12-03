@@ -28,9 +28,9 @@ public interface IWordBO {
 
 	void saveResults(String word, String stem, String root, String pos) throws Exception;
 
-	String[] saveWordAndUrduMeaning(String filePath);
+	void saveWordAndUrduMeaning(String URL);
 
-	void saveFarsiMeaning(String word, String filePath);
+	void saveFarsiMeaning(String word, String URL);
 
 	String getFarsiMeaning(String word);
 
@@ -44,13 +44,12 @@ public interface IWordBO {
 
 	List<Word> getRecentSearchHistory(int limit);
 
-	List<String> getAllLemmaztizedWords();
-
-	boolean insertLemmatizedWord(String originalWord, String lemmatizedWord);
-
-	String getLemmatizedWord(String originalWord);
-
 	List<String> getSegmentedWordsWithDiacritics(String word);
 
 	List<String> getRecentSearchSuggestions();
+	
+	String[] getMeaningsFromDB(String word);
+	public String[] getMeaning1(String word) throws Exception;
+	
+
 }
