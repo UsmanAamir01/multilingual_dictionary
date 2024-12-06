@@ -1,43 +1,24 @@
 package pl;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
+import java.awt.*;
+import javax.swing.*;
 
 import bl.IBLFacade;
 import dto.Word;
 
 public class ViewOnceWordView extends JFrame {
     private IBLFacade facade;
-    private JTextField arabicWordField;
-    private JButton viewButton, backButton;
-    private JLabel headingLabel;
     private JLabel arabicWordLabel, urduMeaningLabel, persianMeaningLabel;
     private JFrame parentFrame;
 
-    public ViewOnceWordView(IBLFacade facade, JFrame parentFrame) {
+    public ViewOnceWordView(IBLFacade facade, JFrame parentFrame, String arabicWord) {
         this.facade = facade;
         this.parentFrame = parentFrame;
 
-        setTitle("View Word Once");
-        setSize(600,600);
+        setTitle("View Word Details");
+        setSize(600, 400);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         getContentPane().setBackground(new Color(245, 245, 245));
         setLayout(new BorderLayout(10, 10));
 
@@ -45,106 +26,72 @@ public class ViewOnceWordView extends JFrame {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         mainPanel.setBackground(Color.WHITE);
 
-        headingLabel = createHeadingLabel("View a Word Once");
+        JLabel headingLabel = createHeadingLabel("Word Details");
         mainPanel.add(headingLabel, BorderLayout.NORTH);
 
-        JPanel inputPanel = createInputPanel();
-        JPanel footerPanel = createFooterPanel();
+        JPanel detailsPanel = createDetailsPanel();
+        mainPanel.add(detailsPanel, BorderLayout.CENTER);
 
-        mainPanel.add(inputPanel, BorderLayout.CENTER);
+        JPanel footerPanel = createFooterPanel();
         mainPanel.add(footerPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
+
+        // Display the word details immediately
+        displayWordDetails(arabicWord);
     }
 
-    private JPanel createInputPanel() {
-        JPanel inputPanel = new JPanel(new GridBagLayout());
-        inputPanel.setBackground(Color.WHITE);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+    private JPanel createDetailsPanel() {
+        JPanel detailsPanel = new JPanel(new GridLayout(3, 1, 10, 10));
+        detailsPanel.setBackground(Color.WHITE);
 
-        JLabel promptLabel = new JLabel("Enter Arabic Word to View:");
-        promptLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        inputPanel.add(promptLabel, gbc);
+        arabicWordLabel = createMeaningLabel("Arabic Word: ");
+        urduMeaningLabel = createMeaningLabel("Urdu Meaning: ");
+        persianMeaningLabel = createMeaningLabel("Persian Meaning: ");
 
-        arabicWordField = new JTextField(20);
-        arabicWordField.setFont(new Font("Arial", Font.PLAIN, 14));
-        arabicWordField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(180, 180, 180)),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)
-        ));
-        gbc.gridy = 1;
-        inputPanel.add(arabicWordField, gbc);
+        detailsPanel.add(arabicWordLabel);
+        detailsPanel.add(urduMeaningLabel);
+        detailsPanel.add(persianMeaningLabel);
 
-        arabicWordLabel = createMeaningLabel("");
-        urduMeaningLabel = createMeaningLabel("");
-        persianMeaningLabel = createMeaningLabel("");
-
-        gbc.gridy = 2;
-        inputPanel.add(arabicWordLabel, gbc);
-
-        gbc.gridy = 3;
-        inputPanel.add(urduMeaningLabel, gbc);
-
-        gbc.gridy = 4;
-        inputPanel.add(persianMeaningLabel, gbc);
-
-        return inputPanel;
+        return detailsPanel;
     }
 
     private JPanel createFooterPanel() {
         JPanel footerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
         footerPanel.setBackground(new Color(245, 245, 245));
 
-        viewButton = createButton("View Once");
-        backButton = createButton("Back");
+        JButton backButton = createButton("Back");
+        backButton.setToolTipText("Return to the previous screen");
 
-        viewButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                displayWord();
-            }
+        backButton.addActionListener(e -> {
+            dispose();
+            parentFrame.setVisible(true);
         });
 
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-                parentFrame.setVisible(true);
-            }
-        });
-
-        footerPanel.add(viewButton);
         footerPanel.add(backButton);
-
         return footerPanel;
     }
 
-    private void displayWord() {
-        String arabicWord = arabicWordField.getText().trim();
-        if (arabicWord.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter an Arabic word.", "Input Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
+    private void displayWordDetails(String arabicWord) {
         Word word = facade.viewOnceWord(arabicWord);
+
         if (word != null) {
             arabicWordLabel.setText("Arabic Word: " + word.getArabicWord());
             urduMeaningLabel.setText("Urdu Meaning: " + word.getUrduMeaning());
             persianMeaningLabel.setText("Persian Meaning: " + word.getPersianMeaning());
-            arabicWordLabel.setBackground(new Color(224, 247, 218));
-            urduMeaningLabel.setBackground(new Color(224, 247, 218));
-            persianMeaningLabel.setBackground(new Color(224, 247, 218));
+            updateLabelBackgrounds(new Color(224, 247, 218));
         } else {
-            arabicWordLabel.setText("Word not found.");
-            urduMeaningLabel.setText("");
-            persianMeaningLabel.setText("");
-            arabicWordLabel.setBackground(new Color(255, 228, 225));
-            urduMeaningLabel.setBackground(new Color(255, 228, 225));
-            persianMeaningLabel.setBackground(new Color(255, 228, 225));
+            arabicWordLabel.setText("Arabic Word: Word not found.");
+            urduMeaningLabel.setText("Urdu Meaning: ");
+            persianMeaningLabel.setText("Persian Meaning: ");
+            updateLabelBackgrounds(new Color(255, 228, 225));
         }
+    }
+
+    private void updateLabelBackgrounds(Color color) {
+        arabicWordLabel.setBackground(color);
+        urduMeaningLabel.setBackground(color);
+        persianMeaningLabel.setBackground(color);
     }
 
     private JLabel createHeadingLabel(String text) {
