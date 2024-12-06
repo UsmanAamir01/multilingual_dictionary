@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN" monitorInterval="30">
+    <!-- Define reusable properties -->
     <Properties>
         <Property name="logPath">logs/dictionary-app-log.txt</Property>
     </Properties>
-    
+
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout>
@@ -22,6 +23,7 @@
         <Logger name="bl" level="debug" additivity="false">
             <AppenderRef ref="File" />
         </Logger>
+
         <Logger name="dal" level="debug" additivity="false">
             <AppenderRef ref="File" />
         </Logger>

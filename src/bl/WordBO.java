@@ -28,8 +28,7 @@ public class WordBO implements IWordBO {
 	
 	static {
 	    try {
-	       
-	        FileHandler fileHandler = new FileHandler("src/logs/dictionary-app-log.txt", 5000000, 1, true);
+	        FileHandler fileHandler = new FileHandler("src/logs/dictionary-app-log.txt", true); 
 	        fileHandler.setFormatter(new SimpleFormatter());
 	        LOGGER.addHandler(fileHandler);
 	        LOGGER.setLevel(Level.ALL);
