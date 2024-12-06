@@ -13,6 +13,10 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.SimpleFormatter;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -30,6 +34,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import bl.BLFacade;
 import bl.IBLFacade;
 import bl.UserBO;
@@ -37,6 +44,8 @@ import bl.WordBO;
 import dto.Word;
 
 public class WordUI extends JFrame {
+
+	private static final Logger logger = LogManager.getLogger(WordUI.class);
 	private JTextField usernameField;
 	private JPasswordField passwordField;
 	private JButton loginButton;
@@ -62,10 +71,12 @@ public class WordUI extends JFrame {
 				String password = new String(passwordField.getPassword());
 				if (userBo.validateUser(username, password)) {
 					JOptionPane.showMessageDialog(WordUI.this, "Login successful!");
+					logger.info("Login successful for user: " + username);
 					showDashboard();
 				} else {
 					JOptionPane.showMessageDialog(WordUI.this, "Invalid credentials, please try again.", "Error",
 							JOptionPane.ERROR_MESSAGE);
+					logger.warn("Failed login attempt for user: " + username);
 				}
 			}
 		});
@@ -140,7 +151,6 @@ public class WordUI extends JFrame {
 		JButton addWordButton = createSidebarButton("Add Word");
 		JButton viewAllButton = createSidebarButton("View All Words");
 		JButton importFileButton = createSidebarButton("Import File");
-		JButton viewOnceButton = createSidebarButton("View Word");
 		JButton arabicTaggerButton = createSidebarButton("Word Normalization");
 		JButton viewFavoritesButton = createSidebarButton("View Favourites");
 		JButton searchHistoryButton = createSidebarButton("Search History");
@@ -151,7 +161,6 @@ public class WordUI extends JFrame {
 		addWordButton.addActionListener(actionListener);
 		viewAllButton.addActionListener(actionListener);
 		importFileButton.addActionListener(actionListener);
-		viewOnceButton.addActionListener(actionListener);
 		arabicTaggerButton.addActionListener(actionListener);
 		viewFavoritesButton.addActionListener(actionListener);
 		searchHistoryButton.addActionListener(actionListener);
@@ -160,7 +169,6 @@ public class WordUI extends JFrame {
 		sidebarPanel.add(addWordButton);
 		sidebarPanel.add(viewAllButton);
 		sidebarPanel.add(importFileButton);
-		sidebarPanel.add(viewOnceButton);
 		sidebarPanel.add(arabicTaggerButton);
 		sidebarPanel.add(viewFavoritesButton);
 		sidebarPanel.add(searchHistoryButton);
@@ -212,6 +220,7 @@ public class WordUI extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String command = ((JButton) e.getSource()).getText();
+			logger.info("Button clicked: " + command); 
 			switch (command) {
 			case "Add Word":
 				navigateTo(new AddWordView(facade, WordUI.this));
@@ -221,9 +230,6 @@ public class WordUI extends JFrame {
 				break;
 			case "Import File":
 				navigateTo(new DictionaryUI(facade, WordUI.this));
-				break;
-			case "View Word":
-				navigateTo(new ViewOnceWordView(facade, WordUI.this));
 				break;
 			case "Word Normalization":
 				navigateTo(new ArabicWordProcessingView(facade, WordUI.this));
@@ -258,6 +264,7 @@ public class WordUI extends JFrame {
 	private void triggerSearch() {
 		String searchText = searchField.getText().trim();
 		String selectedLanguage = (String) languageComboBox.getSelectedItem();
+		logger.info("Search triggered with term: " + searchText + " in language: " + selectedLanguage);
 
 		if (!searchText.isEmpty()) {
 			String result = facade.getMeanings(searchText, selectedLanguage);
