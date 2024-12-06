@@ -217,20 +217,24 @@ public class AllWordView extends JFrame {
 		    public void mouseClicked(MouseEvent e) {
 		        int clickedRow = table.rowAtPoint(e.getPoint());
 		        int clickedColumn = table.columnAtPoint(e.getPoint());
+		        if (clickedRow != -1) { 
+		            if (clickedColumn == 0 && e.getClickCount() == 1) {
+		                String arabicWord = (String) table.getValueAt(clickedRow, clickedColumn);
 
-		        if (clickedRow != -1 && clickedColumn == 0 && e.getClickCount() == 1) {
-		            String arabicWord = (String) table.getValueAt(clickedRow, clickedColumn); 
-		            new ViewOnceWordView(facade, AllWordView.this, arabicWord);
-		        }
+		                AllWordView.this.setVisible(false);
+		                ViewOnceWordView viewOnceWordView = new ViewOnceWordView(facade, AllWordView.this, arabicWord);
+		                viewOnceWordView.setVisible(true); 
+		            }
 
-		        if (clickedColumn == 3) {
-		            String word = (String) table.getValueAt(clickedRow, 0);
-		            boolean isFavorite = facade.isWordFavorite(word);
-		            boolean newStatus = !isFavorite;
-		            facade.markWordAsFavorite(word, newStatus);
-		            Icon newIcon = new ImageIcon(getClass()
-		                    .getResource(newStatus ? "/images/icon_filledstar.png" : "/images/icon_hollowstar.png"));
-		            table.setValueAt(newIcon, clickedRow, 3);
+		            if (clickedColumn == 3) {
+		                String word = (String) table.getValueAt(clickedRow, 0);
+		                boolean isFavorite = facade.isWordFavorite(word);
+		                boolean newStatus = !isFavorite; 
+		                facade.markWordAsFavorite(word, newStatus);
+		                Icon newIcon = new ImageIcon(getClass()
+		                        .getResource(newStatus ? "/images/icon_filledstar.png" : "/images/icon_hollowstar.png"));
+		                table.setValueAt(newIcon, clickedRow, 3);
+		            }
 		        }
 		    }
 		});

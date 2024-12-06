@@ -151,7 +151,6 @@ public class WordUI extends JFrame {
 		JButton addWordButton = createSidebarButton("Add Word");
 		JButton viewAllButton = createSidebarButton("View All Words");
 		JButton importFileButton = createSidebarButton("Import File");
-		JButton viewOnceButton = createSidebarButton("View Word");
 		JButton arabicTaggerButton = createSidebarButton("Word Normalization");
 		JButton viewFavoritesButton = createSidebarButton("View Favourites");
 		JButton searchHistoryButton = createSidebarButton("Search History");
@@ -162,7 +161,6 @@ public class WordUI extends JFrame {
 		addWordButton.addActionListener(actionListener);
 		viewAllButton.addActionListener(actionListener);
 		importFileButton.addActionListener(actionListener);
-		viewOnceButton.addActionListener(actionListener);
 		arabicTaggerButton.addActionListener(actionListener);
 		viewFavoritesButton.addActionListener(actionListener);
 		searchHistoryButton.addActionListener(actionListener);
@@ -171,7 +169,6 @@ public class WordUI extends JFrame {
 		sidebarPanel.add(addWordButton);
 		sidebarPanel.add(viewAllButton);
 		sidebarPanel.add(importFileButton);
-		sidebarPanel.add(viewOnceButton);
 		sidebarPanel.add(arabicTaggerButton);
 		sidebarPanel.add(viewFavoritesButton);
 		sidebarPanel.add(searchHistoryButton);
@@ -233,9 +230,6 @@ public class WordUI extends JFrame {
 				break;
 			case "Import File":
 				navigateTo(new DictionaryUI(facade, WordUI.this));
-				break;
-			case "View Word":
-				navigateTo(new ViewOnceWordView(facade, WordUI.this, command));
 				break;
 			case "Word Normalization":
 				navigateTo(new ArabicWordProcessingView(facade, WordUI.this));
