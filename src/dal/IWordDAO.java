@@ -8,6 +8,8 @@ import dto.Word;
 public interface IWordDAO {
 	Word getWordFromDB(String arabicWord);
 
+	String[] getMeaningsFromDB(String word);
+
 	boolean updateWordToDB(Word w);
 
 	boolean addWordToDB(Word w);
@@ -43,8 +45,6 @@ public interface IWordDAO {
 	void markAsFavorite(String arabicWord, boolean isFavorite);
 
 	List<Word> getFavoriteWords();
-	
-	String[] getMeaningsFromDB(String word);
 
 	boolean isWordFavorite(String arabicWord);
 
@@ -55,5 +55,5 @@ public interface IWordDAO {
 	List<String> segmentWordWithDiacritics(String word);
 
 	List<String> getRecentSearchSuggestions();
-	
+
 }

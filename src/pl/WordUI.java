@@ -244,7 +244,6 @@ public class WordUI extends JFrame {
 				DictionaryApp dictionaryApp = new DictionaryApp(facade, WordUI.this);
 				navigateTo(dictionaryApp);
 				break;
-
 			case "Close":
 				System.exit(0);
 				break;
@@ -273,9 +272,7 @@ public class WordUI extends JFrame {
 				JOptionPane.showMessageDialog(this,
 						"Searching for: " + searchText + " in " + selectedLanguage + "\n" + result, "Search Result",
 						JOptionPane.INFORMATION_MESSAGE);
-
 				Word word = createWordBasedOnLanguage(searchText, selectedLanguage);
-
 				facade.addSearchToHistory(word);
 
 			} else {
@@ -284,7 +281,6 @@ public class WordUI extends JFrame {
 						"Word not found in the database. Would you like to scrape data for this word or segment it?",
 						"Word Not Found", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options,
 						options[0]);
-
 				if (choice == JOptionPane.YES_OPTION) {
 					showScraperUI(selectedLanguage);
 				} else if (choice == JOptionPane.NO_OPTION) {
