@@ -93,6 +93,9 @@ public class WordDAO implements IWordDAO {
 
 	@Override
 	public Word getWordFromDB(String arabicWord) {
+		 if (arabicWord == null) {
+		        throw new IllegalArgumentException("Arabic word cannot be null.");
+		    }
 		String query = "SELECT aw.arabic_word, aw.isFavorite, um.urdu_meaning, pm.persian_meaning "
 				+ "FROM arabic_word aw " + "LEFT JOIN urdu_meaning um ON aw.id = um.id "
 				+ "LEFT JOIN persian_meaning pm ON aw.id = pm.id " + "WHERE aw.arabic_word = ?";
@@ -491,6 +494,9 @@ public class WordDAO implements IWordDAO {
 
 	@Override
 	public void markAsFavorite(String arabicWord, boolean isFavorite) {
+		if (arabicWord==null) {
+			throw new NullPointerException();
+		}
 		String query = "UPDATE arabic_word SET isFavorite = ? WHERE arabic_word = ?";
 		try (PreparedStatement statement = getConnection().prepareStatement(query)) {
 			statement.setBoolean(1, isFavorite);

@@ -8,6 +8,8 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class DictionaryApp extends JFrame {
     private final IBLFacade facade;
@@ -81,7 +83,7 @@ public class DictionaryApp extends JFrame {
     }
 
     private void processFile() {
-        tableModel.setRowCount(0); // Clear previous data
+        tableModel.setRowCount(0); 
         JFileChooser fileChooser = new JFileChooser();
         int returnValue = fileChooser.showOpenDialog(this);
 
@@ -90,25 +92,23 @@ public class DictionaryApp extends JFrame {
 
             try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
                 String line;
+                ArrayList<String> wordList = new ArrayList<>();
                 while ((line = br.readLine()) != null) {
                     String[] words = line.split("\\s+");
-                    for (String word : words) {
-                        try {
-                            String[] meanings = facade.getMeaning1(word);
-                            String urduMeaning = meanings != null && meanings.length > 0 ? meanings[0] : "Not found";
-                            String persianMeaning = meanings != null && meanings.length > 1 ? meanings[1] : "Not found";
-
-                            tableModel.addRow(new Object[]{word, urduMeaning, persianMeaning});
-                        } catch (Exception e) {
-                            tableModel.addRow(new Object[]{word, "Error retrieving meaning", "Error retrieving meaning"});
-                        }
-                    }
+                    Collections.addAll(wordList, words);
                 }
+
+                String[] wordsArray = wordList.toArray(new String[0]);
+                WordProcessingThread processingThread = new WordProcessingThread(wordsArray, tableModel, facade);
+                processingThread.start();
+
             } catch (IOException ioException) {
                 JOptionPane.showMessageDialog(this, "Error reading file: " + ioException.getMessage());
             }
         }
     }
+
+
 
     private JLabel createHeadingLabel(String text) {
         JLabel label = new JLabel(text, SwingConstants.CENTER);
