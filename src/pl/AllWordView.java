@@ -47,6 +47,12 @@ public class AllWordView extends JFrame {
 			public Class<?> getColumnClass(int columnIndex) {
 				return columnIndex == 3 ? Icon.class : super.getColumnClass(columnIndex);
 			}
+
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return column != 0 && column != 1 && column != 2;
+			}
+
 		};
 
 		table = new JTable(model);
@@ -213,30 +219,33 @@ public class AllWordView extends JFrame {
 		}
 
 		table.addMouseListener(new MouseAdapter() {
-		    @Override
-		    public void mouseClicked(MouseEvent e) {
-		        int clickedRow = table.rowAtPoint(e.getPoint());
-		        int clickedColumn = table.columnAtPoint(e.getPoint());
-		        if (clickedRow != -1) { 
-		            if (clickedColumn == 0 && e.getClickCount() == 1) {
-		                String arabicWord = (String) table.getValueAt(clickedRow, clickedColumn);
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int clickedRow = table.rowAtPoint(e.getPoint());
+				int clickedColumn = table.columnAtPoint(e.getPoint());
 
-		                AllWordView.this.setVisible(false);
-		                ViewOnceWordView viewOnceWordView = new ViewOnceWordView(facade, AllWordView.this, arabicWord);
-		                viewOnceWordView.setVisible(true); 
-		            }
+				if (clickedRow != -1) {
+					if (clickedColumn == 0 && e.getClickCount() == 2) {
+						String arabicWord = (String) table.getValueAt(clickedRow, clickedColumn);
 
-		            if (clickedColumn == 3) {
-		                String word = (String) table.getValueAt(clickedRow, 0);
-		                boolean isFavorite = facade.isWordFavorite(word);
-		                boolean newStatus = !isFavorite; 
-		                facade.markWordAsFavorite(word, newStatus);
-		                Icon newIcon = new ImageIcon(getClass()
-		                        .getResource(newStatus ? "/images/icon_filledstar.png" : "/images/icon_hollowstar.png"));
-		                table.setValueAt(newIcon, clickedRow, 3);
-		            }
-		        }
-		    }
+						AllWordView.this.setVisible(false);
+						ViewOnceWordView viewOnceWordView = new ViewOnceWordView(facade, AllWordView.this, arabicWord);
+						viewOnceWordView.setVisible(true);
+					}
+
+					if (clickedColumn == 3 && e.getClickCount() == 1) {
+						String word = (String) table.getValueAt(clickedRow, 0);
+						boolean isFavorite = facade.isWordFavorite(word);
+						boolean newStatus = !isFavorite;
+
+						facade.markWordAsFavorite(word, newStatus);
+
+						Icon newIcon = new ImageIcon(getClass().getResource(
+								newStatus ? "/images/icon_filledstar.png" : "/images/icon_hollowstar.png"));
+						table.setValueAt(newIcon, clickedRow, 3);
+					}
+				}
+			}
 		});
 	}
 }

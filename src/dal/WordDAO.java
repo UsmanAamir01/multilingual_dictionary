@@ -93,7 +93,10 @@ public class WordDAO implements IWordDAO {
 
 	@Override
 	public Word getWordFromDB(String arabicWord) {
-		String query = "SELECT * FROM dictionary WHERE arabic_word = ?";
+		String query = "SELECT aw.arabic_word, aw.isFavorite, um.urdu_meaning, pm.persian_meaning "
+				+ "FROM arabic_word aw " + "LEFT JOIN urdu_meaning um ON aw.id = um.id "
+				+ "LEFT JOIN persian_meaning pm ON aw.id = pm.id " + "WHERE aw.arabic_word = ?";
+
 		try (PreparedStatement statement = getConnection().prepareStatement(query)) {
 			statement.setString(1, arabicWord);
 			ResultSet resultSet = statement.executeQuery();
@@ -101,10 +104,11 @@ public class WordDAO implements IWordDAO {
 				String wordText = resultSet.getString("arabic_word");
 				String urduMeaning = resultSet.getString("urdu_meaning");
 				String persianMeaning = resultSet.getString("persian_meaning");
-				return new Word(wordText, urduMeaning, persianMeaning, false);
+				boolean isFavorite = resultSet.getBoolean("isFavorite");
+				return new Word(wordText, urduMeaning, persianMeaning, isFavorite);
 			}
 		} catch (SQLException e) {
-			LOGGER.log(Level.SEVERE, "Database error", e);
+			LOGGER.log(Level.SEVERE, "Database error while fetching word", e);
 		}
 		return null;
 	}
@@ -112,7 +116,9 @@ public class WordDAO implements IWordDAO {
 	@Override
 	public String[] getMeaningsFromDB(String word) {
 		String[] meanings = new String[2];
-		String query = "SELECT persian_meaning, urdu_meaning FROM dictionary WHERE arabic_word = ?";
+		String query = "SELECT um.urdu_meaning, pm.persian_meaning " + "FROM arabic_word aw "
+				+ "LEFT JOIN urdu_meaning um ON aw.id = um.id " + "LEFT JOIN persian_meaning pm ON aw.id = pm.id "
+				+ "WHERE aw.arabic_word = ?";
 
 		try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
 				PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -136,40 +142,83 @@ public class WordDAO implements IWordDAO {
 
 	@Override
 	public boolean updateWordToDB(Word w) {
-		String query = "UPDATE dictionary SET urdu_meaning = ?, persian_meaning = ? WHERE arabic_word = ?";
-		try (PreparedStatement statement = getConnection().prepareStatement(query)) {
-			statement.setString(1, w.getUrduMeaning());
-			statement.setString(2, w.getPersianMeaning());
-			statement.setString(3, w.getArabicWord());
-			return statement.executeUpdate() > 0;
+		String updateUrduMeaningQuery = "UPDATE urdu_meaning SET urdu_meaning = ? WHERE id = (SELECT id FROM arabic_word WHERE arabic_word = ?)";
+		String updatePersianMeaningQuery = "UPDATE persian_meaning SET persian_meaning = ? WHERE id = (SELECT id FROM arabic_word WHERE arabic_word = ?)";
+
+		try (PreparedStatement stmtUrdu = getConnection().prepareStatement(updateUrduMeaningQuery);
+				PreparedStatement stmtPersian = getConnection().prepareStatement(updatePersianMeaningQuery)) {
+
+			stmtUrdu.setString(1, w.getUrduMeaning());
+			stmtUrdu.setString(2, w.getArabicWord());
+
+			stmtPersian.setString(1, w.getPersianMeaning());
+			stmtPersian.setString(2, w.getArabicWord());
+
+			int urduUpdateResult = stmtUrdu.executeUpdate();
+			int persianUpdateResult = stmtPersian.executeUpdate();
+
+			return urduUpdateResult > 0 && persianUpdateResult > 0;
+
 		} catch (SQLException e) {
-			LOGGER.log(Level.SEVERE, "Database error", e);
+			LOGGER.log(Level.SEVERE, "Database error while updating word", e);
 		}
 		return false;
 	}
 
 	@Override
 	public boolean addWordToDB(Word w) {
-		String query = "INSERT INTO dictionary (arabic_word, urdu_meaning, persian_meaning) VALUES (?, ?, ?)";
-		try (PreparedStatement statement = getConnection().prepareStatement(query)) {
-			statement.setString(1, w.getArabicWord());
-			statement.setString(2, w.getUrduMeaning());
-			statement.setString(3, w.getPersianMeaning());
-			return statement.executeUpdate() > 0;
+		String insertArabicWordQuery = "INSERT INTO arabic_word (arabic_word) VALUES (?)";
+		String insertUrduMeaningQuery = "INSERT INTO urdu_meaning (id, urdu_meaning) VALUES ((SELECT id FROM arabic_word WHERE arabic_word = ?), ?)";
+		String insertPersianMeaningQuery = "INSERT INTO persian_meaning (id, persian_meaning) VALUES ((SELECT id FROM arabic_word WHERE arabic_word = ?), ?)";
+
+		try (PreparedStatement stmtArabic = getConnection().prepareStatement(insertArabicWordQuery);
+				PreparedStatement stmtUrdu = getConnection().prepareStatement(insertUrduMeaningQuery);
+				PreparedStatement stmtPersian = getConnection().prepareStatement(insertPersianMeaningQuery)) {
+
+			stmtArabic.setString(1, w.getArabicWord());
+			int arabicWordInsertResult = stmtArabic.executeUpdate();
+			if (arabicWordInsertResult > 0) {
+				stmtUrdu.setString(1, w.getArabicWord());
+				stmtUrdu.setString(2, w.getUrduMeaning());
+
+				stmtPersian.setString(1, w.getArabicWord());
+				stmtPersian.setString(2, w.getPersianMeaning());
+
+				int urduInsertResult = stmtUrdu.executeUpdate();
+				int persianInsertResult = stmtPersian.executeUpdate();
+
+				return urduInsertResult > 0 && persianInsertResult > 0;
+			}
+
 		} catch (SQLException e) {
-			LOGGER.log(Level.SEVERE, "Database error", e);
+			LOGGER.log(Level.SEVERE, "Database error while adding word", e);
 		}
 		return false;
 	}
 
 	@Override
 	public boolean removeWordFromDB(String arabicWord) {
-		String query = "DELETE FROM dictionary WHERE arabic_word = ?";
-		try (PreparedStatement statement = getConnection().prepareStatement(query)) {
-			statement.setString(1, arabicWord);
-			return statement.executeUpdate() > 0;
+		String deleteUrduMeaningQuery = "DELETE FROM urdu_meaning WHERE id = (SELECT id FROM arabic_word WHERE arabic_word = ?)";
+		String deletePersianMeaningQuery = "DELETE FROM persian_meaning WHERE id = (SELECT id FROM arabic_word WHERE arabic_word = ?)";
+		String deleteArabicWordQuery = "DELETE FROM arabic_word WHERE arabic_word = ?";
+
+		try (PreparedStatement stmtUrdu = getConnection().prepareStatement(deleteUrduMeaningQuery);
+				PreparedStatement stmtPersian = getConnection().prepareStatement(deletePersianMeaningQuery);
+				PreparedStatement stmtArabic = getConnection().prepareStatement(deleteArabicWordQuery)) {
+
+			stmtUrdu.setString(1, arabicWord);
+			int urduDeleteResult = stmtUrdu.executeUpdate();
+
+			stmtPersian.setString(1, arabicWord);
+			int persianDeleteResult = stmtPersian.executeUpdate();
+
+			stmtArabic.setString(1, arabicWord);
+			int arabicDeleteResult = stmtArabic.executeUpdate();
+
+			return urduDeleteResult > 0 && persianDeleteResult > 0 && arabicDeleteResult > 0;
+
 		} catch (SQLException e) {
-			LOGGER.log(Level.SEVERE, "Database error", e);
+			LOGGER.log(Level.SEVERE, "Database error while removing word", e);
 		}
 		return false;
 	}
@@ -177,7 +226,10 @@ public class WordDAO implements IWordDAO {
 	@Override
 	public List<Word> getAllWords() {
 		List<Word> wordList = new ArrayList<>();
-		String query = "SELECT arabic_word, urdu_meaning, persian_meaning, isFavorite FROM dictionary";
+		String query = "SELECT aw.arabic_word, um.urdu_meaning, pm.persian_meaning, aw.isFavorite "
+				+ "FROM arabic_word aw " + "LEFT JOIN urdu_meaning um ON aw.id = um.id "
+				+ "LEFT JOIN persian_meaning pm ON aw.id = pm.id";
+
 		try (PreparedStatement stmt = getConnection().prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 			while (rs.next()) {
 				wordList.add(new Word(rs.getString("arabic_word"), rs.getString("urdu_meaning"),
@@ -227,19 +279,28 @@ public class WordDAO implements IWordDAO {
 	@Override
 	public List<Word> searchWord(String searchTerm) {
 		List<Word> results = new ArrayList<>();
-		String query = "SELECT * FROM dictionary WHERE arabic_word LIKE ? OR urdu_meaning LIKE ? OR persian_meaning LIKE ?";
+		String query = "SELECT aw.arabic_word, aw.isFavorite, um.urdu_meaning, pm.persian_meaning "
+				+ "FROM arabic_word aw " + "LEFT JOIN urdu_meaning um ON aw.id = um.id "
+				+ "LEFT JOIN persian_meaning pm ON aw.id = pm.id "
+				+ "WHERE aw.arabic_word LIKE ? OR um.urdu_meaning LIKE ? OR pm.persian_meaning LIKE ?";
+
 		try (PreparedStatement statement = getConnection().prepareStatement(query)) {
 			String searchPattern = "%" + searchTerm + "%";
 			statement.setString(1, searchPattern);
 			statement.setString(2, searchPattern);
 			statement.setString(3, searchPattern);
-			ResultSet resultSet = statement.executeQuery();
-			while (resultSet.next()) {
-				results.add(new Word(resultSet.getString("arabic_word"), resultSet.getString("urdu_meaning"),
-						resultSet.getString("persian_meaning"), false));
+
+			try (ResultSet resultSet = statement.executeQuery()) {
+				while (resultSet.next()) {
+					String wordText = resultSet.getString("arabic_word");
+					String urduMeaning = resultSet.getString("urdu_meaning");
+					String persianMeaning = resultSet.getString("persian_meaning");
+					boolean isFavorite = resultSet.getBoolean("isFavorite");
+					results.add(new Word(wordText, urduMeaning, persianMeaning, isFavorite));
+				}
 			}
 		} catch (SQLException e) {
-			LOGGER.log(Level.SEVERE, "Database error", e);
+			LOGGER.log(Level.SEVERE, "Database error while searching for word", e);
 		}
 		return results;
 	}
@@ -248,18 +309,27 @@ public class WordDAO implements IWordDAO {
 	public String getMeanings(String word, String language) {
 		StringBuilder meanings = new StringBuilder();
 		String query;
+
 		if ("Urdu".equalsIgnoreCase(language)) {
-			query = "SELECT arabic_word, persian_meaning FROM dictionary WHERE urdu_meaning = ?";
+			query = "SELECT aw.arabic_word, pm.persian_meaning FROM arabic_word aw "
+					+ "LEFT JOIN persian_meaning pm ON aw.id = pm.id "
+					+ "LEFT JOIN urdu_meaning um ON aw.id = um.id WHERE um.urdu_meaning = ?";
 		} else if ("Persian".equalsIgnoreCase(language)) {
-			query = "SELECT arabic_word, urdu_meaning FROM dictionary WHERE persian_meaning = ?";
+			query = "SELECT aw.arabic_word, um.urdu_meaning FROM arabic_word aw "
+					+ "LEFT JOIN urdu_meaning um ON aw.id = um.id "
+					+ "LEFT JOIN persian_meaning pm ON aw.id = pm.id WHERE pm.persian_meaning = ?";
 		} else if ("Arabic".equalsIgnoreCase(language)) {
-			query = "SELECT urdu_meaning, persian_meaning FROM dictionary WHERE arabic_word = ?";
+			query = "SELECT um.urdu_meaning, pm.persian_meaning FROM arabic_word aw "
+					+ "LEFT JOIN urdu_meaning um ON aw.id = um.id "
+					+ "LEFT JOIN persian_meaning pm ON aw.id = pm.id WHERE aw.arabic_word = ?";
 		} else {
 			return "Invalid language selection.";
 		}
+
 		try (PreparedStatement preparedStatement = getConnection().prepareStatement(query)) {
 			preparedStatement.setString(1, word);
 			ResultSet resultSet = preparedStatement.executeQuery();
+
 			if (resultSet.next()) {
 				if ("Urdu".equalsIgnoreCase(language)) {
 					meanings.append("Arabic: ").append(resultSet.getString("arabic_word")).append("\n");
@@ -284,7 +354,8 @@ public class WordDAO implements IWordDAO {
 	@Override
 	public String fetchArabicWord() throws Exception {
 		String arabicWord = null;
-		String query = "SELECT arabic_word FROM dictionary";
+		String query = "SELECT arabic_word FROM arabic_word";
+
 		try (Connection connection = connect();
 				PreparedStatement statement = connection.prepareStatement(query);
 				ResultSet resultSet = statement.executeQuery()) {
@@ -331,12 +402,27 @@ public class WordDAO implements IWordDAO {
 
 	@Override
 	public void saveWordAndUrduMeaning(String word, String urduMeaning) {
-		String sql = "INSERT INTO dictionary (arabic_word, urdu_meaning) VALUES (?, ?)";
-		try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		String insertArabicWordQuery = "INSERT INTO arabic_word (arabic_word) VALUES (?)";
+
+		try (Connection conn = connect();
+				PreparedStatement pstmt = conn.prepareStatement(insertArabicWordQuery,
+						PreparedStatement.RETURN_GENERATED_KEYS)) {
+
 			pstmt.setString(1, word);
-			pstmt.setString(2, urduMeaning);
 			pstmt.executeUpdate();
-			LOGGER.log(Level.INFO, "Record inserted successfully for word: " + word);
+
+			ResultSet generatedKeys = pstmt.getGeneratedKeys();
+			if (generatedKeys.next()) {
+				int arabicWordId = generatedKeys.getInt(1);
+
+				String insertUrduMeaningQuery = "INSERT INTO urdu_meaning (id, urdu_meaning) VALUES (?, ?)";
+				try (PreparedStatement pstmtUrdu = conn.prepareStatement(insertUrduMeaningQuery)) {
+					pstmtUrdu.setInt(1, arabicWordId);
+					pstmtUrdu.setString(2, urduMeaning);
+					pstmtUrdu.executeUpdate();
+					LOGGER.log(Level.INFO, "Record inserted successfully for word: " + word);
+				}
+			}
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "Error saving word and Urdu meaning: " + e.getMessage(), e);
 		}
@@ -369,7 +455,8 @@ public class WordDAO implements IWordDAO {
 
 	@Override
 	public void updateFarsiMeaning(String word, String farsiMeaning) {
-		String sql = "UPDATE dictionary SET persian_meaning = ? WHERE arabic_word = ?";
+		String sql = "UPDATE persian_meaning SET persian_meaning = ? WHERE id = (SELECT id FROM arabic_word WHERE arabic_word = ?)";
+
 		try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, farsiMeaning);
 			pstmt.setString(2, word);
@@ -383,7 +470,8 @@ public class WordDAO implements IWordDAO {
 
 	@Override
 	public String getFarsiMeaning(String word) {
-		String sql = "SELECT persian_meaning FROM dictionary WHERE arabic_word = ?";
+		String sql = "SELECT persian_meaning FROM persian_meaning WHERE id = (SELECT id FROM arabic_word WHERE arabic_word = ?)";
+
 		try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, word);
 			ResultSet rs = pstmt.executeQuery();
@@ -403,22 +491,27 @@ public class WordDAO implements IWordDAO {
 
 	@Override
 	public void markAsFavorite(String arabicWord, boolean isFavorite) {
-		String query = "UPDATE dictionary SET isFavorite = ? WHERE arabic_word = ?";
+		String query = "UPDATE arabic_word SET isFavorite = ? WHERE arabic_word = ?";
 		try (PreparedStatement statement = getConnection().prepareStatement(query)) {
 			statement.setBoolean(1, isFavorite);
 			statement.setString(2, arabicWord);
 			statement.executeUpdate();
+			LOGGER.log(Level.INFO, "Successfully updated favorite status for word: {0}", arabicWord);
 		} catch (SQLException e) {
-			LOGGER.log(Level.SEVERE, "Error updating favorite status.", e);
+			LOGGER.log(Level.SEVERE, "Error updating favorite status for word: {0}", arabicWord);
 		}
 	}
 
 	@Override
 	public List<Word> getFavoriteWords() {
 		List<Word> favoriteWords = new ArrayList<>();
-		String query = "SELECT * FROM dictionary WHERE isFavorite = TRUE";
-		try (Statement stmt = connection.createStatement()) {
-			ResultSet rs = stmt.executeQuery(query);
+		String query = "SELECT arabic_word.arabic_word, arabic_word.isFavorite, urdu_meaning.urdu_meaning, persian_meaning.persian_meaning "
+				+ "FROM arabic_word " + "LEFT JOIN urdu_meaning ON arabic_word.id = urdu_meaning.id "
+				+ "LEFT JOIN persian_meaning ON arabic_word.id = persian_meaning.id "
+				+ "WHERE arabic_word.isFavorite = TRUE";
+
+		try (PreparedStatement stmt = connection.prepareStatement(query)) {
+			ResultSet rs = stmt.executeQuery();
 			while (rs.next()) {
 				favoriteWords.add(new Word(rs.getString("arabic_word"), rs.getString("urdu_meaning"),
 						rs.getString("persian_meaning"), rs.getBoolean("isFavorite")));
@@ -432,7 +525,7 @@ public class WordDAO implements IWordDAO {
 
 	@Override
 	public boolean isWordFavorite(String arabicWord) {
-		String query = "SELECT isFavorite FROM dictionary WHERE arabic_word = ?";
+		String query = "SELECT isFavorite FROM arabic_word WHERE arabic_word = ?";
 		try (PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setString(1, arabicWord);
 			ResultSet resultSet = statement.executeQuery();
@@ -455,15 +548,15 @@ public class WordDAO implements IWordDAO {
 		try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
 				PreparedStatement stmt = conn.prepareStatement(query)) {
 
-			stmt.setString(1, word.getArabicWord() != null ? word.getArabicWord() : null);
-			stmt.setString(2, word.getPersianMeaning() != null ? word.getPersianMeaning() : null);
-			stmt.setString(3, word.getUrduMeaning() != null ? word.getUrduMeaning() : null);
+			stmt.setString(1, word.getArabicWord());
+			stmt.setString(2, word.getPersianMeaning());
+			stmt.setString(3, word.getUrduMeaning());
 
 			stmt.executeUpdate();
-			LOGGER.log(Level.INFO, "Added search to history: {0}", word);
+			LOGGER.log(Level.INFO, "Added search to history for word: {0}", word.getArabicWord());
 		} catch (SQLException e) {
 			LOGGER.log(Level.SEVERE, "Error adding search to history for word {0}: {1}",
-					new Object[] { word, e.getMessage() });
+					new Object[] { word.getArabicWord(), e.getMessage() });
 		}
 	}
 
@@ -474,6 +567,7 @@ public class WordDAO implements IWordDAO {
 		try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
 				PreparedStatement stmt = conn.prepareStatement(query)) {
 			stmt.setInt(1, limit);
+
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
 					Word word = new Word(rs.getString("arabic_word"), rs.getString("persian_meaning"),
@@ -481,9 +575,10 @@ public class WordDAO implements IWordDAO {
 					history.add(word);
 				}
 			}
-			LOGGER.log(Level.INFO, "Retrieved recent search history with limit: {0}", limit);
+			LOGGER.log(Level.INFO, "Successfully retrieved recent search history with limit: {0}", limit);
+
 		} catch (SQLException e) {
-			LOGGER.log(Level.SEVERE, "Error retrieving search history with limit {0}: {1}",
+			LOGGER.log(Level.SEVERE, "Error retrieving recent search history with limit {0}: {1}",
 					new Object[] { limit, e.getMessage() });
 		}
 		return history;
