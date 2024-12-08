@@ -23,14 +23,6 @@ public class AddWordTesting {
 
 		try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/Dictionarydb", "root", "");
 				Statement stmt = conn.createStatement()) {
-
-			stmt.execute("DELETE FROM persian_meaning");
-			stmt.execute("DELETE FROM urdu_meaning");
-			stmt.execute("DELETE FROM arabic_word");
-
-			stmt.execute("ALTER TABLE words AUTO_INCREMENT = 1");
-			stmt.execute("ALTER TABLE urdumeaning AUTO_INCREMENT = 1");
-			stmt.execute("ALTER TABLE persianmeaning AUTO_INCREMENT = 1");
 		}
 	}
 
