@@ -1,4 +1,9 @@
+package testing;
+
 import org.junit.jupiter.api.*;
+
+import dal.WordDAO;
+
 import java.sql.*;
 
 import static org.junit.jupiter.api.Assertions.*;
