@@ -143,10 +143,16 @@ public class WordUI extends JFrame {
 	private void showDashboard() {
 		getContentPane().removeAll();
 		setTitle("Dashboard");
-
-		sidebarPanel = new JPanel(new GridLayout(9, 1, 10, 10));
-		sidebarPanel.setPreferredSize(new Dimension(200, 600));
+		
+		// Sidebar Panel Setup
+		sidebarPanel = new JPanel(new GridLayout(11, 1, 10, 10)); // Adjusted rows to provide more space for logo
+		sidebarPanel.setPreferredSize(new Dimension(200, 700)); // Increased height to accommodate adjustments
 		sidebarPanel.setBackground(new Color(240, 240, 240));
+
+		// Add Logo Panel to Sidebar
+		JPanel logoPanel = createLogoPanel("src/images/logo_dictionary-name.png", 150, 150); // Adjusted logo dimensions
+		sidebarPanel.add(logoPanel);
+
 
 		JButton addWordButton = createSidebarButton("Add Word");
 		JButton viewAllButton = createSidebarButton("View All Words");
@@ -174,6 +180,7 @@ public class WordUI extends JFrame {
 		sidebarPanel.add(searchHistoryButton);
 		sidebarPanel.add(Customdictionary);
 		sidebarPanel.add(closeButton);
+
 		mainContentPanel = new JPanel();
 		mainContentPanel.setLayout(new BoxLayout(mainContentPanel, BoxLayout.Y_AXIS));
 		mainContentPanel.setBackground(Color.WHITE);
@@ -214,6 +221,20 @@ public class WordUI extends JFrame {
 		add(splitPane);
 		revalidate();
 		repaint();
+	}
+
+	private JPanel createLogoPanel(String logoPath, int width, int height) {
+		JPanel logoPanel = new JPanel();
+		logoPanel.setBackground(new Color(240, 240, 240));
+		logoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+		JLabel logoLabel = new JLabel();
+		ImageIcon logoIcon = new ImageIcon(logoPath);
+		Image scaledImage = logoIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+		logoLabel.setIcon(new ImageIcon(scaledImage));
+		logoPanel.add(logoLabel);
+
+		return logoPanel;
 	}
 
 	private class SidebarButtonActionListener implements ActionListener {

@@ -1,0 +1,86 @@
+Dec 11, 2024 12:52:30 PM dal.WordDAO <init>
+SEVERE: Failed to initialize WordDAO: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+Dec 11, 2024 12:54:13 PM dal.WordDAO <init>
+INFO: WordDAO initialized and database connection established.
+Dec 11, 2024 12:54:24 PM dal.WordDAO getConnection
+INFO: Using existing database connection.
+Dec 11, 2024 12:54:24 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: أجمل - isFavorite: false
+Dec 11, 2024 12:54:24 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: إِيْجَادُ - isFavorite: false
+Dec 11, 2024 12:54:24 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: ال - isFavorite: false
+Dec 11, 2024 12:54:24 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: حب - isFavorite: false
+Dec 11, 2024 12:54:24 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: خواب - isFavorite: false
+Dec 11, 2024 12:54:24 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: خوشی - isFavorite: false
+Dec 11, 2024 12:54:24 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: دوست - isFavorite: false
+Dec 11, 2024 12:54:24 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: سکون - isFavorite: false
+Dec 11, 2024 12:54:24 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: محبت - isFavorite: false
+Dec 11, 2024 12:54:24 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: ْأَشْغَال - isFavorite: false
+Dec 11, 2024 12:54:24 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: کتاب - isFavorite: false
+Dec 11, 2024 12:54:28 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: دوست - isFavorite: false
+Dec 11, 2024 12:54:28 PM dal.WordDAO getConnection
+INFO: Using existing database connection.
+Dec 11, 2024 12:54:28 PM dal.WordDAO markAsFavorite
+INFO: Successfully updated favorite status for word: دوست
+Dec 11, 2024 12:54:29 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: دوست - isFavorite: true
+Dec 11, 2024 12:54:29 PM dal.WordDAO getConnection
+INFO: Using existing database connection.
+Dec 11, 2024 12:54:29 PM dal.WordDAO markAsFavorite
+INFO: Successfully updated favorite status for word: دوست
+Dec 11, 2024 12:54:31 PM dal.WordDAO getConnection
+INFO: Using existing database connection.
+Dec 11, 2024 12:54:31 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: دوست - isFavorite: false
+Dec 11, 2024 12:54:35 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: دوست - isFavorite: false
+Dec 11, 2024 12:54:35 PM dal.WordDAO getConnection
+INFO: Using existing database connection.
+Dec 11, 2024 12:54:35 PM dal.WordDAO markAsFavorite
+INFO: Successfully updated favorite status for word: دوست
+Dec 11, 2024 12:54:36 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: دوست - isFavorite: true
+Dec 11, 2024 12:54:36 PM dal.WordDAO getConnection
+INFO: Using existing database connection.
+Dec 11, 2024 12:54:36 PM dal.WordDAO markAsFavorite
+INFO: Successfully updated favorite status for word: دوست
+Dec 11, 2024 12:55:07 PM dal.WordDAO getConnection
+INFO: Using existing database connection.
+Dec 11, 2024 12:55:07 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: أجمل - isFavorite: false
+Dec 11, 2024 12:55:07 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: إِيْجَادُ - isFavorite: false
+Dec 11, 2024 12:55:07 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: ال - isFavorite: false
+Dec 11, 2024 12:55:07 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: حب - isFavorite: false
+Dec 11, 2024 12:55:07 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: خواب - isFavorite: false
+Dec 11, 2024 12:55:07 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: خوشی - isFavorite: false
+Dec 11, 2024 12:55:07 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: دوست - isFavorite: false
+Dec 11, 2024 12:55:07 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: سکون - isFavorite: false
+Dec 11, 2024 12:55:07 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: محبت - isFavorite: false
+Dec 11, 2024 12:55:07 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: ْأَشْغَال - isFavorite: false
+Dec 11, 2024 12:55:07 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: کتاب - isFavorite: false
+Dec 11, 2024 12:55:08 PM dal.WordDAO getConnection
+INFO: Using existing database connection.
+Dec 11, 2024 12:55:08 PM dal.WordDAO isWordFavorite
+INFO: Checked favorite status for word: حب - isFavorite: false

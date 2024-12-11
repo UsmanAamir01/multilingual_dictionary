@@ -12,7 +12,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -23,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
@@ -71,20 +71,46 @@ public class DictionaryUI extends JFrame {
                     File selectedFile = fileChooser.getSelectedFile();
                     String filePath = selectedFile.getAbsolutePath();
                     filePathField.setText(filePath);
-                    List<Word> importedWords = facade.importDataFromFile(filePath);
-                    if (!importedWords.isEmpty() && facade.insertImportedData(importedWords)) {
-                        DefaultTableModel tableModel = (DefaultTableModel) dataTable.getModel();
-                        tableModel.setRowCount(0);
-                        for (Word word : importedWords) {
-                            tableModel.addRow(new Object[]{word.getArabicWord(), word.getUrduMeaning(), word.getPersianMeaning()});
+
+                    Thread importThread = new Thread(() -> {
+                        try {
+                            List<Word> importedWords = facade.importDataFromFile(filePath);
+                            if (!importedWords.isEmpty()) {
+                                DefaultTableModel tableModel = (DefaultTableModel) dataTable.getModel();
+
+                                for (Word word : importedWords) {
+                                    Thread.sleep(500);
+                                    synchronized (dataTable) {
+                                        tableModel.addRow(new Object[]{
+                                            word.getArabicWord(),
+                                            word.getUrduMeaning(),
+                                            word.getPersianMeaning()
+                                        });
+                                    }
+                                }
+                                
+                                facade.insertImportedData(importedWords);
+                                synchronized (DictionaryUI.this) {
+                                    JOptionPane.showMessageDialog(DictionaryUI.this, "Data import completed successfully!");
+                                }
+                            } else {
+                                synchronized (DictionaryUI.this) {
+                                    JOptionPane.showMessageDialog(DictionaryUI.this, "No valid data found in the file.");
+                                }
+                            }
+                        } catch (Exception e) {
+                            synchronized (DictionaryUI.this) {
+                                JOptionPane.showMessageDialog(DictionaryUI.this, "An error occurred: " + e.getMessage());
+                            }
                         }
-                        JOptionPane.showMessageDialog(DictionaryUI.this, "Data imported successfully!");
-                    } else {
-                        JOptionPane.showMessageDialog(DictionaryUI.this, "No valid data found in the file or import failed.");
-                    }
+                    });
+
+                    importThread.start();
                 }
             }
         });
+
+
 
         backButton.addActionListener(new ActionListener() {
             @Override
