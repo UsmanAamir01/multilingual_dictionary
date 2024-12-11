@@ -99,7 +99,6 @@ public class WordSegmentationUI extends JFrame {
         meaningPanel.add(new JScrollPane(meaningArea), BorderLayout.CENTER);
         add(meaningPanel, gbc);
 
-        // Adding back button
         gbc.gridx = 0;
         gbc.gridy = 3;
         JPanel backPanel = new JPanel(new BorderLayout());

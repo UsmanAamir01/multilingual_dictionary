@@ -26,16 +26,16 @@ public class WordBO implements IWordBO {
 	private IWordDAOFacade wordDAOFacade;
 	private static final Logger LOGGER = Logger.getLogger(WordDAO.class.getName());
 	
-	static {
-	    try {
-	        FileHandler fileHandler = new FileHandler("src/logs/dictionary-app-log.txt", true); 
-	        fileHandler.setFormatter(new SimpleFormatter());
-	        LOGGER.addHandler(fileHandler);
-	        LOGGER.setLevel(Level.ALL);
-	    } catch (IOException e) {
-	        LOGGER.log(Level.SEVERE, "Error setting up file handler", e);
-	    }
-	}
+//	static {
+//	    try {
+//	        FileHandler fileHandler = new FileHandler("src/logs/dictionary-app-log.txt", true); 
+//	        fileHandler.setFormatter(new SimpleFormatter());
+//	        LOGGER.addHandler(fileHandler);
+//	        LOGGER.setLevel(Level.ALL);
+//	    } catch (IOException e) {
+//	        LOGGER.log(Level.SEVERE, "Error setting up file handler", e);
+//	    }
+//	}
 
 	public WordBO() {
 		wordDAOFacade = new WordDAOFacade();

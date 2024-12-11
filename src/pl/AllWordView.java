@@ -4,14 +4,12 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.*;
-import java.util.concurrent.*;
-
 import bl.IBLFacade;
 import dto.Word;
 
 public class AllWordView extends JFrame {
     private JTable table;
-    private JLabel headingLabel, wordLabel, urduLabel, persianLabel;
+    private JLabel headingLabel, posLabel, stemLabel, lemmaLabel;
     private final IBLFacade facade;
     private JFrame previousWindow;
     private JButton backButton, updateButton, removeButton;
@@ -41,9 +39,9 @@ public class AllWordView extends JFrame {
         headingLabel = createLabel("Word and Meanings", new Font("Arial", Font.BOLD, 24), new Color(25, 25, 112),
                 SwingConstants.CENTER);
 
-        wordLabel = createMeaningLabel("Arabic Word: ");
-        urduLabel = createMeaningLabel("Urdu Meaning: ");
-        persianLabel = createMeaningLabel("Persian Meaning: ");
+        posLabel = createMeaningLabel("POS (Part Of Speech): ");
+        stemLabel = createMeaningLabel("Stem Word: ");
+        lemmaLabel = createMeaningLabel("Lemma: ");
 
         setLayout(new BorderLayout(10, 10));
         add(headingLabel, BorderLayout.NORTH);
@@ -60,7 +58,11 @@ public class AllWordView extends JFrame {
             if (!event.getValueIsAdjusting()) {
                 int selectedRow = table.getSelectedRow();
                 if (selectedRow != -1)
-                    updateLabels(selectedRow);
+					try {
+						updateLabels(selectedRow);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
             }
         });
 
@@ -82,10 +84,19 @@ public class AllWordView extends JFrame {
         tableHeader.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(30, 136, 229)));
     }
 
-    private void updateLabels(int selectedRow) {
-        wordLabel.setText("Arabic Word: " + table.getValueAt(selectedRow, 0));
-        urduLabel.setText("Urdu Meaning: " + table.getValueAt(selectedRow, 1));
-        persianLabel.setText("Persian Meaning: " + table.getValueAt(selectedRow, 2));
+    private void updateLabels(int selectedRow) throws Exception {
+        String wordText = (String) table.getValueAt(selectedRow, 0);
+        String result = facade.processWord(wordText);
+        if (result != null) {
+            String[] parts = result.split(",");
+            String stem = parts[0];
+            String lemma = parts[1];
+            String pos = parts[2];
+
+            posLabel.setText("Part Of Speech: " + pos);
+            stemLabel.setText("Stem Word: " + stem);
+            lemmaLabel.setText("Lemma: " + lemma);
+        }
     }
 
     private JLabel createLabel(String text, Font font, Color color, int alignment) {
@@ -114,9 +125,9 @@ public class AllWordView extends JFrame {
 
         JPanel labelsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         labelsPanel.setBackground(new Color(248, 248, 255));
-        labelsPanel.add(wordLabel);
-        labelsPanel.add(urduLabel);
-        labelsPanel.add(persianLabel);
+        labelsPanel.add(posLabel);
+        labelsPanel.add(stemLabel);
+        labelsPanel.add(lemmaLabel);
 
         footerPanel.add(labelsPanel);
 
