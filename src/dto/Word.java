@@ -12,7 +12,7 @@ public class Word {
         this.persianMeaning = persianMeaning;
         this.isFavorite = false;
     }
-
+//word
 
 
     public Word(String arabicWord, String urduMeaning, String persianMeaning, boolean isFavorite) {
