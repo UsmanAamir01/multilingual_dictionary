@@ -144,13 +144,11 @@ public class WordUI extends JFrame {
 		getContentPane().removeAll();
 		setTitle("Dashboard");
 		
-		// Sidebar Panel Setup
-		sidebarPanel = new JPanel(new GridLayout(11, 1, 10, 10)); // Adjusted rows to provide more space for logo
-		sidebarPanel.setPreferredSize(new Dimension(200, 700)); // Increased height to accommodate adjustments
+		sidebarPanel = new JPanel(new GridLayout(11, 1, 10, 10)); 
+		sidebarPanel.setPreferredSize(new Dimension(200, 700)); 
 		sidebarPanel.setBackground(new Color(240, 240, 240));
 
-		// Add Logo Panel to Sidebar
-		JPanel logoPanel = createLogoPanel("src/images/logo_dictionary-name.png", 150, 150); // Adjusted logo dimensions
+		JPanel logoPanel = createLogoPanel("images/logo_dictionary-name.png", 150, 150); // Adjusted logo dimensions
 		sidebarPanel.add(logoPanel);
 
 
@@ -199,7 +197,7 @@ public class WordUI extends JFrame {
 		languageComboBox.setPreferredSize(new Dimension(150, 30));
 		searchField = new JTextField(15);
 		JButton logoButton = new JButton();
-		ImageIcon logoIcon = new ImageIcon("src/images/search-icon.png");
+		ImageIcon logoIcon = new ImageIcon("images/search-icon.png");
 		logoIcon = new ImageIcon(logoIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
 		logoButton.setIcon(logoIcon);
 		logoButton.setBorder(BorderFactory.createEmptyBorder());

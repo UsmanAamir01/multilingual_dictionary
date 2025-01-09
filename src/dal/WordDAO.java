@@ -42,7 +42,7 @@ public class WordDAO implements IWordDAO {
 			FileHandler fileHandler = new FileHandler("src/logs/dictionary-app-log.txt", true);
 			fileHandler.setFormatter(new SimpleFormatter());
 			LOGGER.addHandler(fileHandler);
-			LOGGER.setLevel(Level.ALL);
+			LOGGER.setLevel(Level.SEVERE);
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, "Error setting up file handler", e);
 		}

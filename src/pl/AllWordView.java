@@ -216,8 +216,8 @@ public class AllWordView extends JFrame {
         for (int row = 0; row < table.getRowCount(); row++) {
             String word = (String) table.getValueAt(row, 0);
             boolean isFavorite = facade.isWordFavorite(word);
-            Icon icon = new ImageIcon(
-                    getClass().getResource(isFavorite ? "/images/icon_filledstar.png" : "/images/icon_hollowstar.png"));
+            Icon icon = new ImageIcon(System.getProperty("user.dir") + 
+                    (isFavorite ? "/images/icon_filledstar.png" : "/images/icon_hollowstar.png"));
             table.setValueAt(icon, row, 3);
         }
 
@@ -243,12 +243,14 @@ public class AllWordView extends JFrame {
 
                         facade.markWordAsFavorite(word, newStatus);
 
-                        Icon newIcon = new ImageIcon(getClass().getResource(
-                                newStatus ? "/images/icon_filledstar.png" : "/images/icon_hollowstar.png"));
+                        Icon newIcon = new ImageIcon(System.getProperty("user.dir") +
+                                (newStatus ? "/images/icon_filledstar.png" : "/images/icon_hollowstar.png"));
                         table.setValueAt(newIcon, clickedRow, 3);
                     }
                 }
             }
         });
     }
+
+
 }

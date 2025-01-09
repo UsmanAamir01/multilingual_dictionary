@@ -38,4 +38,5 @@ public class AddWordTesting {
         assertThrows(NullPointerException.class, () -> dao.addWordToDB(null),
                 "Adding a null word should throw NullPointerException.");
     }
+    
 }

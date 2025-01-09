@@ -143,7 +143,6 @@ public class WordSegmentationUI extends JFrame {
             }
         });
 
-        // Back button action to go back to the previous window
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

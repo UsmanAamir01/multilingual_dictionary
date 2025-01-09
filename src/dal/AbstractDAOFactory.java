@@ -6,7 +6,7 @@ import java.util.Properties;
 
 public abstract class AbstractDAOFactory implements IDAOFactory {
     private static IDAOFactory instance = null;
-    private static final String CONFIG_FILE = "config.properties";
+    private static final String CONFIG_FILE = "properties/config.properties";
 
     public static IDAOFactory getInstance() {
         if (instance == null) {
