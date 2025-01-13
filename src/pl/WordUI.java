@@ -37,8 +37,7 @@ public class WordUI extends JFrame {
         sidebarPanel.setPreferredSize(new Dimension(220, getHeight()));
         updateSidebarTheme();
 
-        // Logo with a new elegant font and better image handling
-        JPanel logoPanel = createLogoPanel("images/dictionary_logo.jpeg", 120, 120);
+        JPanel logoPanel = createLogoPanel("images/dictionary_logo.jpeg", 100, 100);
         sidebarPanel.add(logoPanel);
 
         themeToggleLabel = new JLabel();
