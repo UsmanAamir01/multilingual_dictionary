@@ -49,9 +49,8 @@ public class DictionaryUI extends JFrame {
 
     public void createAndShowGUI() {
         setTitle("Import Dictionary Data");
-
-        importButton = createStyledButton("Import Data");
-        backButton = createStyledButton("Back");
+        importButton = createStyledButton("Import Data", new Color(0, 123, 255), new Color(255, 255, 255));
+        backButton = createStyledButton("Back", new Color(220, 53, 69), new Color(255, 255, 255));
         filePathField = new JTextField(30);
         filePathField.setFont(new Font("Arial", Font.PLAIN, 14));
         dataTable = new JTable();
@@ -151,7 +150,7 @@ public class DictionaryUI extends JFrame {
         panel.add(avgCharLengthLabel, gbc);
 
         add(panel);
-        setSize(600, 500);
+        setSize(700,650);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -164,14 +163,14 @@ public class DictionaryUI extends JFrame {
         setVisible(true);
     }
 
-    private JButton createStyledButton(String text) {
+    private JButton createStyledButton(String text, Color bgColor, Color fgColor) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
-        button.setBackground(new Color(0, 123, 255));
-        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 16));
+        button.setBackground(bgColor);
+        button.setForeground(fgColor);
         button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createLineBorder(new Color(0, 102, 204), 2));
-        button.setPreferredSize(new Dimension(120, 40));
+        button.setBorder(BorderFactory.createLineBorder(bgColor.darker(), 2));
+        button.setPreferredSize(new Dimension(150, 50));
         return button;
     }
 
