@@ -1,6 +1,7 @@
 package pl;
 
 import java.awt.*;
+
 import javax.swing.*;
 
 import bl.BLFacade;
@@ -120,7 +121,6 @@ public class WelcomeUI extends JFrame {
         contactPanel.setBackground(new Color(240, 248, 255));
         contactPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Header Section
         JLabel headerLabel = new JLabel("Contact Us", SwingConstants.CENTER);
         headerLabel.setFont(new Font("Serif", Font.BOLD, 24));
         headerLabel.setForeground(new Color(25, 25, 112));
@@ -184,8 +184,6 @@ public class WelcomeUI extends JFrame {
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         contactPanel.add(scrollPane, BorderLayout.CENTER);
-
-        // Newsletter Subscription Panel
         JPanel subscriptionPanel = new JPanel(new GridBagLayout());
         subscriptionPanel.setBackground(new Color(240, 248, 255));
         subscriptionPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));

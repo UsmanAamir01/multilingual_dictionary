@@ -109,7 +109,7 @@ public class ViewOnceWordView extends JFrame {
 	private void markAsFavorite() {
 		String arabicWord = arabicWordLabel.getText().replace("Arabic Word: ", "").trim();
 		boolean isFavorite = facade.isWordFavorite(arabicWord);
-		boolean newStatus = !isFavorite; // Toggle the favorite status
+		boolean newStatus = !isFavorite; 
 		facade.markWordAsFavorite(arabicWord, newStatus);
 
 		updateFavoriteIcon(newStatus);
@@ -155,7 +155,7 @@ public class ViewOnceWordView extends JFrame {
 
 	private JButton createFavoriteButton() {
 		JButton button = new JButton("Add to Favorites");
-		button.setBackground(new Color(255, 165, 0)); // Enhanced color
+		button.setBackground(new Color(255, 165, 0)); 
 		button.setForeground(Color.WHITE);
 		button.setFont(new Font("Arial", Font.BOLD, 14));
 		button.setFocusPainted(false);
