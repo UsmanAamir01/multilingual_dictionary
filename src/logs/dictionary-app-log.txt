@@ -956,3 +956,39 @@ Caused by: java.net.ConnectException: Connection refused: connect
 	at com.mysql.cj.protocol.a.NativeSocketConnection.connect(NativeSocketConnection.java:63)
 	... 50 more
 
+Jan 26, 2025 12:08:52 AM dal.WordDAO <init>
+SEVERE: Failed to initialize WordDAO: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+Jan 26, 2025 12:12:14 AM dal.WordDAO <init>
+SEVERE: Failed to initialize WordDAO: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+Jan 26, 2025 12:13:25 AM dal.WordDAO <init>
+SEVERE: Failed to initialize WordDAO: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+Jan 26, 2025 12:17:24 AM dal.WordDAO <init>
+SEVERE: Failed to initialize WordDAO: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+Jan 26, 2025 12:20:18 AM dal.WordDAO <init>
+SEVERE: Failed to initialize WordDAO: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+Jan 26, 2025 12:23:27 AM dal.WordDAO <init>
+SEVERE: Failed to initialize WordDAO: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+Jan 26, 2025 12:24:15 AM dal.WordDAO <init>
+SEVERE: Failed to initialize WordDAO: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+Jan 26, 2025 12:25:37 AM dal.WordDAO <init>
+SEVERE: Failed to initialize WordDAO: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+Jan 26, 2025 12:26:44 AM dal.WordDAO <init>
+SEVERE: Failed to initialize WordDAO: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.

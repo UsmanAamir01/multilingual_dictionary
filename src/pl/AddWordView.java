@@ -22,6 +22,8 @@ public class AddWordView extends JFrame {
 	private JButton addButton, backButton;
 	private JFrame previousWindow;
 	private final IBLFacade facade;
+	
+	
 
 	public AddWordView(IBLFacade facade, JFrame previousWindow) {
 		this.facade = facade;

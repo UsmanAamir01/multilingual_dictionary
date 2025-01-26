@@ -9,327 +9,428 @@ import bl.*;
 import dto.Word;
 
 public class WordUI extends JFrame {
-    
-    private static final Logger logger = LogManager.getLogger(WordUI.class);
-    private IBLFacade facade;
-    private JPanel sidebarPanel;
-    private JPanel mainContentPanel;
-    private JTextField searchField;
-    private JComboBox<String> languageComboBox;
-    private boolean isDarkMode = false;
-    private JLabel themeToggleLabel;
 
-    public WordUI(IBLFacade facade) {
-        this.facade = facade;
-        setTitle("Multilingual Dictionary");
-        setSize(850, 650);
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        getContentPane().setBackground(new Color(245, 245, 245));
-        showDashboard();
-    }
+	private static final Logger logger = LogManager.getLogger(WordUI.class);
+	private IBLFacade facade;
+	private JPanel sidebarPanel;
+	private JPanel mainContentPanel;
+	private JTextField searchField;
+	private JComboBox<String> languageComboBox;
+	private boolean isDarkMode = false;
+	private JLabel themeToggleLabel;
 
-    private void showDashboard() {
-        getContentPane().removeAll();
-        setTitle("Dashboard");
+	public WordUI(IBLFacade facade) {
+		this.facade = facade;
+		setTitle("Multilingual Dictionary");
+		setSize(850, 650);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
+		getContentPane().setBackground(new Color(245, 245, 245));
+		showDashboard();
+	}
 
-        sidebarPanel = new JPanel(new GridLayout(10, 1, 10, 10));
-        sidebarPanel.setPreferredSize(new Dimension(220, getHeight()));
-        updateSidebarTheme();
+	private JPanel createHeaderPanel() {
+		JPanel headerPanel = new JPanel(new BorderLayout());
+		headerPanel.setBackground(new Color(0, 51, 153));
+		headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+		leftPanel.setOpaque(false);
+		JButton faqsButton = createHeaderButton("FAQs");
+		JButton instructionsButton = createHeaderButton("Instructions");
+		HeaderButtonActionListener headerListener = new HeaderButtonActionListener();
+		faqsButton.addActionListener(headerListener);
+		instructionsButton.addActionListener(headerListener);
 
-        JPanel logoPanel = createLogoPanel("images/dictionary_logo.jpeg", 100, 100);
-        sidebarPanel.add(logoPanel);
+		leftPanel.add(faqsButton);
+		leftPanel.add(instructionsButton);
 
-        themeToggleLabel = new JLabel();
-        updateThemeToggleIcon();
-        themeToggleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        themeToggleLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                toggleTheme();
-            }
-        });
+		themeToggleLabel = new JLabel();
+		updateThemeToggleIcon();
+		themeToggleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		themeToggleLabel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				toggleTheme();
+			}
+		});
+		leftPanel.add(Box.createHorizontalStrut(20));
+		leftPanel.add(themeToggleLabel);
+		headerPanel.add(leftPanel, BorderLayout.WEST);
+		return headerPanel;
+	}
 
-        JPanel topRightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        topRightPanel.setBackground(Color.WHITE);
-        topRightPanel.add(themeToggleLabel);
+	private void updateThemeToggleIcon() {
+		String iconPath = isDarkMode ? "images/icon_darkmode.png" : "images/icon_lightmode.png";
+		ImageIcon icon = new ImageIcon(iconPath);
+		if (icon.getIconWidth() > 0 && icon.getIconHeight() > 0) {
+			Image scaledImage = icon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+			themeToggleLabel.setIcon(new ImageIcon(scaledImage));
+		} else {
+			themeToggleLabel.setText(isDarkMode ? "Dark Mode" : "Light Mode");
+		}
+	}
 
-        JButton addWordButton = createSidebarButton("Add Word");
-        JButton viewAllButton = createSidebarButton("View All Words");
-        JButton importFileButton = createSidebarButton("Import File");
-        JButton arabicTaggerButton = createSidebarButton("Word Normalization");
-        JButton viewFavoritesButton = createSidebarButton("View Favourites");
-        JButton searchHistoryButton = createSidebarButton("Search History");
-        JButton customDictionaryButton = createSidebarButton("Custom Dictionary");
-        JButton closeButton = createSidebarButton("Close");
+	private void updateHeaderTheme(JPanel headerPanel) {
+	    headerPanel.setBackground(isDarkMode ? new Color(30, 30, 30) : new Color(0, 51, 153));
+	    for (Component component : headerPanel.getComponents()) {
+	        if (component instanceof JPanel) {
+	            for (Component innerComponent : ((JPanel) component).getComponents()) {
+	                if (innerComponent instanceof JButton) {
+	                    JButton button = (JButton) innerComponent;
+	                    button.setBackground(isDarkMode ? new Color(50, 50, 50) : new Color(0, 51, 153));
+	                    button.setForeground(isDarkMode ? Color.WHITE : Color.WHITE);
+	                }
+	            }
+	        }
+	    }
+	}
 
-        SidebarButtonActionListener actionListener = new SidebarButtonActionListener();
-        addWordButton.addActionListener(actionListener);
-        viewAllButton.addActionListener(actionListener);
-        importFileButton.addActionListener(actionListener);
-        arabicTaggerButton.addActionListener(actionListener);
-        viewFavoritesButton.addActionListener(actionListener);
-        searchHistoryButton.addActionListener(actionListener);
-        customDictionaryButton.addActionListener(actionListener);
-        closeButton.addActionListener(actionListener);
+	private void toggleTheme() {
+	    isDarkMode = !isDarkMode;
+	    updateThemeToggleIcon();
+	    updateSidebarTheme();
+	    updateMainContentTheme();
+	    updateHeaderButtonTheme(); 
+	    revalidate();
+	    repaint();
+	}
 
-        sidebarPanel.add(addWordButton);
-        sidebarPanel.add(viewAllButton);
-        sidebarPanel.add(importFileButton);
-        sidebarPanel.add(arabicTaggerButton);
-        sidebarPanel.add(viewFavoritesButton);
-        sidebarPanel.add(searchHistoryButton);
-        sidebarPanel.add(customDictionaryButton);
-        sidebarPanel.add(closeButton);
-
-        mainContentPanel = new JPanel();
-        mainContentPanel.setLayout(new BoxLayout(mainContentPanel, BoxLayout.Y_AXIS));
-        updateMainContentTheme();
-        mainContentPanel.setBackground(Color.WHITE);
-        mainContentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        JLabel welcomeLabel = new JLabel("Dictionary Dashboard", SwingConstants.CENTER);
-        welcomeLabel.setFont(new Font("Georgia", Font.BOLD, 30));
-        welcomeLabel.setForeground(new Color(0, 51, 153));
-        welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        mainContentPanel.add(welcomeLabel);
-
-        mainContentPanel.add(Box.createVerticalStrut(20));
-
-        
-        JPanel searchLanguagePanel = new JPanel();
-        searchLanguagePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10)); 
-        searchLanguagePanel.setBackground(Color.WHITE);
-
-        String[] languages = { "Arabic", "Persian", "Urdu" };
-        languageComboBox = new JComboBox<>(languages);
-        languageComboBox.setPreferredSize(new Dimension(130, 30));  
-        languageComboBox.setFont(new Font("Georgia", Font.PLAIN, 14));  
-
-        searchField = new JTextField(20);
-        searchField.setPreferredSize(new Dimension(300, 30));  
-        searchField.setFont(new Font("Georgia", Font.PLAIN, 14));
-
-        JButton logoButton = new JButton();
-        ImageIcon logoIcon = new ImageIcon("images/search-icon.png");
-        logoIcon = new ImageIcon(logoIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
-        logoButton.setIcon(logoIcon);
-        logoButton.setBorder(BorderFactory.createEmptyBorder());
-        logoButton.setContentAreaFilled(false);
-        logoButton.addActionListener(e -> triggerSearch());
-
-        searchLanguagePanel.add(languageComboBox);
-        searchLanguagePanel.add(searchField);
-        searchLanguagePanel.add(logoButton);
-
-        mainContentPanel.add(searchLanguagePanel);
-
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sidebarPanel, mainContentPanel);
-        splitPane.setDividerSize(0);
-        splitPane.setDividerLocation(220);
-
-        getContentPane().setLayout(new BorderLayout());
-        add(topRightPanel, BorderLayout.NORTH);
-        add(splitPane, BorderLayout.CENTER);
-
-        revalidate();
-        repaint();
-    }
+	private void updateHeaderButtonTheme() {
+	    Component[] headerComponents = ((JPanel) ((JPanel) getContentPane().getComponent(0)).getComponent(0)).getComponents();
+	    for (Component component : headerComponents) {
+	        if (component instanceof JButton) {
+	            JButton button = (JButton) component;
+	            button.setBackground(isDarkMode ? new Color(75, 75, 75) : new Color(0, 51, 153));
+	            button.setForeground(isDarkMode ? Color.WHITE : Color.WHITE);
+	            button.setBorder(BorderFactory.createLineBorder(button.getBackground().darker(), 2));
+	        }
+	    }
+	}
 
 
-    private JPanel createLogoPanel(String logoPath, int width, int height) {
-        JPanel logoPanel = new JPanel();
-        logoPanel.setBackground(new Color(240, 240, 240));
-        logoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); 
-        JLabel logoLabel = new JLabel();
-        ImageIcon logoIcon = new ImageIcon(logoPath);
 
-        if (logoIcon.getIconWidth() > 0 && logoIcon.getIconHeight() > 0) {
-            Image scaledImage = logoIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
-            logoLabel.setIcon(new ImageIcon(scaledImage));
-        } else {
-            logger.warn("Logo not found at path: " + logoPath);
-            logoLabel.setText("Logo Missing");
-            logoLabel.setFont(new Font("Georgia", Font.PLAIN, 14));
-            logoLabel.setForeground(Color.RED);
-            logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            logoLabel.setPreferredSize(new Dimension(width, height));
-        }
+	private class HeaderButtonActionListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String command = ((JButton) e.getSource()).getText();
+			logger.info("Header button clicked: " + command);
+			switch (command) {
+			case "FAQs":
+				navigateTo(new FAQsView(WordUI.this));
+				break;
+			case "Instructions":
+				navigateTo(new InstructionsView(WordUI.this));
+				break;
+			}
+		}
+	}
 
-        logoPanel.setLayout(new GridBagLayout());
-        logoPanel.add(logoLabel);
+	private void showDashboard() {
+		getContentPane().removeAll();
+		setTitle("Dashboard");
 
-        return logoPanel;
-    }
+		JPanel headerPanel = new JPanel(new BorderLayout());
+		headerPanel.setBackground(Color.WHITE);
 
-    private class SidebarButtonActionListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            String command = ((JButton) e.getSource()).getText();
-            logger.info("Button clicked: " + command);
-            switch (command) {
-                case "Add Word":
-                    navigateTo(new AddWordView(facade, WordUI.this));
-                    break;
-                case "View All Words":
-                    navigateTo(new AllWordView(facade, WordUI.this));
-                    break;
-                case "Import File":
-                    navigateTo(new DictionaryUI(facade, WordUI.this));
-                    break;
-                case "Word Normalization":
-                    navigateTo(new ArabicWordProcessingView(facade, WordUI.this));
-                    break;
-                case "View Favourites":
-                    navigateTo(new ViewFavorites(WordUI.this, facade));
-                    break;
-                case "Search History":
-                    navigateTo(new HistoryView(WordUI.this, facade));
-                    break;
-                case "Custom Dictionary":
-                    DictionaryApp dictionaryApp = new DictionaryApp(facade, WordUI.this);
-                    navigateTo(dictionaryApp);
-                    break;
-                case "Close":
-                    System.exit(0);
-                    break;
-            }
-        }
-    }
+		JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+		JButton faqsButton = createHeaderButton("FAQs");
+		JButton instructionsButton = createHeaderButton("Instructions");
 
-    private JButton createSidebarButton(String text) {
-        return createButton(text, new Color(0, 51, 153), Color.WHITE);
-    }
+		faqsButton.addActionListener(e -> navigateTo(new FAQsView(this)));
+		instructionsButton.addActionListener(e -> navigateTo(new InstructionsView(this)));
 
-    private void navigateTo(JFrame frame) {
-        frame.setVisible(true);
-        WordUI.this.setVisible(false);
-    }
+		leftPanel.add(faqsButton);
+		leftPanel.add(instructionsButton);
+		headerPanel.add(leftPanel, BorderLayout.WEST);
 
-    private JButton createButton(String text, Color backgroundColor, Color textColor) {
-        JButton button = new JButton(text);
-        button.setBackground(backgroundColor);
-        button.setForeground(textColor);
-        button.setFont(new Font("Georgia", Font.BOLD, 14));
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createLineBorder(backgroundColor.darker(), 2));
-        button.setPreferredSize(new Dimension(150, 40));
-        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        button.setOpaque(true);
-        return button;
-    }
+		themeToggleLabel = new JLabel();
+		updateThemeToggleIcon();
+		themeToggleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		themeToggleLabel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				toggleTheme();
+			}
+		});
 
-    private void triggerSearch() {
-        String searchText = searchField.getText().trim();
-        String selectedLanguage = (String) languageComboBox.getSelectedItem();
-        logger.info("Search triggered with term: " + searchText + " in language: " + selectedLanguage);
+		headerPanel.add(themeToggleLabel, BorderLayout.EAST);
+		sidebarPanel = new JPanel(new GridLayout(10, 1, 10, 10));
+		sidebarPanel.setPreferredSize(new Dimension(220, getHeight()));
+		updateSidebarTheme();
 
-        if (!searchText.isEmpty()) {
-            String result = facade.getMeanings(searchText, selectedLanguage);
+		JPanel logoPanel = createLogoPanel("images/dictionary_logo.jpeg", 100, 100);
+		sidebarPanel.add(logoPanel);
 
-            if (!result.equals("Word not found.") && !result.equals("Error retrieving meanings.")) {
-                JOptionPane.showMessageDialog(this,
-                        "Searching for: " + searchText + " in " + selectedLanguage + "\n" + result, "Search Result",
-                        JOptionPane.INFORMATION_MESSAGE);
-                Word word = createWordBasedOnLanguage(searchText, selectedLanguage);
-                facade.addSearchToHistory(word);
-            } else {
-                Object[] options = { "Scrape Data", "Segment Word" };
-                int choice = JOptionPane.showOptionDialog(this,
-                        "Word not found in the database. Would you like to scrape data for this word or segment it?",
-                        "Word Not Found", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options,
-                        options[0]);
-                if (choice == JOptionPane.YES_OPTION) {
-                    showScraperUI(selectedLanguage);
-                } else if (choice == JOptionPane.NO_OPTION) {
-                    showSegmentationUI();
-                }
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Please enter a word to search.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
+		JButton addWordButton = createSidebarButton("Add Word");
+		JButton viewAllButton = createSidebarButton("View All Words");
+		JButton importFileButton = createSidebarButton("Import File");
+		JButton arabicTaggerButton = createSidebarButton("Word Normalization");
+		JButton viewFavoritesButton = createSidebarButton("View Favourites");
+		JButton searchHistoryButton = createSidebarButton("Search History");
+		JButton customDictionaryButton = createSidebarButton("Custom Dictionary");
+		JButton settingsButton = createSidebarButton("Settings");
 
-    private void toggleTheme() {
-        isDarkMode = !isDarkMode;
-        updateThemeToggleIcon();
-        updateSidebarTheme();
-        updateMainContentTheme();
-        revalidate();
-        repaint();
-    }
+		SidebarButtonActionListener actionListener = new SidebarButtonActionListener();
 
-    private void updateThemeToggleIcon() {
-        String iconPath = isDarkMode ? "images/icon_darkmode.png" : "images/icon_lightmode.png";
-        ImageIcon icon = new ImageIcon(iconPath);
-        if (icon.getIconWidth() > 0 && icon.getIconHeight() > 0) {
-            Image scaledImage = icon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
-            themeToggleLabel.setIcon(new ImageIcon(scaledImage));
-        } else {
-            themeToggleLabel.setText(isDarkMode ? "Dark Mode" : "Light Mode");
-        }
-    }
+		addWordButton.addActionListener(actionListener);
+		viewAllButton.addActionListener(actionListener);
+		importFileButton.addActionListener(actionListener);
+		arabicTaggerButton.addActionListener(actionListener);
+		viewFavoritesButton.addActionListener(actionListener);
+		searchHistoryButton.addActionListener(actionListener);
+		customDictionaryButton.addActionListener(actionListener);
+		settingsButton.addActionListener(e -> navigateTo(new SettingsView(this)));
 
-    private void updateSidebarTheme() {
-        sidebarPanel.setBackground(isDarkMode ? new Color(50, 50, 50) : new Color(240, 240, 240));
+		sidebarPanel.add(addWordButton);
+		sidebarPanel.add(viewAllButton);
+		sidebarPanel.add(importFileButton);
+		sidebarPanel.add(arabicTaggerButton);
+		sidebarPanel.add(viewFavoritesButton);
+		sidebarPanel.add(searchHistoryButton);
+		sidebarPanel.add(customDictionaryButton);
+		sidebarPanel.add(settingsButton);
 
-        for (Component component : sidebarPanel.getComponents()) {
-            if (component instanceof JButton) {
-                JButton button = (JButton) component;
-                button.setBackground(isDarkMode ? new Color(75, 75, 75) : new Color(0, 51, 153));  // Gray in dark mode, blue in light mode
-                button.setForeground(isDarkMode ? Color.WHITE : Color.WHITE);
-            }
-        }
-    }
+		mainContentPanel = new JPanel();
+		mainContentPanel.setLayout(new BoxLayout(mainContentPanel, BoxLayout.Y_AXIS));
+		updateMainContentTheme();
+		mainContentPanel.setBackground(Color.WHITE);
+		mainContentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-    private void updateMainContentTheme() {
-        mainContentPanel.setBackground(isDarkMode ? new Color(30, 30, 30) : Color.WHITE);
+		JLabel welcomeLabel = new JLabel("Dictionary Dashboard", SwingConstants.CENTER);
+		welcomeLabel.setFont(new Font("Georgia", Font.BOLD, 30));
+		welcomeLabel.setForeground(new Color(0, 51, 153));
+		welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		mainContentPanel.add(welcomeLabel);
 
-        for (Component component : mainContentPanel.getComponents()) {
-            if (component instanceof JLabel) {
-                JLabel label = (JLabel) component;
-                label.setForeground(isDarkMode ? Color.WHITE : new Color(0, 51, 153));  // White text in dark mode, dark blue in light mode
-            }
-            if (component instanceof JTextField) {
-                JTextField textField = (JTextField) component;
-                textField.setBackground(isDarkMode ? new Color(50, 50, 50) : Color.WHITE);
-                textField.setForeground(isDarkMode ? Color.WHITE : Color.BLACK);
-            }
-            if (component instanceof JComboBox) {
-                JComboBox<?> comboBox = (JComboBox<?>) component;
-                comboBox.setBackground(isDarkMode ? new Color(50, 50, 50) : Color.WHITE);
-                comboBox.setForeground(isDarkMode ? Color.WHITE : Color.BLACK);
-            }
-        }
-    }
+		mainContentPanel.add(Box.createVerticalStrut(20));
 
-    private Word createWordBasedOnLanguage(String wordText, String selectedLanguage) {
-        switch (selectedLanguage) {
-        case "Arabic":
-            return new Word(wordText, null, null);
-        case "Persian":
-            return new Word(null, wordText, null);
-        case "Urdu":
-            return new Word(null, null, wordText);
-        default:
-            return null;
-        }
-    }
+		JPanel searchLanguagePanel = new JPanel();
+		searchLanguagePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+		searchLanguagePanel.setBackground(Color.WHITE);
 
-    private void showSegmentationUI() {
-        WordSegmentationUI segmentationUI = new WordSegmentationUI(facade, WordUI.this);
-        segmentationUI.setVisible(true);
-    }
+		String[] languages = { "Arabic", "Persian", "Urdu" };
+		languageComboBox = new JComboBox<>(languages);
+		languageComboBox.setPreferredSize(new Dimension(130, 30));
+		languageComboBox.setFont(new Font("Georgia", Font.PLAIN, 14));
 
-    private void showScraperUI(String language) {
-        DictionaryScraper scraper = new DictionaryScraper(facade, WordUI.this);
-        scraper.setVisible(true);
-        scraper.setTitle("Scraper for " + language);
-    }
+		searchField = new JTextField(20);
+		searchField.setPreferredSize(new Dimension(300, 30));
+		searchField.setFont(new Font("Georgia", Font.PLAIN, 14));
 
-    public static void main(String[] args) {
-        IBLFacade facade = new BLFacade(new WordBO(), new UserBO());
-        WordUI wordUI = new WordUI(facade);
-        wordUI.setVisible(true);
-    }
+		JButton logoButton = new JButton();
+		ImageIcon logoIcon = new ImageIcon("images/search-icon.png");
+		logoIcon = new ImageIcon(logoIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH));
+		logoButton.setIcon(logoIcon);
+		logoButton.setBorder(BorderFactory.createEmptyBorder());
+		logoButton.setContentAreaFilled(false);
+		logoButton.addActionListener(e -> triggerSearch());
+
+		searchLanguagePanel.add(languageComboBox);
+		searchLanguagePanel.add(searchField);
+		searchLanguagePanel.add(logoButton);
+
+		mainContentPanel.add(searchLanguagePanel);
+
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sidebarPanel, mainContentPanel);
+		splitPane.setDividerSize(0);
+		splitPane.setDividerLocation(220);
+
+		getContentPane().setLayout(new BorderLayout());
+		add(headerPanel, BorderLayout.NORTH);
+		add(splitPane, BorderLayout.CENTER);
+
+		revalidate();
+		repaint();
+	}
+
+	private JButton createHeaderButton(String text) {
+		JButton button = new JButton(text);
+		button.setBackground(new Color(0, 51, 153));
+		button.setForeground(Color.WHITE);
+		button.setFont(new Font("Georgia", Font.BOLD, 14));
+		button.setFocusPainted(false);
+		button.setBorder(BorderFactory.createLineBorder(new Color(0, 51, 153).darker(), 2));
+		button.setPreferredSize(new Dimension(95, 35));
+		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		button.setOpaque(true);
+		return button;
+	}
+
+	private JPanel createLogoPanel(String logoPath, int width, int height) {
+		JPanel logoPanel = new JPanel();
+		logoPanel.setBackground(new Color(240, 240, 240));
+		logoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		JLabel logoLabel = new JLabel();
+		ImageIcon logoIcon = new ImageIcon(logoPath);
+
+		if (logoIcon.getIconWidth() > 0 && logoIcon.getIconHeight() > 0) {
+			Image scaledImage = logoIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+			logoLabel.setIcon(new ImageIcon(scaledImage));
+		} else {
+			logger.warn("Logo not found at path: " + logoPath);
+			logoLabel.setText("Logo Missing");
+			logoLabel.setFont(new Font("Georgia", Font.PLAIN, 14));
+			logoLabel.setForeground(Color.RED);
+			logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+			logoLabel.setPreferredSize(new Dimension(width, height));
+		}
+
+		logoPanel.setLayout(new GridBagLayout());
+		logoPanel.add(logoLabel);
+
+		return logoPanel;
+	}
+
+	private class SidebarButtonActionListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String command = ((JButton) e.getSource()).getText();
+			logger.info("Button clicked: " + command);
+			switch (command) {
+			case "Add Word":
+				navigateTo(new AddWordView(facade, WordUI.this));
+				break;
+			case "View All Words":
+				navigateTo(new AllWordView(facade, WordUI.this));
+				break;
+			case "Import File":
+				navigateTo(new DictionaryUI(facade, WordUI.this));
+				break;
+			case "Word Normalization":
+				navigateTo(new ArabicWordProcessingView(facade, WordUI.this));
+				break;
+			case "View Favourites":
+				navigateTo(new ViewFavorites(WordUI.this, facade));
+				break;
+			case "Search History":
+				navigateTo(new HistoryView(WordUI.this, facade));
+				break;
+			case "Custom Dictionary":
+				DictionaryApp dictionaryApp = new DictionaryApp(facade, WordUI.this);
+				navigateTo(dictionaryApp);
+				break;
+			case "Settings":
+				navigateTo(new SettingsView(WordUI.this));
+				break;
+
+			}
+		}
+	}
+
+	private JButton createSidebarButton(String text) {
+		return createButton(text, new Color(0, 51, 153), Color.WHITE);
+	}
+
+	private void navigateTo(JFrame frame) {
+		frame.setVisible(true);
+		WordUI.this.setVisible(false);
+	}
+
+	private JButton createButton(String text, Color backgroundColor, Color textColor) {
+		JButton button = new JButton(text);
+		button.setBackground(backgroundColor);
+		button.setForeground(textColor);
+		button.setFont(new Font("Georgia", Font.BOLD, 14));
+		button.setFocusPainted(false);
+		button.setBorder(BorderFactory.createLineBorder(backgroundColor.darker(), 2));
+		button.setPreferredSize(new Dimension(150, 40));
+		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		button.setOpaque(true);
+		return button;
+	}
+
+	private void triggerSearch() {
+		String searchText = searchField.getText().trim();
+		String selectedLanguage = (String) languageComboBox.getSelectedItem();
+		logger.info("Search triggered with term: " + searchText + " in language: " + selectedLanguage);
+
+		if (!searchText.isEmpty()) {
+			String result = facade.getMeanings(searchText, selectedLanguage);
+
+			if (!result.equals("Word not found.") && !result.equals("Error retrieving meanings.")) {
+				JOptionPane.showMessageDialog(this,
+						"Searching for: " + searchText + " in " + selectedLanguage + "\n" + result, "Search Result",
+						JOptionPane.INFORMATION_MESSAGE);
+				Word word = createWordBasedOnLanguage(searchText, selectedLanguage);
+				facade.addSearchToHistory(word);
+			} else {
+				Object[] options = { "Scrape Data", "Segment Word" };
+				int choice = JOptionPane.showOptionDialog(this,
+						"Word not found in the database. Would you like to scrape data for this word or segment it?",
+						"Word Not Found", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options,
+						options[0]);
+				if (choice == JOptionPane.YES_OPTION) {
+					showScraperUI(selectedLanguage);
+				} else if (choice == JOptionPane.NO_OPTION) {
+					showSegmentationUI();
+				}
+			}
+		} else {
+			JOptionPane.showMessageDialog(this, "Please enter a word to search.", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	private void updateSidebarTheme() {
+		sidebarPanel.setBackground(isDarkMode ? new Color(50, 50, 50) : new Color(240, 240, 240));
+
+		for (Component component : sidebarPanel.getComponents()) {
+			if (component instanceof JButton) {
+				JButton button = (JButton) component;
+				button.setBackground(isDarkMode ? new Color(75, 75, 75) : new Color(0, 51, 153));
+				button.setForeground(isDarkMode ? Color.WHITE : Color.WHITE);
+			}
+		}
+	}
+
+	private void updateMainContentTheme() {
+		mainContentPanel.setBackground(isDarkMode ? new Color(30, 30, 30) : Color.WHITE);
+
+		for (Component component : mainContentPanel.getComponents()) {
+			if (component instanceof JLabel) {
+				JLabel label = (JLabel) component;
+				label.setForeground(isDarkMode ? Color.WHITE : new Color(0, 51, 153));
+
+			}
+			if (component instanceof JTextField) {
+				JTextField textField = (JTextField) component;
+				textField.setBackground(isDarkMode ? new Color(50, 50, 50) : Color.WHITE);
+				textField.setForeground(isDarkMode ? Color.WHITE : Color.BLACK);
+			}
+			if (component instanceof JComboBox) {
+				JComboBox<?> comboBox = (JComboBox<?>) component;
+				comboBox.setBackground(isDarkMode ? new Color(50, 50, 50) : Color.WHITE);
+				comboBox.setForeground(isDarkMode ? Color.WHITE : Color.BLACK);
+			}
+		}
+	}
+
+	private Word createWordBasedOnLanguage(String wordText, String selectedLanguage) {
+		switch (selectedLanguage) {
+		case "Arabic":
+			return new Word(wordText, null, null);
+		case "Persian":
+			return new Word(null, wordText, null);
+		case "Urdu":
+			return new Word(null, null, wordText);
+		default:
+			return null;
+		}
+	}
+
+	private void showSegmentationUI() {
+		WordSegmentationUI segmentationUI = new WordSegmentationUI(facade, WordUI.this);
+		segmentationUI.setVisible(true);
+	}
+
+	private void showScraperUI(String language) {
+		DictionaryScraper scraper = new DictionaryScraper(facade, WordUI.this);
+		scraper.setVisible(true);
+		scraper.setTitle("Scraper for " + language);
+	}
+
+	public static void main(String[] args) {
+		IBLFacade facade = new BLFacade(new WordBO(), new UserBO());
+		WordUI wordUI = new WordUI(facade);
+		wordUI.setVisible(true);
+	}
 }
