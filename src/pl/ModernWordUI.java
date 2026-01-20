@@ -85,7 +85,7 @@ public class ModernWordUI extends JFrame implements ThemeManager.ThemeListener {
         sidebar.addItem("📋", "View All Words");
         sidebar.addItem(UIConstants.ICON_IMPORT, "Import File");
         sidebar.addItem(UIConstants.ICON_NORMALIZE, "Word Normalization");
-        sidebar.addItem(UIConstants.ICON_STAR, "Favorites");
+        sidebar.addItem(UIConstants.ICON_STAR, "Favourites");
         sidebar.addItem(UIConstants.ICON_HISTORY, "Search History");
         sidebar.addItem(UIConstants.ICON_BOOK, "Custom Dictionary");
         
@@ -148,21 +148,51 @@ public class ModernWordUI extends JFrame implements ThemeManager.ThemeListener {
         
         headerPanel.add(searchSection, BorderLayout.WEST);
         
-        // Right section (theme toggle)
+        // Right section (premium theme toggle)
         JPanel rightSection = new JPanel(new FlowLayout(FlowLayout.RIGHT, UIConstants.SPACING_MD, 0));
         rightSection.setOpaque(false);
         
-        themeToggle = new JLabel(isDarkMode ? UIConstants.ICON_SUN : UIConstants.ICON_MOON);
-        themeToggle.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 22));
-        themeToggle.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        themeToggle.setToolTipText("Toggle Dark Mode");
-        themeToggle.addMouseListener(new MouseAdapter() {
+        // Premium pill-style theme toggle button
+        JPanel themeToggleContainer = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Pill background
+                Color bgColor = isDarkMode ? new Color(45, 55, 72) : new Color(226, 232, 240);
+                g2.setColor(bgColor);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30);
+                
+                // Border
+                g2.setColor(isDarkMode ? new Color(74, 85, 104) : new Color(148, 163, 184));
+                g2.setStroke(new BasicStroke(1.5f));
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 30, 30);
+                
+                g2.dispose();
+            }
+        };
+        themeToggleContainer.setLayout(new FlowLayout(FlowLayout.CENTER, 8, 6));
+        themeToggleContainer.setOpaque(false);
+        themeToggleContainer.setPreferredSize(new Dimension(90, 38));
+        themeToggleContainer.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        
+        themeToggle = new JLabel(isDarkMode ? "Light" : "Dark");
+        themeToggle.setFont(new Font(UIConstants.FONT_FAMILY, Font.BOLD, 12));
+        themeToggle.setForeground(UIConstants.getPrimary(isDarkMode));
+        themeToggleContainer.add(themeToggle);
+        
+        themeToggleContainer.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 ThemeManager.toggleDarkMode();
             }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                themeToggleContainer.repaint();
+            }
         });
-        rightSection.add(themeToggle);
+        rightSection.add(themeToggleContainer);
         
         headerPanel.add(rightSection, BorderLayout.EAST);
     }
@@ -266,7 +296,7 @@ public class ModernWordUI extends JFrame implements ThemeManager.ThemeListener {
                        UIConstants.SUCCESS, UIConstants.SUCCESS_DARK));
         cardsPanel.add(createPremiumActionCard("📋", "View All", "Browse dictionary", "View All Words",
                        UIConstants.GRADIENT_BLUE_START, UIConstants.GRADIENT_BLUE_END));
-        cardsPanel.add(createPremiumActionCard("⭐", "Favorites", "Saved words", "Favorites",
+        cardsPanel.add(createPremiumActionCard("⭐", "Favourites", "Saved words", "Favourites",
                        UIConstants.GRADIENT_AMBER_START, UIConstants.GRADIENT_AMBER_END));
         cardsPanel.add(createPremiumActionCard("🕐", "History", "Recent searches", "Search History",
                        UIConstants.GRADIENT_PURPLE_START, UIConstants.GRADIENT_PURPLE_END));
@@ -291,7 +321,7 @@ public class ModernWordUI extends JFrame implements ThemeManager.ThemeListener {
         
         statsPanel.add(createStatCardPremium("📚", "1,000+", "Total Words", UIConstants.getPrimary(isDarkMode)));
         statsPanel.add(createStatCardPremium("🌍", "3", "Languages", UIConstants.getSecondary(isDarkMode)));
-        statsPanel.add(createStatCardPremium("⭐", "50+", "Favorites", UIConstants.getAccent(isDarkMode)));
+        statsPanel.add(createStatCardPremium("⭐", "50+", "Favourites", UIConstants.getAccent(isDarkMode)));
         
         welcomePanel.add(statsPanel);
         
@@ -480,7 +510,7 @@ public class ModernWordUI extends JFrame implements ThemeManager.ThemeListener {
             case "Word Normalization":
                 navigateTo(new ArabicWordProcessingView(facade, this));
                 break;
-            case "Favorites":
+            case "Favourites":
                 new ModernFavoritesView(this, facade, isDarkMode);
                 break;
             case "Search History":
@@ -620,7 +650,7 @@ public class ModernWordUI extends JFrame implements ThemeManager.ThemeListener {
         favoriteBtn.setDarkMode(isDarkMode);
         favoriteBtn.addActionListener(e -> {
             facade.markWordAsFavorite(word, true);
-            JOptionPane.showMessageDialog(this, "Added to favorites!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Added to favourites!", "Success", JOptionPane.INFORMATION_MESSAGE);
         });
         actionsPanel.add(favoriteBtn);
         
@@ -653,7 +683,9 @@ public class ModernWordUI extends JFrame implements ThemeManager.ThemeListener {
         ComponentFactory.setDarkMode(isDarkMode);
         
         // Update components
-        themeToggle.setText(isDarkMode ? UIConstants.ICON_SUN : UIConstants.ICON_MOON);
+        // Update components
+        themeToggle.setText(isDarkMode ? "Light" : "Dark");
+        themeToggle.setForeground(UIConstants.getPrimary(isDarkMode));
         sidebar.setDarkMode(isDarkMode);
         searchField.setDarkMode(isDarkMode);
         languageComboBox.setDarkMode(isDarkMode);
