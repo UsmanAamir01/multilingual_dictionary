@@ -14,7 +14,9 @@ public class WordDAOFacade implements IWordDAOFacade {
 	}
 
 	public WordDAOFacade() {
-		this.wordDAO = new WordDAO();
+		// Use the factory to create the appropriate DAO based on configuration
+		IDAOFactory factory = AbstractDAOFactory.getInstance();
+		this.wordDAO = factory.createWordDAO();
 	}
 
 	@Override

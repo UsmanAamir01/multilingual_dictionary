@@ -15,6 +15,12 @@ public class UserBO implements IUserBO {
 
 	@Override
 	public boolean validateUser(String username, String password) {
+		// Mock login - accept any non-empty credentials
+		if (username != null && !username.trim().isEmpty() && 
+		    password != null && !password.trim().isEmpty()) {
+			return true;
+		}
+		// Also keep original validation for existing users
 		return users.containsKey(username) && users.get(username).equals(password);
 	}
 }

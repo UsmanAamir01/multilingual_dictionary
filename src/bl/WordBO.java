@@ -1,6 +1,6 @@
 package bl;
 
-import com.qcri.farasa.segmenter.Farasa;
+// import com.qcri.farasa.segmenter.Farasa;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;

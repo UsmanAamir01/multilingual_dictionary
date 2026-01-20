@@ -27,7 +27,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.qcri.farasa.segmenter.Farasa;
+// import com.qcri.farasa.segmenter.Farasa;
 
 import dto.Word;
 
@@ -605,12 +605,14 @@ public class WordDAO implements IWordDAO {
 		}
 
 		try {
-			Farasa farasaSegmenter = new Farasa();
-			ArrayList<String> segmentedWords = farasaSegmenter.segmentLine(strippedWord.toString());
-			ArrayList<String> segmentedWithDiacritics = reapplyDiacritics(segmentedWords, diacriticalMarks);
-			List<String> result = splitByCommasAndPlus(segmentedWithDiacritics);
-			LOGGER.log(Level.INFO, "Successfully segmented word with diacritics: {0}", word);
-			return result;
+			// Farasa farasaSegmenter = new Farasa();
+			// ArrayList<String> segmentedWords = farasaSegmenter.segmentLine(strippedWord.toString());
+			// ArrayList<String> segmentedWithDiacritics = reapplyDiacritics(segmentedWords, diacriticalMarks);
+			// List<String> result = splitByCommasAndPlus(segmentedWithDiacritics);
+			// LOGGER.log(Level.INFO, "Successfully segmented word with diacritics: {0}", word);
+			// return result;
+			LOGGER.log(Level.WARNING, "Farasa segmentation not available - returning null for word: {0}", word);
+			return null;
 		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "Error during segmentation for word {0}: {1}",
 					new Object[] { word, e.getMessage() });

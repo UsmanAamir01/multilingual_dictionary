@@ -1,1 +1,19 @@
+# Compiled output
 /bin/
+
+# Logs
+*.log
+*.lck
+src/logs/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# IDE/Editor files
+.settings/
+*.class
+
+# Build artifacts
+*.jar
+!lib/*.jar
