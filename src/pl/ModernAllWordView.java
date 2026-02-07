@@ -135,7 +135,7 @@ public class ModernAllWordView extends JFrame {
         DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
             @Override
             public Class<?> getColumnClass(int columnIndex) {
-                return columnIndex == 3 ? Icon.class : String.class;
+                return String.class; // Use String for all columns including star
             }
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -187,6 +187,13 @@ public class ModernAllWordView extends JFrame {
                         (isDarkMode ? new Color(40, 40, 40) : new Color(248, 250, 252)));
                 }
                 ((JLabel) c).setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));
+                
+                // Special styling for star column
+                if (column == 3) {
+                    ((JLabel) c).setHorizontalAlignment(SwingConstants.CENTER);
+                    ((JLabel) c).setFont(new Font("Segoe UI Emoji", Font.PLAIN, 22));
+                    ((JLabel) c).setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                }
                 return c;
             }
         });
@@ -201,17 +208,56 @@ public class ModernAllWordView extends JFrame {
             }
         });
         
-        // Double-click to view word details
+        // Double-click to view word details OR single-click on favorite column to toggle
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    int row = table.rowAtPoint(e.getPoint());
-                    int col = table.columnAtPoint(e.getPoint());
-                    if (row != -1 && col == 0) {
-                        String word = (String) table.getValueAt(row, 0);
-                        // Open word detail view
-                    }
+                int viewRow = table.rowAtPoint(e.getPoint());
+                int col = table.columnAtPoint(e.getPoint());
+                
+                if (viewRow == -1) return;
+                
+                // Convert view row to model row (important when table is sorted/filtered)
+                int modelRow = viewRow;
+                if (table.getRowSorter() != null) {
+                    modelRow = table.convertRowIndexToModel(viewRow);
+                }
+                
+                // Single click on Favorite column (column 3) to toggle favorite
+                if (col == 3) {
+                    DefaultTableModel model = (DefaultTableModel) table.getModel();
+                    String word = (String) model.getValueAt(modelRow, 0);
+                    boolean currentlyFavorite = facade.isWordFavorite(word);
+                    boolean newStatus = !currentlyFavorite;
+                    
+                    // Update database
+                    facade.markWordAsFavorite(word, newStatus);
+                    
+                    // Update the star icon in the table model
+                    model.setValueAt(getStarLabel(newStatus), modelRow, 3);
+                    
+                    // Show feedback
+                    System.out.println("Toggled favorite for: " + word + " -> " + newStatus);
+                }
+                
+                // Double-click on first column to view word details
+                if (e.getClickCount() == 2 && col == 0) {
+                    DefaultTableModel model = (DefaultTableModel) table.getModel();
+                    String word = (String) model.getValueAt(modelRow, 0);
+                    // Open word detail view
+                }
+            }
+        });
+        
+        // Change cursor when hovering over star column
+        table.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                int col = table.columnAtPoint(e.getPoint());
+                if (col == 3) {
+                    table.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                } else {
+                    table.setCursor(Cursor.getDefaultCursor());
                 }
             }
         });
@@ -291,11 +337,13 @@ public class ModernAllWordView extends JFrame {
         }
     }
     
-    private Icon getStarIcon(String word) {
+    private String getStarLabel(boolean isFavorite) {
+        return isFavorite ? "⭐" : "☆";
+    }
+    
+    private String getStarIcon(String word) {
         boolean isFavorite = facade.isWordFavorite(word);
-        String iconPath = System.getProperty("user.dir") + 
-            (isFavorite ? "/images/icon_filledstar.png" : "/images/icon_hollowstar.png");
-        return new ImageIcon(iconPath);
+        return getStarLabel(isFavorite);
     }
     
     private void filterTable(String query) {

@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.stream.Collectors;
 
+import bl.async.TaskExecutor;
 import dal.IWordDAOFacade;
 import dal.WordDAOFacade;
 import dto.Word;
@@ -190,7 +191,8 @@ public class WordBO implements IWordBO {
 
 	@Override
 	public void saveWordAndUrduMeaning(String URL) {
-	    Runnable task = () -> {
+	    // Use TaskExecutor instead of raw Thread for proper async handling
+	    TaskExecutor.runAsync(() -> {
 	        try {
 	            String[] wordAndUrduMeaning = wordDAOFacade.scrapeWordAndUrduMeaning(URL);
 
@@ -199,34 +201,33 @@ public class WordBO implements IWordBO {
 	                String urduMeaning = wordAndUrduMeaning[1];
 
 	                wordDAOFacade.saveWordAndUrduMeaning(word, urduMeaning);
-	                LOGGER.log(Level.INFO, "Thread: Word: {0}, Urdu Meaning: {1}", new Object[]{word, urduMeaning});
+	                LOGGER.log(Level.INFO, "Async: Word: {0}, Urdu Meaning: {1}", new Object[]{word, urduMeaning});
 	            } else {
-	                LOGGER.log(Level.WARNING, "Thread: Failed to retrieve word and Urdu meaning from URL: {0}", URL);
+	                LOGGER.log(Level.WARNING, "Async: Failed to retrieve word and Urdu meaning from URL: {0}", URL);
 	            }
 	        } catch (Exception e) {
-	            LOGGER.log(Level.SEVERE, "Thread: Error saving word and Urdu meaning from URL: {0}", e.getMessage());
+	            LOGGER.log(Level.SEVERE, "Async: Error saving word and Urdu meaning from URL: {0}", e.getMessage());
 	        }
-	    };
-	    new Thread(task).start();
+	    });
 	}
 
 	@Override
 	public void saveFarsiMeaning(String word, String filePath) {
-	    Runnable task = () -> {
+	    // Use TaskExecutor instead of raw Thread for proper async handling
+	    TaskExecutor.runAsync(() -> {
 	        try {
 	            String farsiMeaning = wordDAOFacade.scrapeFarsiMeaning(filePath);
 
 	            if (farsiMeaning != null) {
 	                wordDAOFacade.updateFarsiMeaning(word, farsiMeaning);
-	                LOGGER.log(Level.INFO, "Thread: Farsi Meaning stored for word: {0}, Meaning: {1}", new Object[]{word, farsiMeaning});
+	                LOGGER.log(Level.INFO, "Async: Farsi Meaning stored for word: {0}, Meaning: {1}", new Object[]{word, farsiMeaning});
 	            } else {
-	                LOGGER.log(Level.WARNING, "Thread: Failed to retrieve Farsi meaning from file path: {0}", filePath);
+	                LOGGER.log(Level.WARNING, "Async: Failed to retrieve Farsi meaning from file path: {0}", filePath);
 	            }
 	        } catch (Exception e) {
-	            LOGGER.log(Level.SEVERE, "Thread: Error saving Farsi meaning for word: {0}. Error: {1}", new Object[]{word, e.getMessage()});
+	            LOGGER.log(Level.SEVERE, "Async: Error saving Farsi meaning for word: {0}. Error: {1}", new Object[]{word, e.getMessage()});
 	        }
-	    };
-	    new Thread(task).start();
+	    });
 	}
 
 

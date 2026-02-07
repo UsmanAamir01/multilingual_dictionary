@@ -17,3 +17,6 @@ src/logs/
 # Build artifacts
 *.jar
 !lib/*.jar
+
+# Sensitive configuration (do not commit credentials!)
+config/database.properties

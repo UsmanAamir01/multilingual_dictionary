@@ -166,13 +166,15 @@ public class ModernTextField extends JTextField {
     public void paint(Graphics g) {
         super.paint(g);
         
-        // Draw placeholder after everything else
-        if (getText().isEmpty() && !placeholder.isEmpty() && !isFocused) {
+        // Draw placeholder after everything else - show when text is empty
+        if (getText().isEmpty() && !placeholder.isEmpty()) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
             Color placeholderColor = UIConstants.getTextSecondary(isDarkMode);
+            // Make placeholder more subtle when focused
+            int alpha = isFocused ? 100 : 160;
             g2.setColor(new Color(placeholderColor.getRed(), placeholderColor.getGreen(), 
-                                 placeholderColor.getBlue(), 160));
+                                 placeholderColor.getBlue(), alpha));
             g2.setFont(getFont());
             Insets insets = getInsets();
             g2.drawString(placeholder, insets.left, getHeight() / 2 + 5);

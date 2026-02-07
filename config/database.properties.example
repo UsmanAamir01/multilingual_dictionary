@@ -1,0 +1,22 @@
+# Database Configuration - EXAMPLE FILE
+# Copy this file to database.properties and add your credentials
+# DO NOT commit database.properties (contains sensitive credentials)
+
+# Connection settings
+db.url=jdbc:mysql://localhost:3306/Dictionarydb
+db.user=your_username_here
+db.password=your_password_here
+
+# HikariCP Pool Settings
+db.pool.maximumPoolSize=10
+db.pool.minimumIdle=2
+db.pool.connectionTimeout=30000
+db.pool.idleTimeout=600000
+db.pool.maxLifetime=1800000
+db.pool.poolName=DictionaryPool
+
+# Web Scraper Settings
+scraper.timeout=30000
+scraper.retryCount=3
+scraper.retryDelayMs=1000
+scraper.userAgent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0 Safari/537.36

@@ -118,7 +118,7 @@ public class ModernHistoryView extends JDialog {
         titleRow.add(iconLabel);
         titleRow.add(titleLabel);
         
-        JLabel subtitleLabel = new JLabel("Your recent searches from the last 7 days");
+        JLabel subtitleLabel = new JLabel("Your most recent word searches");
         subtitleLabel.setFont(UIConstants.FONT_BODY);
         subtitleLabel.setForeground(new Color(255, 255, 255, 200));
         
@@ -242,7 +242,7 @@ public class ModernHistoryView extends JDialog {
     }
     
     private void loadHistory() {
-        List<Word> history = facade.getRecentSearchHistory(7);
+        List<Word> history = facade.getRecentSearchHistory(50);
         DefaultTableModel model = (DefaultTableModel) historyTable.getModel();
         model.setRowCount(0);
         

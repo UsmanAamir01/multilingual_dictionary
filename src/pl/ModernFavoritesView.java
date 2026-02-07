@@ -216,16 +216,7 @@ public class ModernFavoritesView extends JDialog {
         scrollPane.setBorder(BorderFactory.createLineBorder(borderColor, 1));
         scrollPane.getViewport().setBackground(cardColor);
         
-        // Empty state
-        if (listModel.isEmpty()) {
-            JLabel emptyLabel = new JLabel("No favorites yet. Add words to your favorites from the All Words view.");
-            emptyLabel.setFont(UIConstants.FONT_BODY);
-            emptyLabel.setForeground(textSecondary);
-            emptyLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            listPanel.add(emptyLabel, BorderLayout.CENTER);
-        } else {
-            listPanel.add(scrollPane, BorderLayout.CENTER);
-        }
+        listPanel.add(scrollPane, BorderLayout.CENTER);
         
         return listPanel;
     }
