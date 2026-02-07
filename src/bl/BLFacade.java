@@ -133,5 +133,25 @@ public class BLFacade implements IBLFacade {
 		return wordBO.getMeaningsFromDB(word);
 	}
 
+	// ==================== Added for JavaFX UI ====================
 
+	@Override
+	public List<Word> getSearchHistory() {
+		return wordBO.getSearchHistory();
+	}
+
+	@Override
+	public void clearSearchHistory() {
+		wordBO.clearSearchHistory();
+	}
+
+	@Override
+	public void clearFavorites() {
+		wordBO.clearFavorites();
+	}
+
+	@Override
+	public int importFromFile(String filePath) {
+		return wordBO.importFromFile(filePath);
+	}
 }

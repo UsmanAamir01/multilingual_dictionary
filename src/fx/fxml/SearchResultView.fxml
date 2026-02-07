@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="fx.controller.SearchResultController"
+      spacing="0"
+      styleClass="content-area">
+    
+    <!-- Header Section -->
+    <StackPane fx:id="headerPane" minHeight="90" maxHeight="90">
+        <HBox alignment="CENTER_LEFT" spacing="16">
+            <padding><Insets top="20" right="28" bottom="20" left="28"/></padding>
+            
+            <Label text="🔍" style="-fx-font-size: 32px;"/>
+            
+            <VBox spacing="4">
+                <Label fx:id="titleLabel" text="Search Results" 
+                       style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label fx:id="subtitleLabel" text="Results for..." 
+                       style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+            </VBox>
+            
+            <Region HBox.hgrow="ALWAYS"/>
+            
+            <Button text="🔙 Back" styleClass="button-header" onAction="#handleBack"
+                    prefWidth="90"/>
+        </HBox>
+    </StackPane>
+    
+    <!-- Word Details Card -->
+    <VBox spacing="16">
+        <padding><Insets top="20" right="0" bottom="0" left="0"/></padding>
+        
+        <!-- Main Result Card -->
+        <VBox fx:id="resultCard" styleClass="card-elevated" spacing="16">
+            <!-- Word Header -->
+            <HBox alignment="CENTER_LEFT" spacing="16">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label fx:id="wordLabel" text="Word" 
+                           style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
+                    <Label fx:id="languageLabel" text="Arabic" styleClass="badge"/>
+                </VBox>
+                
+                <Button fx:id="favoriteBtn" text="☆" onAction="#handleToggleFavorite"
+                        style="-fx-font-size: 24px; -fx-background-color: transparent; -fx-cursor: hand;"/>
+            </HBox>
+            
+            <Separator/>
+            
+            <!-- Meanings -->
+            <VBox spacing="12">
+                <Label text="Meanings" style="-fx-font-size: 16px; -fx-font-weight: 600;"/>
+                
+                <VBox spacing="8" styleClass="card">
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="🇵🇰" style="-fx-font-size: 20px;"/>
+                        <VBox spacing="2">
+                            <Label text="Urdu" style="-fx-font-size: 12px; -fx-text-fill: #64748B;"/>
+                            <Label fx:id="urduMeaningLabel" text="--" 
+                                   style="-fx-font-size: 15px;" wrapText="true"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+                
+                <VBox spacing="8" styleClass="card">
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="🇮🇷" style="-fx-font-size: 20px;"/>
+                        <VBox spacing="2">
+                            <Label text="Persian" style="-fx-font-size: 12px; -fx-text-fill: #64748B;"/>
+                            <Label fx:id="persianMeaningLabel" text="--" 
+                                   style="-fx-font-size: 15px;" wrapText="true"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+            </VBox>
+            
+            <Separator/>
+            
+            <!-- Linguistic Info -->
+            <VBox spacing="12">
+                <Label text="Linguistic Analysis" style="-fx-font-size: 16px; -fx-font-weight: 600;"/>
+                
+                <HBox spacing="16">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="stat-card">
+                        <Label text="Part of Speech" style="-fx-font-size: 11px; -fx-text-fill: #64748B;"/>
+                        <Label fx:id="posLabel" text="--" 
+                               style="-fx-font-size: 16px; -fx-font-weight: 600; -fx-text-fill: #6366F1;"/>
+                    </VBox>
+                    
+                    <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="stat-card">
+                        <Label text="Stem" style="-fx-font-size: 11px; -fx-text-fill: #64748B;"/>
+                        <Label fx:id="stemLabel" text="--" 
+                               style="-fx-font-size: 16px; -fx-font-weight: 600; -fx-text-fill: #8B5CF6;"/>
+                    </VBox>
+                    
+                    <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="stat-card">
+                        <Label text="Lemma" style="-fx-font-size: 11px; -fx-text-fill: #64748B;"/>
+                        <Label fx:id="lemmaLabel" text="--" 
+                               style="-fx-font-size: 16px; -fx-font-weight: 600; -fx-text-fill: #10B981;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </VBox>
+        
+        <!-- Actions -->
+        <HBox spacing="12" alignment="CENTER">
+            <Button text="Add to Favourites" styleClass="button-primary" onAction="#handleToggleFavorite" prefWidth="160"/>
+            <Button text="Edit Word" styleClass="button-outline" onAction="#handleEdit" prefWidth="100"/>
+            <Button text="New Search" styleClass="button-text" onAction="#handleBack" prefWidth="110"/>
+        </HBox>
+    </VBox>
+    
+    <!-- Not Found State -->
+    <VBox fx:id="notFoundState" alignment="CENTER" spacing="16" visible="false" managed="false" VBox.vgrow="ALWAYS">
+        <Label text="😕" style="-fx-font-size: 64px;"/>
+        <Label text="Word Not Found" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+        <Label fx:id="notFoundWord" text="'...' was not found in the database" styleClass="text-muted"/>
+        
+        <HBox spacing="12" alignment="CENTER">
+            <padding><Insets top="16"/></padding>
+            <Button text="Try Web Search" styleClass="button-primary" onAction="#handleWebSearch" prefWidth="140"/>
+            <Button text="Add Manually" styleClass="button-outline" onAction="#handleAddManually" prefWidth="130"/>
+        </HBox>
+    </VBox>
+</VBox>

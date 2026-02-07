@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="fx.controller.AddWordController"
+      styleClass="surface"
+      spacing="0"
+      prefWidth="480"
+      prefHeight="420">
+    
+    <!-- Header with Gradient -->
+    <StackPane fx:id="headerPane" minHeight="90" maxHeight="90">
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <padding><Insets top="20" right="24" bottom="20" left="24"/></padding>
+            
+            <Label text="➕" style="-fx-font-size: 28px; -fx-text-fill: white;"/>
+            
+            <VBox spacing="4">
+                <Label text="Add New Word" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label text="Enter word details in all languages" style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+            </VBox>
+            
+            <Region HBox.hgrow="ALWAYS"/>
+            
+            <Button fx:id="closeBtn" text="✕" onAction="#handleClose"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 20px; -fx-cursor: hand;"/>
+        </HBox>
+    </StackPane>
+    
+    <!-- Form Content -->
+    <VBox spacing="20" VBox.vgrow="ALWAYS">
+        <padding><Insets top="28" right="28" bottom="16" left="28"/></padding>
+        
+        <!-- Arabic Word Field -->
+        <VBox spacing="8">
+            <Label text="Arabic Word" styleClass="text-body-bold"/>
+            <TextField fx:id="arabicField" promptText="Enter Arabic word..." prefHeight="44"/>
+        </VBox>
+        
+        <!-- Urdu Meaning Field -->
+        <VBox spacing="8">
+            <Label text="Urdu Meaning" styleClass="text-body-bold"/>
+            <TextField fx:id="urduField" promptText="Enter Urdu meaning..." prefHeight="44"/>
+        </VBox>
+        
+        <!-- Persian Meaning Field -->
+        <VBox spacing="8">
+            <Label text="Persian Meaning" styleClass="text-body-bold"/>
+            <TextField fx:id="persianField" promptText="Enter Persian meaning..." prefHeight="44"/>
+        </VBox>
+    </VBox>
+    
+    <!-- Footer Buttons -->
+    <HBox spacing="12" alignment="CENTER">
+        <padding><Insets top="16" right="28" bottom="24" left="28"/></padding>
+        
+        <Button text="Add Word" styleClass="button-success" onAction="#handleAddWord"
+                prefWidth="120">
+            <graphic>
+                <Label text="✓" style="-fx-text-fill: white; -fx-font-size: 14px;"/>
+            </graphic>
+        </Button>
+        
+        <Button text="Clear" styleClass="button-outline" onAction="#handleClear"
+                prefWidth="100"/>
+        
+        <Button text="Cancel" styleClass="button-text" onAction="#handleClose"
+                prefWidth="100"/>
+    </HBox>
+</VBox>

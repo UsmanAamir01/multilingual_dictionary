@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="fx.controller.MainController"
+            styleClass="root">
+    
+    <!-- LEFT SIDEBAR -->
+    <left>
+        <VBox fx:id="sidebar" styleClass="sidebar">
+            <!-- Logo Header -->
+            <VBox styleClass="sidebar-header">
+                <Label text="📖 Dictionary" styleClass="sidebar-logo"/>
+            </VBox>
+            
+            <!-- Navigation Items -->
+            <VBox fx:id="navContainer" spacing="4" VBox.vgrow="ALWAYS">
+                <padding><Insets top="16" right="12" bottom="16" left="12"/></padding>
+                
+                <!-- Main Navigation -->
+                <HBox fx:id="navAddWord" styleClass="sidebar-item" onMouseClicked="#handleAddWord">
+                    <Label text="➕" styleClass="sidebar-item-icon"/>
+                    <Label text="Add Word" styleClass="sidebar-item-text">
+                        <HBox.margin><Insets left="12"/></HBox.margin>
+                    </Label>
+                </HBox>
+                
+                <HBox fx:id="navViewAll" styleClass="sidebar-item" onMouseClicked="#handleViewAll">
+                    <Label text="📋" styleClass="sidebar-item-icon"/>
+                    <Label text="View All Words" styleClass="sidebar-item-text">
+                        <HBox.margin><Insets left="12"/></HBox.margin>
+                    </Label>
+                </HBox>
+                
+                <HBox fx:id="navImport" styleClass="sidebar-item" onMouseClicked="#handleImport">
+                    <Label text="📁" styleClass="sidebar-item-icon"/>
+                    <Label text="Import File" styleClass="sidebar-item-text">
+                        <HBox.margin><Insets left="12"/></HBox.margin>
+                    </Label>
+                </HBox>
+                
+                <HBox fx:id="navNormalize" styleClass="sidebar-item" onMouseClicked="#handleNormalize">
+                    <Label text="🔧" styleClass="sidebar-item-icon"/>
+                    <Label text="Word Normalization" styleClass="sidebar-item-text">
+                        <HBox.margin><Insets left="12"/></HBox.margin>
+                    </Label>
+                </HBox>
+                
+                <HBox fx:id="navFavorites" styleClass="sidebar-item" onMouseClicked="#handleFavorites">
+                    <Label text="⭐" styleClass="sidebar-item-icon"/>
+                    <Label text="Favourites" styleClass="sidebar-item-text">
+                        <HBox.margin><Insets left="12"/></HBox.margin>
+                    </Label>
+                </HBox>
+                
+                <HBox fx:id="navHistory" styleClass="sidebar-item" onMouseClicked="#handleHistory">
+                    <Label text="🕐" styleClass="sidebar-item-icon"/>
+                    <Label text="Search History" styleClass="sidebar-item-text">
+                        <HBox.margin><Insets left="12"/></HBox.margin>
+                    </Label>
+                </HBox>
+                
+                <!-- Spacer -->
+                <Region VBox.vgrow="ALWAYS"/>
+                
+                <!-- Divider -->
+                <Separator styleClass="sidebar-divider"/>
+                
+                <!-- Bottom Navigation -->
+                <HBox styleClass="sidebar-item" onMouseClicked="#handleFAQs">
+                    <padding><Insets top="8"/></padding>
+                    <Label text="❓" styleClass="sidebar-item-icon"/>
+                    <Label text="FAQs" styleClass="sidebar-item-text">
+                        <HBox.margin><Insets left="12"/></HBox.margin>
+                    </Label>
+                </HBox>
+                
+                <HBox styleClass="sidebar-item" onMouseClicked="#handleInstructions">
+                    <Label text="📖" styleClass="sidebar-item-icon"/>
+                    <Label text="Instructions" styleClass="sidebar-item-text">
+                        <HBox.margin><Insets left="12"/></HBox.margin>
+                    </Label>
+                </HBox>
+                
+                <HBox styleClass="sidebar-item" onMouseClicked="#handleSettings">
+                    <Label text="⚙️" styleClass="sidebar-item-icon"/>
+                    <Label text="Settings" styleClass="sidebar-item-text">
+                        <HBox.margin><Insets left="12"/></HBox.margin>
+                    </Label>
+                </HBox>
+            </VBox>
+        </VBox>
+    </left>
+    
+    <!-- CENTER CONTENT -->
+    <center>
+        <VBox>
+            <!-- Header Bar -->
+            <HBox styleClass="header" alignment="CENTER_LEFT">
+                <!-- Search Section -->
+                <HBox spacing="12" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                    <ComboBox fx:id="languageCombo" promptText="Language" prefWidth="130" prefHeight="40"/>
+                    
+                    <TextField fx:id="searchField" promptText="Search for words..." 
+                               prefWidth="350" prefHeight="40" styleClass="search-field"/>
+                    
+                    <Button text="Search" styleClass="button-primary" 
+                            onAction="#handleSearch" prefWidth="100"/>
+                </HBox>
+                
+                <!-- Theme Toggle -->
+                <HBox alignment="CENTER_RIGHT">
+                    <HBox styleClass="theme-toggle" onMouseClicked="#toggleTheme" alignment="CENTER">
+                        <Label fx:id="themeLabel" text="Dark" styleClass="theme-toggle-label"/>
+                    </HBox>
+                </HBox>
+            </HBox>
+            
+            <!-- Main Content Area -->
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll-pane">
+                <StackPane fx:id="contentPane" styleClass="content-area">
+                    <!-- Welcome Content (Default) -->
+                    <VBox fx:id="welcomeContent" spacing="20" alignment="TOP_LEFT">
+                        <padding><Insets top="8" right="8" bottom="8" left="8"/></padding>
+                        
+                        <!-- Hero Card with Gradient -->
+                        <StackPane fx:id="heroCard" styleClass="hero-card" minHeight="130">
+                            <VBox spacing="8">
+                                <Label text="📖" style="-fx-font-size: 28px;"/>
+                                <Label text="Welcome to Multilingual Dictionary" styleClass="text-title" 
+                                       style="-fx-text-fill: white;"/>
+                                <Label text="Your premium solution for Arabic, Persian, and Urdu translations" 
+                                       style="-fx-text-fill: rgba(255,255,255,0.85); -fx-font-size: 14px;"/>
+                            </VBox>
+                        </StackPane>
+                        
+                        <!-- Quick Actions Section -->
+                        <VBox spacing="12">
+                            <Label text="Quick Actions" styleClass="text-heading"/>
+                            
+                            <HBox fx:id="quickActionsGrid" spacing="16">
+                                <!-- Action cards will be created dynamically -->
+                            </HBox>
+                        </VBox>
+                        
+                        <!-- Statistics Section -->
+                        <VBox spacing="12">
+                            <Label text="Statistics" styleClass="text-heading"/>
+                            
+                            <HBox fx:id="statsGrid" spacing="16">
+                                <!-- Stat cards will be created dynamically -->
+                            </HBox>
+                        </VBox>
+                    </VBox>
+                </StackPane>
+            </ScrollPane>
+        </VBox>
+    </center>
+</BorderPane>

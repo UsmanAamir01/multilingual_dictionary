@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="fx.controller.SettingsController"
+      spacing="0"
+      styleClass="content-area">
+    
+    <!-- Header Section -->
+    <StackPane fx:id="headerPane" minHeight="90" maxHeight="90">
+        <HBox alignment="CENTER_LEFT" spacing="16">
+            <padding><Insets top="20" right="28" bottom="20" left="28"/></padding>
+            
+            <Label text="⚙️" style="-fx-font-size: 32px;"/>
+            
+            <VBox spacing="4">
+                <Label text="Settings" 
+                       style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label text="Customize your experience" 
+                       style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+            </VBox>
+            
+            <Region HBox.hgrow="ALWAYS"/>
+            
+            <Button text="🔙 Back" styleClass="button-header" onAction="#handleBack"
+                    prefWidth="90"/>
+        </HBox>
+    </StackPane>
+    
+    <!-- Settings Content -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="scroll-pane">
+        <VBox spacing="20">
+            <padding><Insets top="20" right="0" bottom="20" left="0"/></padding>
+            
+            <!-- Appearance Section -->
+            <VBox styleClass="card" spacing="16">
+                <Label text="Appearance" style="-fx-font-size: 18px; -fx-font-weight: 600;"/>
+                
+                <HBox alignment="CENTER_LEFT" spacing="16">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Dark Mode" style="-fx-font-size: 15px; -fx-font-weight: 500;"/>
+                        <Label text="Switch between light and dark themes" styleClass="text-muted" style="-fx-font-size: 12px;"/>
+                    </VBox>
+                    <ToggleButton fx:id="darkModeToggle" text="Off" onAction="#handleDarkModeToggle"
+                                  style="-fx-background-color: #E2E8F0; -fx-background-radius: 20px; -fx-padding: 8px 20px;"/>
+                </HBox>
+                
+                <Separator/>
+                
+                <HBox alignment="CENTER_LEFT" spacing="16">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Font Size" style="-fx-font-size: 15px; -fx-font-weight: 500;"/>
+                        <Label text="Adjust text size across the application" styleClass="text-muted" style="-fx-font-size: 12px;"/>
+                    </VBox>
+                    <ComboBox fx:id="fontSizeCombo" prefWidth="120"/>
+                </HBox>
+            </VBox>
+            
+            <!-- Language Section -->
+            <VBox styleClass="card" spacing="16">
+                <Label text="Language Preferences" style="-fx-font-size: 18px; -fx-font-weight: 600;"/>
+                
+                <HBox alignment="CENTER_LEFT" spacing="16">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Default Search Language" style="-fx-font-size: 15px; -fx-font-weight: 500;"/>
+                        <Label text="Language to use when searching" styleClass="text-muted" style="-fx-font-size: 12px;"/>
+                    </VBox>
+                    <ComboBox fx:id="defaultLanguageCombo" prefWidth="140"/>
+                </HBox>
+            </VBox>
+            
+            <!-- Data Section -->
+            <VBox styleClass="card" spacing="16">
+                <Label text="Data Management" style="-fx-font-size: 18px; -fx-font-weight: 600;"/>
+                
+                <HBox alignment="CENTER_LEFT" spacing="16">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Clear Search History" style="-fx-font-size: 15px; -fx-font-weight: 500;"/>
+                        <Label text="Remove all search history data" styleClass="text-muted" style="-fx-font-size: 12px;"/>
+                    </VBox>
+                    <Button text="Clear" styleClass="button-danger" onAction="#handleClearHistory" prefWidth="80"/>
+                </HBox>
+                
+                <Separator/>
+                
+                <HBox alignment="CENTER_LEFT" spacing="16">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Clear All Favourites" style="-fx-font-size: 15px; -fx-font-weight: 500;"/>
+                        <Label text="Remove all favourite words" styleClass="text-muted" style="-fx-font-size: 12px;"/>
+                    </VBox>
+                    <Button text="Clear" styleClass="button-danger" onAction="#handleClearFavorites" prefWidth="80"/>
+                </HBox>
+                
+                <Separator/>
+                
+                <HBox alignment="CENTER_LEFT" spacing="16">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Export Dictionary" style="-fx-font-size: 15px; -fx-font-weight: 500;"/>
+                        <Label text="Save dictionary data to a file" styleClass="text-muted" style="-fx-font-size: 12px;"/>
+                    </VBox>
+                    <Button text="Export" styleClass="button-outline" onAction="#handleExport" prefWidth="80"/>
+                </HBox>
+            </VBox>
+            
+            <!-- About Section -->
+            <VBox styleClass="card" spacing="16">
+                <Label text="About" style="-fx-font-size: 18px; -fx-font-weight: 600;"/>
+                
+                <HBox alignment="CENTER_LEFT" spacing="16">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Multilingual Dictionary" style="-fx-font-size: 15px; -fx-font-weight: 500;"/>
+                        <Label text="Version 2.0.0 - JavaFX Edition" styleClass="text-muted" style="-fx-font-size: 12px;"/>
+                    </VBox>
+                </HBox>
+                
+                <Label text="A premium multilingual dictionary for Arabic, Urdu, and Persian translations. Built with JavaFX for a modern, responsive experience." 
+                       styleClass="text-muted" style="-fx-font-size: 13px;" wrapText="true"/>
+            </VBox>
+        </VBox>
+    </ScrollPane>
+</VBox>

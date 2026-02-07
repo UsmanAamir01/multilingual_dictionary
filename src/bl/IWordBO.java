@@ -51,5 +51,10 @@ public interface IWordBO {
 	String[] getMeaningsFromDB(String word);
 	public String[] getMeaning1(String word) throws Exception;
 	
+	// Added for JavaFX UI
+	List<Word> getSearchHistory();
+	void clearSearchHistory();
+	void clearFavorites();
+	int importFromFile(String filePath);
 
 }

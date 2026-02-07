@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="fx.controller.FavoritesController"
+      spacing="0"
+      styleClass="content-area">
+    
+    <!-- Header Section -->
+    <StackPane fx:id="headerPane" minHeight="90" maxHeight="90">
+        <HBox alignment="CENTER_LEFT" spacing="16">
+            <padding><Insets top="20" right="28" bottom="20" left="28"/></padding>
+            
+            <Label text="⭐" style="-fx-font-size: 32px;"/>
+            
+            <VBox spacing="4">
+                <Label text="Favourites" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label fx:id="countLabel" text="0 words saved" 
+                       style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+            </VBox>
+            
+            <Region HBox.hgrow="ALWAYS"/>
+            
+            <Button text="🔙 Back" styleClass="button-header" onAction="#handleBack"
+                    prefWidth="90"/>
+        </HBox>
+    </StackPane>
+    
+    <!-- Content -->
+    <VBox VBox.vgrow="ALWAYS" spacing="0">
+        <padding><Insets top="20" right="0" bottom="0" left="0"/></padding>
+        
+        <!-- Favorites List -->
+        <ListView fx:id="favoritesList" VBox.vgrow="ALWAYS" styleClass="list-view"/>
+        
+        <!-- Empty State -->
+        <VBox fx:id="emptyState" alignment="CENTER" spacing="16" visible="false" managed="false">
+            <Label text="⭐" style="-fx-font-size: 48px; -fx-opacity: 0.4;"/>
+            <Label text="No favourites yet" styleClass="text-heading" style="-fx-opacity: 0.6;"/>
+            <Label text="Mark words as favourite to see them here" styleClass="text-caption"/>
+        </VBox>
+    </VBox>
+    
+    <!-- Footer Actions -->
+    <HBox spacing="12" alignment="CENTER">
+        <padding><Insets top="16" right="0" bottom="0" left="0"/></padding>
+        
+        <Button text="View Details" styleClass="button-primary" onAction="#handleViewDetails" prefWidth="120"/>
+        <Button text="Remove from Favourites" styleClass="button-danger" onAction="#handleRemove" prefWidth="180"/>
+    </HBox>
+</VBox>

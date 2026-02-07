@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="fx.controller.AllWordsController"
+      spacing="0"
+      styleClass="content-area">
+    
+    <!-- Header Section -->
+    <StackPane fx:id="headerPane" minHeight="100" maxHeight="100" styleClass="card-elevated">
+        <HBox alignment="CENTER_LEFT" spacing="20">
+            <padding><Insets top="20" right="28" bottom="20" left="28"/></padding>
+            
+            <!-- Title -->
+            <VBox spacing="4">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="📋" style="-fx-font-size: 28px;"/>
+                    <Label text="All Words" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                </HBox>
+                <Label text="Browse and manage your dictionary" 
+                       style="-fx-font-size: 14px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+            </VBox>
+            
+            <Region HBox.hgrow="ALWAYS"/>
+            
+            <!-- Search -->
+            <TextField fx:id="searchField" promptText="Search words..." 
+                       prefWidth="280" prefHeight="40" styleClass="search-field"
+                       style="-fx-background-color: rgba(255,255,255,0.15); -fx-text-fill: white; -fx-prompt-text-fill: rgba(255,255,255,0.6);"/>
+            
+            <Button text="🔙 Back" styleClass="button-header" onAction="#handleBack"
+                    prefWidth="90"/>
+        </HBox>
+    </StackPane>
+    
+    <!-- Table Section -->
+    <VBox VBox.vgrow="ALWAYS" spacing="16">
+        <padding><Insets top="20" right="0" bottom="0" left="0"/></padding>
+        
+        <TableView fx:id="wordsTable" VBox.vgrow="ALWAYS" styleClass="table-view">
+            <columns>
+                <TableColumn fx:id="arabicCol" text="Arabic Word" prefWidth="220">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="arabicWord"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="urduCol" text="Urdu Meaning" prefWidth="220">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="urduMeaning"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="persianCol" text="Persian Meaning" prefWidth="220">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="persianMeaning"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="favoriteCol" text="⭐" prefWidth="60" style="-fx-alignment: CENTER;"/>
+            </columns>
+            <placeholder>
+                <Label text="No words found. Add some words to get started!" styleClass="text-muted"/>
+            </placeholder>
+        </TableView>
+    </VBox>
+    
+    <!-- Footer with Info and Actions -->
+    <VBox spacing="12">
+        <padding><Insets top="16" right="0" bottom="0" left="0"/></padding>
+        
+        <!-- Word Info Card -->
+        <HBox fx:id="infoCard" styleClass="card" alignment="CENTER" spacing="32" minHeight="60">
+            <Label fx:id="posLabel" text="Part of Speech: --" styleClass="text-body"/>
+            <Separator orientation="VERTICAL" prefHeight="30"/>
+            <Label fx:id="stemLabel" text="Stem: --" styleClass="text-body"/>
+            <Separator orientation="VERTICAL" prefHeight="30"/>
+            <Label fx:id="lemmaLabel" text="Lemma: --" styleClass="text-body"/>
+        </HBox>
+        
+        <!-- Action Buttons -->
+        <HBox spacing="12" alignment="CENTER">
+            <Button text="Update" styleClass="button-success" onAction="#handleUpdate" prefWidth="100"/>
+            <Button text="Remove" styleClass="button-danger" onAction="#handleRemove" prefWidth="100"/>
+            <Button text="Toggle Favorite" styleClass="button-outline" onAction="#handleToggleFavorite" prefWidth="140"/>
+        </HBox>
+    </VBox>
+</VBox>

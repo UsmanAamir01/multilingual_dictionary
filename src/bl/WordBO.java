@@ -304,5 +304,48 @@ public class WordBO implements IWordBO {
 		return wordDAOFacade.getMeaningsFromDB(word);
 	}
 
-	
+	// ==================== Added for JavaFX UI ====================
+
+	private List<Word> searchHistory = new ArrayList<>();
+	private List<Word> favoriteWordsCache = new ArrayList<>();
+
+	@Override
+	public List<Word> getSearchHistory() {
+		return new ArrayList<>(searchHistory);
+	}
+
+	@Override
+	public void clearSearchHistory() {
+		searchHistory.clear();
+	}
+
+	@Override
+	public void clearFavorites() {
+		favoriteWordsCache.clear();
+		// Also clear from database if needed
+		try {
+			List<Word> favorites = getFavoriteWords();
+			if (favorites != null) {
+				for (Word word : favorites) {
+					markWordAsFavorite(word.getArabicWord(), false);
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Error clearing favorites: {0}", e.getMessage());
+		}
+	}
+
+	@Override
+	public int importFromFile(String filePath) {
+		try {
+			List<Word> words = importDataFromFile(filePath);
+			if (words != null && !words.isEmpty()) {
+				insertImportedData(words);
+				return words.size();
+			}
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Error importing from file: {0}", e.getMessage());
+		}
+		return 0;
+	}
 }

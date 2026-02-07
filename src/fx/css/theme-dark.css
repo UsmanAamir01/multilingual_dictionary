@@ -1,0 +1,151 @@
+/*
+ * Dark Theme - Premium Design System
+ * Multilingual Dictionary JavaFX Application
+ */
+
+/* ============================================
+   ROOT VARIABLES (Dark Mode Overrides)
+   ============================================ */
+.root {
+    /* Background Colors */
+    -fx-bg-primary: #0F172A;
+    -fx-bg-surface: #1E293B;
+    -fx-bg-card: #334155;
+    -fx-bg-elevated: #475569;
+
+    /* Text Colors */
+    -fx-text-primary: #F1F5F9;
+    -fx-text-secondary: #94A3B8;
+    -fx-text-muted: #64748B;
+    -fx-text-inverse: #1E293B;
+
+    /* Accent Colors */
+    -fx-accent-primary: #818CF8;
+    -fx-accent-primary-hover: #A5B4FC;
+    -fx-accent-secondary: #A78BFA;
+    -fx-accent-success: #34D399;
+    -fx-accent-success-hover: #6EE7B7;
+    -fx-accent-warning: #FBBF24;
+    -fx-accent-danger: #F87171;
+    -fx-accent-danger-hover: #FCA5A5;
+
+    /* Border Colors */
+    -fx-border-light: #334155;
+    -fx-border-medium: #475569;
+
+    /* Gradient Colors */
+    -fx-gradient-start: #6366F1;
+    -fx-gradient-end: #8B5CF6;
+
+    /* Base styling */
+    -fx-background-color: -fx-bg-primary;
+    -fx-font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    -fx-font-size: 14px;
+}
+
+/* ============================================
+   CONTAINERS (Dark Overrides)
+   ============================================ */
+.card {
+    -fx-background-color: -fx-bg-card;
+    -fx-border-color: -fx-border-light;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 12, 0, 0, 3);
+}
+
+.card-elevated {
+    -fx-background-color: -fx-bg-elevated;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 20, 0, 0, 6);
+}
+
+/* ============================================
+   SIDEBAR (Dark Overrides)
+   ============================================ */
+.sidebar {
+    -fx-background-color: -fx-bg-surface;
+    -fx-border-color: -fx-border-light;
+}
+
+.sidebar-header {
+    -fx-border-color: -fx-border-light;
+}
+
+.sidebar-item:hover {
+    -fx-background-color: #334155;
+}
+
+.sidebar-item-active {
+    -fx-background-color: rgba(99, 102, 241, 0.2);
+}
+
+/* ============================================
+   HEADER (Dark Overrides)
+   ============================================ */
+.header {
+    -fx-background-color: -fx-bg-surface;
+    -fx-border-color: -fx-border-light;
+}
+
+/* ============================================
+   SCROLLPANE (Dark Overrides)
+   ============================================ */
+.scroll-bar .thumb {
+    -fx-background-color: #475569;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #64748B;
+}
+
+/* ============================================
+   TABLE (Dark Overrides)
+   ============================================ */
+.table-view {
+    -fx-background-color: -fx-bg-card;
+    -fx-border-color: -fx-border-light;
+}
+
+.table-view .column-header {
+    -fx-background-color: #1E293B;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: -fx-bg-card;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #2D3748;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: -fx-accent-primary;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: rgba(129, 140, 248, 0.15);
+}
+
+.list-view .list-cell:hover:filled {
+    -fx-background-color: rgba(129, 140, 248, 0.15);
+}
+
+/* Button overrides for dark mode */
+.button:hover {
+    -fx-background-color: #475569;
+}
+
+.button-text:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+}
+
+.button-outline:hover {
+    -fx-background-color: rgba(129, 140, 248, 0.2);
+}
+
+/* Theme toggle for dark mode */
+.theme-toggle {
+    -fx-background-color: #475569;
+}
+
+.theme-toggle:hover {
+    -fx-background-color: #64748B;
+}
